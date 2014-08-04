@@ -1,0 +1,5 @@
+Megaplex Theaters	http://dbpedia.org/resource/Megaplex_Theaters	5
+faulty	line
+Louis Pauwels	http://dbpedia.org/resource/Louis_Pauwels	30
+Louis Pauwels 2	http://dbpedia.org/resource/Louis_Pauwels	15
+Megaplex Theaters	http://dbpedia.org/resource/Riverwalk_Hotel_Detroit	10
