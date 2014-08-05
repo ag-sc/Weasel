@@ -1,3 +1,8 @@
 /AnchorParser/data/anchors.txt
 /AnchorParser/bin
 /AnchorParser/data/URIKeyMapSave.ukm
+/AnchorParser/data/anchors.ukm
+/AnchorParser/data/testFiles/URIKeyMapSave.txt
+/AnchorParser/data/testFiles/URIKeyMapSave.ukm
+/AnchorParser/data/testFiles/AnchorKeyMapSave.txt
+/AnchorParser/data/anchors_ukm.txt

@@ -1,0 +1,9 @@
+anchor1	uri1	5
+faulty	line
+anchor3	uri3	5
+anchor4	uri4	5
+anchor2	uri2	5
+anchor5	uri5	5
+anchor2_2	uri2	5
+anchor2_3	uri2	5
+anchor3	uri4	5

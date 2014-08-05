@@ -10,8 +10,16 @@ public class AnchorFileReaderTest {
 	@Test
 	public void testGetTriplet() {
 		try{
-			AnchorFileReader reader = new AnchorFileReader("data/anchors_test.txt");
+			AnchorFileReader reader = new AnchorFileReader("data/testFiles/anchors_test.txt");
 			String[] output = reader.getTriplet();
+			assertEquals("Retur valid triplets", 3, output.length);
+			output = reader.getTriplet();
+			assertEquals("Retur valid triplets", 3, output.length);
+			output = reader.getTriplet();
+			assertEquals("Retur valid triplets", 3, output.length);
+			output = reader.getTriplet();
+			assertEquals("Retur valid triplets", 3, output.length);
+			output = reader.getTriplet();
 			assertEquals("Retur valid triplets", 3, output.length);
 			output = reader.getTriplet();
 			assertEquals("Retur valid triplets", 3, output.length);
@@ -25,5 +33,6 @@ public class AnchorFileReaderTest {
 			fail("File not found exception");
 		}
 	}
+	
 
 }

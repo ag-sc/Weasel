@@ -45,4 +45,24 @@ public class AnchorFileReader {
 			return null;
 		}
 	}
+	
+	public String[] getLine() {
+		try{
+			String line;
+			String[] splitLine;
+			
+			line = br.readLine();
+			if(line == null) return null;
+				
+			if(lineCounter % 10000 == 0) logger.log(Level.FINER, "Processing line: " + lineCounter);
+			splitLine = line.split("\\t");	
+			lineCounter++;
+			return splitLine;
+			
+		}catch(IOException e){
+			logger.log(Level.SEVERE, "ReadLine IOException: \n" + e.getMessage());
+			return null;
+		}
+	}
+	
 }

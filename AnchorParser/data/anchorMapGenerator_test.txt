@@ -1,9 +1,0 @@
-test2_3	link02	9
-test1_1 test1_2	link01	5
-faulty	line
-Louis Pauwels	link01	30
-test2	link02	3
-test4	link04	40
-test3	link03	7
-test5 test5_2	link05	15
-test2_2	link02	4
