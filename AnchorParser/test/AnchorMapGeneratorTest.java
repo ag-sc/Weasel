@@ -14,20 +14,20 @@ public class AnchorMapGeneratorTest {
 
 	@Test
 	public void generateURIKeyMaptest() {
-		HashMap<String, LinkedList<TermFrequency>> URIKeyMap;
+		HashMap<String, LinkedList<TermFrequency>> uriKeyMap;
 		try{
-			URIKeyMap = AnchorMapGenerator.generateURIKeyMap("data/testFiles/anchors_test.txt");
+			uriKeyMap = AnchorMapGenerator.generateURIKeyMap("data/testFiles/anchors_test.txt");
 			
-			assertEquals("Number of key-value pairs is 5.", 5, URIKeyMap.size());
-			assertEquals("key 'uri2' has 3 entries.", 3, URIKeyMap.get("uri2").size());
+			assertEquals("Number of key-value pairs is 5.", 5, uriKeyMap.size());
+			assertEquals("key 'uri2' has 3 entries.", 3, uriKeyMap.get("uri2").size());
 			
-			AnchorMapGenerator.saveURIKeyMapToFile(URIKeyMap, "data/testFiles/URIKeyMapSave.ukm");
-			URIKeyMap = AnchorMapGenerator.loadURIKeyMapFromFile("data/testFiles/URIKeyMapSave.ukm");
+			AnchorMapGenerator.saveURIKeyMapToFile(uriKeyMap, "data/testFiles/URIKeyMapSave.ukm");
+			uriKeyMap = AnchorMapGenerator.loadURIKeyMapFromFile("data/testFiles/URIKeyMapSave.ukm");
 			
-			assertEquals("Number of key-value pairs is 5 in loaded map.", 5, URIKeyMap.size());
-			assertEquals("key 'uri2' has 3 entries in loaded map.", 3, URIKeyMap.get("uri2").size());
+			assertEquals("Number of key-value pairs is 5 in loaded map.", 5, uriKeyMap.size());
+			assertEquals("key 'uri2' has 3 entries in loaded map.", 3, uriKeyMap.get("uri2").size());
 			
-			AnchorMapGenerator.saveMapToTextFile(URIKeyMap, "data/testFiles/URIKeyMapSave.txt");
+			AnchorMapGenerator.saveMapToTextFile(uriKeyMap, "data/testFiles/URIKeyMapSave.txt");
 			
 		}catch(FileNotFoundException e){
 			e.printStackTrace();
@@ -43,14 +43,34 @@ public class AnchorMapGeneratorTest {
 	
 	@Test
 	public void generateAnchorKeyMaptest() {
-		HashMap<String, LinkedList<TermFrequency>> AnchorKeyMap;
+		HashMap<String, LinkedList<TermFrequency>> anchorKeyMap;
 		try{
-			AnchorKeyMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("data/testFiles/URIKeyMapSave.txt");
+			anchorKeyMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("data/testFiles/URIKeyMapSave.txt");
 			
-			assertEquals("Number of key-value pairs is 7 in loaded map.", 7, AnchorKeyMap.size());
-			assertEquals("key 'anchor3' has 2 entries in loaded map.", 2, AnchorKeyMap.get("anchor3").size());
+			assertEquals("Number of key-value pairs is 7 in loaded map.", 7, anchorKeyMap.size());
+			assertEquals("key 'anch or3' has 2 entries in loaded map.", 2, anchorKeyMap.get("anch or3").size());
 			
-			AnchorMapGenerator.saveMapToTextFile(AnchorKeyMap, "data/testFiles/AnchorKeyMapSave.txt");
+			AnchorMapGenerator.saveMapToTextFile(anchorKeyMap, "data/testFiles/AnchorKeyMapSave.txt");
+			
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
+			fail("File not found exception");
+		}catch(IOException e){
+			e.printStackTrace();
+			fail("IO exception");
+		}
+	}
+	
+	@Test
+	public void generatePartialAnchorKeyMaptest() {
+		HashMap<String, LinkedList<String>> partialAnchorKeyMap;
+		try{
+			partialAnchorKeyMap = AnchorMapGenerator.generatePartialAnchorKeyMapFromAnchorKeyMapTextFile("data/testFiles/AnchorKeyMapSave.txt");
+			
+			assertEquals("Number of key-value pairs is 3 in loaded map.", 3, partialAnchorKeyMap.size());
+			assertEquals("key 'anch' has 2 entries in loaded map.", 2, partialAnchorKeyMap.get("anch").size());
+			
+			AnchorMapGenerator.savePartialKeyMapToTextFile(partialAnchorKeyMap, "data/testFiles/PartialAnchorKeyMapSave.txt");
 			
 		}catch(FileNotFoundException e){
 			e.printStackTrace();

@@ -14,9 +14,9 @@ public class AnchorFileReader {
 	private int lineCounter = 0;
 	
 	AnchorFileReader(String fileName) throws FileNotFoundException{
-		consoleHandler.setLevel(Level.ALL);
-		logger.addHandler(consoleHandler);
-		logger.setLevel(Level.ALL);
+		//consoleHandler.setLevel(Level.ALL);
+		//logger.addHandler(consoleHandler);
+		//logger.setLevel(Level.ALL);
 		
 		br = new BufferedReader(new FileReader(fileName));
 	}
