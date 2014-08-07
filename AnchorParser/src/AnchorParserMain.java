@@ -2,9 +2,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
+import jdbm.PrimaryHashMap;
+import jdbm.PrimaryStoreMap;
+import jdbm.RecordManager;
+import jdbm.RecordManagerFactory;
 import datatypes.TermFrequency;
-
 
 public class AnchorParserMain {
 
@@ -12,6 +16,7 @@ public class AnchorParserMain {
 		System.out.println("Hello World!");
 
 		try{
+			/*
 			HashMap<String, LinkedList<TermFrequency>> anchorMap = new HashMap<String, LinkedList<TermFrequency>>();
 			
 			
@@ -32,13 +37,36 @@ public class AnchorParserMain {
 			AnchorMapGenerator.saveMapToTextFile(anchorMap, "data/2_AnchorKeyMap.txt");
 			anchorMap = null;
 			System.gc();
-			
+			*/
 			System.out.println("Generate PartialAnchorKeyMap text file...");
 			HashMap<String, LinkedList<String>> partialAnchorKeyMap;
-			partialAnchorKeyMap = AnchorMapGenerator.generatePartialAnchorKeyMapFromAnchorKeyMapTextFile("data/2_AnchorKeyMap.txt");
-			System.out.println("partialAnchorKeyMap generated, writing to disk...");
-			AnchorMapGenerator.savePartialKeyMapToTextFile(partialAnchorKeyMap, "data/3_PartialAnchorKeyMap.txt");
+			//partialAnchorKeyMap = AnchorMapGenerator.generatePartialAnchorKeyMapFromAnchorKeyMapTextFile("data/2_AnchorKeyMap.txt");
+			//System.out.println("partialAnchorKeyMap generated, writing to disk...");
+			//AnchorMapGenerator.savePartialKeyMapToTextFile(partialAnchorKeyMap, "data/3_PartialAnchorKeyMap.txt");
 			
+			// ----------------------------------------------------------
+			
+			System.out.println("Writing partialAnchorKeyMap to DB...");
+			RecordManager recman = RecordManagerFactory.createRecordManager("data/jdbm/partialMap");
+			
+			PrimaryHashMap<String, LinkedList<String>> partialAnchorMap = recman.hashMap("partialAnchorMap");
+			
+			/*
+			int counter = 0;
+			for(Entry<String, LinkedList<String>> entry: partialAnchorKeyMap.entrySet()){
+				partialAnchorMap.put(entry.getKey(), entry.getValue());
+				if(counter++ % 100000 == 0){
+					System.out.println(counter-1);
+					recman.commit();
+				}
+			}
+			recman.commit();
+			*/
+			
+			System.out.println(partialAnchorMap.get("lisbon"));
+			
+			
+			recman.close();
 			
 		}catch(FileNotFoundException e){
 			e.printStackTrace();
