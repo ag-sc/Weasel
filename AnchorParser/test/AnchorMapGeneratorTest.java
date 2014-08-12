@@ -4,6 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.TreeSet;
+
+import jdbm.PrimaryHashMap;
+import jdbm.RecordManager;
+import jdbm.RecordManagerFactory;
 
 import org.junit.Test;
 
@@ -80,4 +85,49 @@ public class AnchorMapGeneratorTest {
 			fail("IO exception");
 		}
 	}
+	
+	@Test
+	public void dbTest(){
+		try {
+			AnchorFileReader anchorReader = new AnchorFileReader("data/testFiles/anchors_test.txt");
+			AnchorMapGenerator.generateDatabase(anchorReader, "data/jdbm/testDB");
+			
+			RecordManager recman = RecordManagerFactory.createRecordManager("data/jdbm/testDB");
+			
+			PrimaryHashMap<String, TreeSet<TermFrequency>> uriMap = recman.hashMap("uri");
+			assertEquals("Number of key-value pairs is 5 in loaded map.", 5, uriMap.entrySet().size());
+			assertEquals("Number of entries for key 'uri4' is 2.", 2, uriMap.get("uri4").size());
+			
+			PrimaryHashMap<String, TreeSet<TermFrequency>> anchorMap = recman.hashMap("anchor");
+			assertEquals("Number of key-value pairs is 7 in loaded map.", 7, anchorMap.entrySet().size());
+			assertEquals("Number of entries for key 'anch or3' is 2.", 2, anchorMap.get("anch or3").size());
+			
+			PrimaryHashMap<String, TreeSet<TermFrequency>> partialAnchorMap = recman.hashMap("partial");
+			assertEquals("Number of key-value pairs is 3 in loaded map.", 3, partialAnchorMap.entrySet().size());
+			assertEquals("Number of entries for key 'anch' is 2.", 2, partialAnchorMap.get("anch").size());
+			assertEquals("First entry for 'anch' is 'anch or2_2'", "anch or2_2", partialAnchorMap.get("anch").first());
+			
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
+			fail("File not found exception");
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("IO exception");
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
