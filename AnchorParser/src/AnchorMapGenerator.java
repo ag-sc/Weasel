@@ -70,7 +70,7 @@ public class AnchorMapGenerator {
 	public static <T> void saveMapToJDMB(HashMap<String, LinkedList<T>> map, String dbName, String mapName) throws IOException{
 		System.out.println("Writing map to DB '"+dbName+"' as map '"+mapName+"'");
 		RecordManager recman = RecordManagerFactory.createRecordManager(dbName);
-		recman.defrag();
+		//recman.defrag();
 		PrimaryHashMap<String, LinkedList<T>> dbMap = recman.hashMap(mapName);
 		
 		

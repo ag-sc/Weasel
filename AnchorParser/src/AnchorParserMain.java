@@ -18,80 +18,80 @@ public class AnchorParserMain {
 		try{
 			
 			HashMap<String, LinkedList<TermFrequency>> anchorMap = new HashMap<String, LinkedList<TermFrequency>>();
+			/*
 			
+			anchorMap = AnchorMapGenerator.generateURIKeyMap("../../data/Wikipedia Anchor/anchors.txt");
+			System.out.println("AnchorMap generated, writing to disk...");
+			AnchorMapGenerator.saveMapToTextFile(anchorMap, "../../data/Wikipedia Anchor/1_URIKeyMap.txt");
 			
-//			anchorMap = AnchorMapGenerator.generateURIKeyMap("data/anchors.txt");
-//			System.out.println("AnchorMap generated, writing to disk...");
-//			AnchorMapGenerator.saveMapToTextFile(anchorMap, "data/1_URIKeyMap.txt");
-//			
-//			AnchorMapGenerator.saveMapToJDMB(anchorMap, "data/jdbm/db_01", "uriKeyMap");
-			
-			//anchorMap = AnchorMapGenerator.loadURIKeyMapFromFile("data/anchors.ukm");
+			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/db_01", "uriKeyMap");
+			*/
+			//anchorMap = AnchorMapGenerator.loadURIKeyMapFromFile("../../data/Wikipedia Anchor/anchors.ukm");
 			//System.out.println("Object generated, looking up...");
 			//LinkedList<TermFrequency> tmp = anchorMap.get("http://dbpedia.org/resource/Lisbon_Treaty");
 			//System.out.println(tmp);
 			
-//			anchorMap = null;
-//			System.gc();
-			/*
-			System.out.println("Generate AnchorKeyMap text file...");
-			anchorMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("data/1_URIKeyMap.txt");
+			//anchorMap = null;
+			//System.gc();
 			
-			int counter = 0;
-			AnchorMapGenerator.saveMapToJDMB(anchorMap, "data/jdbm/db_02", "anchorKeyMap");
-			for(Entry<String, LinkedList<TermFrequency>> e: anchorMap.entrySet()){
-				System.out.println(counter++ + ": " + e.getKey());
-				System.out.println("/t" + e.getValue());
-				if(counter > 25) break;
-			}
+			System.out.println("Generate AnchorKeyMap text file...");
+			anchorMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("../../data/Wikipedia Anchor/1_URIKeyMap.txt");
+			
+//			int counter = 0;
+			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/db_01", "anchorKeyMap");
+//			for(Entry<String, LinkedList<TermFrequency>> e: anchorMap.entrySet()){
+//				System.out.println(counter++ + ": " + e.getKey());
+//				System.out.println("/t" + e.getValue());
+//				if(counter > 25) break;
+//			}
 			
 			AnchorMapGenerator.saveMapToTextFile(anchorMap, "data/2_AnchorKeyMap.txt");
-			anchorMap = null;
-			System.gc();
-			*/
+//			anchorMap = null;
+//			System.gc();
 			
-			
-			System.out.println("Generate PartialAnchorKeyMap text file...");
-			
-			RecordManager recman = RecordManagerFactory.createRecordManager("data/jdbm/db_01");
-			PrimaryHashMap<String, LinkedList<String>> dbMap = recman.hashMap("partialAnchorKeyMap");
-			
-			LinkedList<String> list = dbMap.get("of");
-			if(list != null) System.out.println(list.size());
-			
-			recman.close();
-			
-			//HashMap<String, LinkedList<String>> partialAnchorKeyMap;
-			//partialAnchorKeyMap = AnchorMapGenerator.generatePartialAnchorKeyMapFromAnchorKeyMapTextFile("data/2_AnchorKeyMap.txt");
-			
-			//AnchorMapGenerator.saveMapToJDMB(partialAnchorKeyMap, "data/jdbm/db_01", "partialAnchorKeyMap");
-			
-			//System.out.println("partialAnchorKeyMap generated, writing to disk...");
-			//AnchorMapGenerator.savePartialKeyMapToTextFile(partialAnchorKeyMap, "data/3_PartialAnchorKeyMap.txt");
-			
-			// ----------------------------------------------------------
-			
-			//System.out.println("Writing partialAnchorKeyMap to DB...");
-			//RecordManager recman = RecordManagerFactory.createRecordManager("data/jdbm/partialMap");
-			
-			//PrimaryHashMap<String, LinkedList<String>> partialAnchorMap = recman.hashMap("partialAnchorMap");
 			
 			/*
-			int counter = 0;
-			for(Entry<String, LinkedList<String>> entry: partialAnchorKeyMap.entrySet()){
-				partialAnchorMap.put(entry.getKey(), entry.getValue());
-				if(counter++ % 100000 == 0){
-					System.out.println(counter-1);
-					recman.commit();
-				}
-			}
-			recman.commit();
+			System.out.println("Generate PartialAnchorKeyMap text file...");
+			
+//			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/Wikipedia Anchor/db/db_01");
+//			PrimaryHashMap<String, LinkedList<String>> dbMap = recman.hashMap("partialAnchorKeyMap");
+//			
+//			LinkedList<String> list = dbMap.get("of");
+//			if(list != null) System.out.println(list.size());
+//			
+//			recman.close();
+			
+			HashMap<String, LinkedList<String>> partialAnchorKeyMap;
+			partialAnchorKeyMap = AnchorMapGenerator.generatePartialAnchorKeyMapFromAnchorKeyMapTextFile("../../data/Wikipedia Anchor/2_AnchorKeyMap.txt");
+			
+			AnchorMapGenerator.saveMapToJDMB(partialAnchorKeyMap, "../../data/Wikipedia Anchor/db/db_01", "partialAnchorKeyMap");
+			
+			System.out.println("partialAnchorKeyMap generated, writing to disk...");
+			AnchorMapGenerator.savePartialKeyMapToTextFile(partialAnchorKeyMap, "../../data/Wikipedia Anchor/3_PartialAnchorKeyMap.txt");
 			*/
+			// ----------------------------------------------------------
 			
-			//System.out.println(partialAnchorMap.get("lisbon"));
-			
-			
-			//recman.close();
+//			System.out.println("Writing partialAnchorKeyMap to DB...");
+//			recman = RecordManagerFactory.createRecordManager("data/jdbm/partialMap");
+//			
+//			PrimaryHashMap<String, LinkedList<String>> partialAnchorMap = recman.hashMap("partialAnchorMap");
+//			
+//			
+//			counter = 0;
+//			for(Entry<String, LinkedList<String>> entry: partialAnchorKeyMap.entrySet()){
+//				partialAnchorMap.put(entry.getKey(), entry.getValue());
+//				if(counter++ % 100000 == 0){
+//					System.out.println(counter-1);
+//					recman.commit();
+//				}
+//			}
+//			recman.commit();
+//			
+//			
+//			System.out.println(partialAnchorMap.get("lisbon"));
+//			
+//			
+//			recman.close();
 			
 		}catch(FileNotFoundException e){
 			e.printStackTrace();
@@ -99,9 +99,9 @@ public class AnchorParserMain {
 			e.printStackTrace();
 		}
 		
-		//catch (ClassNotFoundException e) {
-		//	e.printStackTrace();
-		//}
+//		catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
 		
 		System.out.println("All done :)");
 	}

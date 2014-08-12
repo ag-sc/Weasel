@@ -1,6 +1,9 @@
 package datatypes;
 
-public class Tuple<X, Y> {
+import java.io.Serializable;
+
+public class Tuple<X, Y> implements Serializable {
+	private static final long serialVersionUID = 8551637199843321885L;
 	public X item1;
 	public Y item2;
 	
