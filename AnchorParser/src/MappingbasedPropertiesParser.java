@@ -13,17 +13,31 @@ import jdbm.RecordManagerFactory;
 
 
 public class MappingbasedPropertiesParser {
-
-	public static void main(String[] args) {
-		int j = 0;
-		for(int i = 0; i < 251; i++){
-			j += i;
-		}
-		System.out.println(j);
-		
+	
+	public static void main(String[] args) {		
 		try {
-			generateDB("../../data/Mappingbased Properties/mappingbased_properties_cleaned_en.nt",
-					   "../../data/Mappingbased Properties/db_01");
+			generateDB("../../data/Mappingbased Properties/mappingbased_properties_cleaned_en.nt","../../data/Mappingbased Properties/db/db_01");
+			
+//			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/test");
+//			PrimaryHashMap<Integer, LinkedList<Tuple<Integer, Integer>>> dbMap = recman.hashMap("tuples");
+//			//PrimaryHashMap<Integer, Integer> dbMap = recman.hashMap("tuples");
+//			long time = System.currentTimeMillis();
+//			for(int i = 0; i < 15000000; i++){
+//				LinkedList<Tuple<Integer, Integer>> list = new LinkedList<Tuple<Integer, Integer>>();
+//				//int random = (int) (Math.random() * 30);
+//				int random = 4;
+//				if(i % 1000 == 0) random = (int) (Math.random() * 200);
+//				for(int j = 0; j < random; j++){
+//					list.add(new Tuple<Integer, Integer>((int) (Math.random() * 300), (int) (Math.random() * 300)));
+//				}
+//				dbMap.put(((int) (Math.random() * 3000000)), list);
+//				
+//				if(i % 100000 == 0) {
+//					recman.commit();
+//					System.out.println("lines: " + i + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
+//					time = System.currentTimeMillis();
+//				}
+//			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -33,15 +47,53 @@ public class MappingbasedPropertiesParser {
 		}
 	}
 	
+	private static void generateUriMapping(String source, String DBPath) throws IOException,FileNotFoundException{
+		long time = System.currentTimeMillis();
+		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
+		PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
+		PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
+		
+		BufferedReader br = new BufferedReader(new FileReader(source));
+		String stringPattern = "<.*?resource/([^>]+)>";
+		Pattern resourcePattern = Pattern.compile(stringPattern);
+		
+		String line, subject, latestKey = "";
+		int id = 0, lineCounter = 0;
+		while((line = br.readLine()) != null){
+			lineCounter++;
+			Matcher matcher1 = resourcePattern.matcher(line);
+			if(matcher1.find()) subject = matcher1.group(1);
+			else continue;
+			if(latestKey.compareTo(subject) != 0){
+				intToUri.put(id, subject);
+				uriToInt.put(subject, id);
+				
+				id++;
+				latestKey = subject;
+			}
+			
+			if(lineCounter % 500000 == 0) {
+				recman.commit();
+				System.out.println("lines: " + lineCounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
+				//time = System.currentTimeMillis();
+			}
+		}
+		recman.close();
+	}
+	
 	public static void generateDB(String source, String DBPath) throws IOException,FileNotFoundException{
+		generateUriMapping(source, DBPath);
+		System.out.println("Done with Uri-ID mapping.");
 		long time = System.currentTimeMillis();
 		
 		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
-		PrimaryHashMap<String, LinkedList<Tuple<String, String>>> dbMap = recman.hashMap("tuples");
+		PrimaryHashMap<Integer, LinkedList<Tuple<Integer, Integer>>> dbMap = recman.hashMap("tuples");
+		PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
+		PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
 		
 		String line, subject, predicate, object;
 		String latestKey = "";
-		LinkedList<Tuple<String, String>> currentList = new LinkedList<Tuple<String, String>>();
+		LinkedList<Tuple<Integer, Integer>> currentList = new LinkedList<Tuple<Integer, Integer>>();
 		BufferedReader br = new BufferedReader(new FileReader(source));
 		
 		String stringPattern = "<.*?resource/([^>]+)>";
@@ -50,6 +102,10 @@ public class MappingbasedPropertiesParser {
 		Pattern predicatePattern = Pattern.compile(stringPattern);
 		
 		int linecounter = 0;
+		int keyCounter = 0;
+		double avgLength = 0;
+		double avgListLength = 0;
+		int longestList = 0;
 		while((line = br.readLine()) != null){
 			Matcher matcher1 = resourcePattern.matcher(line);
 			Matcher matcher2 = predicatePattern.matcher(line);
@@ -64,20 +120,28 @@ public class MappingbasedPropertiesParser {
 			else continue;
 			
 			if(latestKey.compareTo(subject) != 0){
-				if(linecounter != 0) dbMap.put(latestKey, currentList);
+				if(linecounter != 0) dbMap.put(uriToInt.get(latestKey), currentList);
 				latestKey = subject;
-				currentList = new LinkedList<Tuple<String, String>>();
-				currentList.add(new Tuple<String, String>(predicate, object));
+				
+				keyCounter++;
+				avgLength += latestKey.length();
+				avgListLength += currentList.size();
+				
+				//if(currentList.size() > longestList) longestList = currentList.size();
+				if(currentList.size() > 10) longestList++;
+				currentList = new LinkedList<Tuple<Integer, Integer>>();
+				currentList.add(new Tuple<Integer, Integer>(0, uriToInt.get(object)));
 			}else{
-				currentList.add(new Tuple<String, String>(predicate, object));
+				currentList.add(new Tuple<Integer, Integer>(0, uriToInt.get(object)));
 			}
 			
 			//dbMap.put(subject, );
 			
 			if(linecounter % 100000 == 0) {
 				recman.commit();
-				System.out.println("lines: " + linecounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
+				System.out.println("lines: " + linecounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last) - longestList: " +longestList);
 				time = System.currentTimeMillis();
+				longestList = 0;
 			}
 			if(linecounter % 1000000 == 0) {
 				System.out.println("defrag...");
@@ -86,8 +150,10 @@ public class MappingbasedPropertiesParser {
 			linecounter++;
 			//System.out.println(subject + " " + predicate + " " + object);
 		}
-		dbMap.put(latestKey, currentList);
+		dbMap.put(uriToInt.get(latestKey), currentList);
 		recman.close();
+		System.out.println("nr of keys: " + keyCounter + " avg lengt: " + (avgLength/(double)keyCounter)
+				+ " avg list lengt: " + (avgListLength/(double)keyCounter));
 		br.close();
 	}
 
