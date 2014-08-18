@@ -3,10 +3,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import datatypes.Tuple;
+import datatypes.Edge;
 import jdbm.PrimaryHashMap;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
@@ -16,8 +17,9 @@ public class MappingbasedPropertiesParser {
 	
 	public static void main(String[] args) {		
 		try {
-			generateDB("../../data/Mappingbased Properties/mappingbased_properties_cleaned_en.nt","../../data/Mappingbased Properties/db/db_01");
+			//generateDB("../../data/Mappingbased Properties/mappingbased_properties_cleaned_en.nt","../../data/Mappingbased Properties/db/db_01");
 			
+			calculateWeights("../../data/Mappingbased Properties/db/db_01");
 //			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/test");
 //			PrimaryHashMap<Integer, LinkedList<Tuple<Integer, Integer>>> dbMap = recman.hashMap("tuples");
 //			//PrimaryHashMap<Integer, Integer> dbMap = recman.hashMap("tuples");
@@ -81,19 +83,62 @@ public class MappingbasedPropertiesParser {
 		recman.close();
 	}
 	
+	private static void calculateWeights(String DBPath) throws IOException,FileNotFoundException{
+		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
+		PrimaryHashMap<Integer, LinkedList<Edge<Integer, Integer>>> dbMap = recman.hashMap("edges");
+		
+		int counter = 0;
+		long time = System.currentTimeMillis();
+		for(Entry<Integer, LinkedList<Edge<Integer, Integer>>> entry: dbMap.entrySet()){
+			double totalTriangles = 0;
+			
+			for(Edge<Integer, Integer> edge: entry.getValue()){
+				if (edge.target != null) {
+					double weight = 1;
+					System.out.println((int) edge.target);
+					for (Edge<Integer, Integer> otherEdge : dbMap
+							.get((int) edge.target)) {
+						for (Edge<Integer, Integer> firstEdge : entry
+								.getValue()) {
+							if (otherEdge.target == firstEdge.target) {
+								totalTriangles += 1;
+								weight += 1;
+							}
+						}
+					}
+					edge.weight = weight;
+				}
+			}
+			
+			for(Edge<Integer, Integer> edge: entry.getValue()){
+				if(totalTriangles > 0) edge.weight /= totalTriangles;
+				System.out.println(edge.target + " - weight: " + edge.weight);
+			}
+			
+			counter++;
+			if(counter % 100000 == 0){
+				//recman.commit();
+				System.out.println("lines: " + counter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
+				time = System.currentTimeMillis();
+			}
+		}
+		
+		recman.close();
+	}
+	
 	public static void generateDB(String source, String DBPath) throws IOException,FileNotFoundException{
-		generateUriMapping(source, DBPath);
+		//generateUriMapping(source, DBPath);
 		System.out.println("Done with Uri-ID mapping.");
 		long time = System.currentTimeMillis();
 		
 		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
-		PrimaryHashMap<Integer, LinkedList<Tuple<Integer, Integer>>> dbMap = recman.hashMap("tuples");
+		PrimaryHashMap<Integer, LinkedList<Edge<Integer, Integer>>> dbMap = recman.hashMap("edges");
 		PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
 		PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
-		
+
 		String line, subject, predicate, object;
 		String latestKey = "";
-		LinkedList<Tuple<Integer, Integer>> currentList = new LinkedList<Tuple<Integer, Integer>>();
+		LinkedList<Edge<Integer, Integer>> currentList = new LinkedList<Edge<Integer, Integer>>();
 		BufferedReader br = new BufferedReader(new FileReader(source));
 		
 		String stringPattern = "<.*?resource/([^>]+)>";
@@ -129,10 +174,10 @@ public class MappingbasedPropertiesParser {
 				
 				//if(currentList.size() > longestList) longestList = currentList.size();
 				if(currentList.size() > 10) longestList++;
-				currentList = new LinkedList<Tuple<Integer, Integer>>();
-				currentList.add(new Tuple<Integer, Integer>(0, uriToInt.get(object)));
+				currentList = new LinkedList<Edge<Integer, Integer>>();
+				currentList.add(new Edge<Integer, Integer>(0, uriToInt.get(object)));
 			}else{
-				currentList.add(new Tuple<Integer, Integer>(0, uriToInt.get(object)));
+				currentList.add(new Edge<Integer, Integer>(0, uriToInt.get(object)));
 			}
 			
 			//dbMap.put(subject, );
@@ -143,7 +188,7 @@ public class MappingbasedPropertiesParser {
 				time = System.currentTimeMillis();
 				longestList = 0;
 			}
-			if(linecounter % 1000000 == 0) {
+			if(linecounter % 8000000 == 0 && linecounter != 0) {
 				System.out.println("defrag...");
 				recman.defrag();
 			}

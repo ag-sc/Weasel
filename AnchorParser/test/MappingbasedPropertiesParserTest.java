@@ -12,7 +12,7 @@ import jdbm.RecordManagerFactory;
 import org.junit.Test;
 
 import datatypes.TermFrequency;
-import datatypes.Tuple;
+import datatypes.Edge;
 
 
 public class MappingbasedPropertiesParserTest {
@@ -26,7 +26,7 @@ public class MappingbasedPropertiesParserTest {
 			
 			
 			RecordManager recman = RecordManagerFactory.createRecordManager(testDBPath);		
-			PrimaryHashMap<String, LinkedList<Tuple<String, String>>> tupleMap = recman
+			PrimaryHashMap<String, LinkedList<Edge<String, String>>> tupleMap = recman
 					.hashMap("tuples");
 			assertEquals("Number of key-value pairs is 2 in loaded map.", 2,
 					tupleMap.entrySet().size());
