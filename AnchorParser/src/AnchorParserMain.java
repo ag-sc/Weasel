@@ -36,16 +36,16 @@ public class AnchorParserMain {
 			
 			System.out.println("Generate AnchorKeyMap text file...");
 			anchorMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("../../data/Wikipedia Anchor/1_URIKeyMap.txt");
+			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 			
-//			int counter = 0;
-			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/db_01", "anchorKeyMap");
-//			for(Entry<String, LinkedList<TermFrequency>> e: anchorMap.entrySet()){
-//				System.out.println(counter++ + ": " + e.getKey());
-//				System.out.println("/t" + e.getValue());
-//				if(counter > 25) break;
-//			}
+			int counter = 0;
+			for(Entry<String, LinkedList<TermFrequency>> e: anchorMap.entrySet()){
+				System.out.println(counter++ + ": " + e.getKey());
+				System.out.println("/t" + e.getValue());
+				if(counter > 25) break;
+			}
 			
-			AnchorMapGenerator.saveMapToTextFile(anchorMap, "data/2_AnchorKeyMap.txt");
+			AnchorMapGenerator.saveMapToTextFile(anchorMap, "../../data/Wikipedia Anchor/2_AnchorKeyMap.txt");
 //			anchorMap = null;
 //			System.gc();
 			

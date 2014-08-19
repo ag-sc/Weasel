@@ -20,6 +20,7 @@ public class EntityLinker {
 		LinkedList<EntityOccurance> fragments = new LinkedList<EntityOccurance>();
 		
 		//TODO: implement sophisticated version
+		//TODO: fix string index
 		for(String s: sentence.replace(",", "").replace(".", "").split(" ")){
 			int start = sentence.indexOf(s);
 			fragments.add(new EntityOccurance(s, start, start + s.length()));
