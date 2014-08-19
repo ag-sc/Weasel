@@ -11,7 +11,7 @@ import jdbm.RecordManagerFactory;
 
 public class JDBMConnector extends DatabaseConnector{
 	private RecordManager recman;
-	PrimaryHashMap<String, LinkedList<TermFrequency>> dbMap;
+	private PrimaryHashMap<String, LinkedList<TermFrequency>> dbMap;
 	
 	public JDBMConnector(String dbName, String tableName) throws IOException{
 		recman = RecordManagerFactory.createRecordManager(dbName);
@@ -36,10 +36,6 @@ public class JDBMConnector extends DatabaseConnector{
 			for(TermFrequency t: tmp){
 				list.add(new String(t.term));
 			}
-		}
-		
-		for(Entry<String, LinkedList<TermFrequency>> e: dbMap.entrySet()){
-			System.out.println(e.getKey());
 		}
 		
 		return list;
