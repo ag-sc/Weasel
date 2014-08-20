@@ -27,13 +27,14 @@ public class AnchorMapGenerator {
 		String[] triplet;
 		
 		while((triplet = anchorReader.getTriplet()) != null){
+			//for(String s: triplet) System.out.println(s);
 			LinkedList<TermFrequency> foundList;
-			TermFrequency termFrequency = new TermFrequency(triplet[0].toLowerCase(), Integer.parseInt(triplet[2]));
+			TermFrequency termFrequency = new TermFrequency(triplet[0], Integer.parseInt(triplet[2]));
 			
-			if((foundList = URIKeyMap.get(triplet[1].toLowerCase())) == null){ // key not found, create new list entry
+			if((foundList = URIKeyMap.get(triplet[1])) == null){ // key not found, create new list entry
 				LinkedList<TermFrequency> newList = new LinkedList<TermFrequency>();
 				newList.add(termFrequency);
-				URIKeyMap.put(triplet[1].toLowerCase(), newList);
+				URIKeyMap.put(triplet[1], newList);
 			}else{ // key found, add string to list
 				//TODO: Do I have to make sure there are no double entries?
 				foundList.add(termFrequency);

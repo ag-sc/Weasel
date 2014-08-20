@@ -13,7 +13,7 @@ public class DatasetEvaluatorSandbox {
 
 	public static void main(String[] args) {
 		try {
-			KORE50Parser parser = new KORE50Parser(new File("../../data/DatasetParser/parserTests/kore50.tsv"));
+			KORE50Parser parser = new KORE50Parser(new File("../../data/DatasetParser/kore50.tsv"));
 			EvaluationEngine evaluator = new RandomEvaluator();
 			JDBMConnector connector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 			EntityLinker linker = new EntityLinker(evaluator, connector);

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class AnchorFileReader {
@@ -33,7 +35,15 @@ public class AnchorFileReader {
 				if(lineCounter % 10000 == 0) logger.log(Level.FINER, "Processing line: " + lineCounter);
 				
 				triplet = line.split("\\t");
-				if(triplet.length != 3) logger.log(Level.FINEST, "Faulty line: " + lineCounter);
+				if(triplet.length != 3){
+					logger.log(Level.FINEST, "Faulty line: " + lineCounter);
+					continue;
+				}
+				
+				String stringPattern = ".*?resource/(.+)";
+				Pattern resourcePattern = Pattern.compile(stringPattern);
+				Matcher matcher = resourcePattern.matcher(triplet[1]);
+				if(matcher.find()) triplet[1] = matcher.group(1);
 				
 				lineCounter++;
 			}while(triplet.length != 3);

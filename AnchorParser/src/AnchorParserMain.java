@@ -18,12 +18,13 @@ public class AnchorParserMain {
 		try{
 			
 			HashMap<String, LinkedList<TermFrequency>> anchorMap = new HashMap<String, LinkedList<TermFrequency>>();
-			/*
+			
 			
 			anchorMap = AnchorMapGenerator.generateURIKeyMap("../../data/Wikipedia Anchor/anchors.txt");
+			
 			System.out.println("AnchorMap generated, writing to disk...");
 			AnchorMapGenerator.saveMapToTextFile(anchorMap, "../../data/Wikipedia Anchor/1_URIKeyMap.txt");
-			
+			/*
 			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/db_01", "uriKeyMap");
 			*/
 			//anchorMap = AnchorMapGenerator.loadURIKeyMapFromFile("../../data/Wikipedia Anchor/anchors.ukm");
@@ -34,7 +35,7 @@ public class AnchorParserMain {
 			//anchorMap = null;
 			//System.gc();
 			
-			System.out.println("Generate AnchorKeyMap text file...");
+			System.out.println("Generate AnchorKeyMap from text file...");
 			anchorMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("../../data/Wikipedia Anchor/1_URIKeyMap.txt");
 			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 			
