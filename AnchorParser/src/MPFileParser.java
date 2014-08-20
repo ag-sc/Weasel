@@ -6,17 +6,14 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jdbm.PrimaryHashMap;
-import jdbm.RecordManager;
-import jdbm.RecordManagerFactory;
 import datatypes.Edge;
-import graphSavers.GraphSaver;
+import graphAccess.GraphAccess;
 
 
 public class MPFileParser {
-	GraphSaver graphSaver;
+	GraphAccess graphSaver;
 	
-	public MPFileParser(GraphSaver graphSaver){
+	public MPFileParser(GraphAccess graphSaver){
 		this.graphSaver = graphSaver;
 	}
 	
@@ -57,7 +54,7 @@ public class MPFileParser {
 				currentList.add(new Edge<String, String>(predicate, object));
 			}
 			linecounter++;
-			if(linecounter % 1000000 == 0) {
+			if(linecounter % 100000 == 0) {
 				System.out.println("lines: " + linecounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since start)");
 				time = System.currentTimeMillis();
 			}

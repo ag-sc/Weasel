@@ -1,3 +1,5 @@
+package entityLinker;
+
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -23,18 +25,18 @@ public class EntityLinkerSandbox {
 		LinkedList<EntityOccurance> entityList;
 		DatabaseConnector connector;
 		try {
-//			start = System.nanoTime();
-//			connector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap",
-//															"anchorKeyMap");
-//			EntityLinker linker = new EntityLinker(evaluator, connector);
-//			entityList = linker.link(input.toLowerCase());
-//			
-//			end = System.nanoTime();
-//			passedTime = (end - start) / 1000000.0;
-//			System.out.println("Calculation time: " + passedTime + " ms");
-//			for(EntityOccurance eo: entityList){
-//				System.out.println(eo);
-//			}
+			start = System.nanoTime();
+			connector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap",
+															"anchorKeyMap");
+			EntityLinker linker = new EntityLinker(evaluator, connector);
+			entityList = linker.link(input.toLowerCase());
+			
+			end = System.nanoTime();
+			passedTime = (end - start) / 1000000.0;
+			System.out.println("Calculation time: " + passedTime + " ms");
+			for(EntityOccurance eo: entityList){
+				System.out.println(eo);
+			}
 			
 			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/Mappingbased Properties/db/db_02");
 			PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");

@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import databaseConnectors.DatabaseConnector;
 import datatypes.EntityOccurance;
+import entityLinker.EntityLinker;
 import evaluation.EvaluationEngine;
 import evaluation.RandomEvaluator;
 

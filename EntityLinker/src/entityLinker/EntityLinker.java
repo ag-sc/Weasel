@@ -1,3 +1,4 @@
+package entityLinker;
 import java.util.LinkedList;
 
 import databaseConnectors.DatabaseConnector;
