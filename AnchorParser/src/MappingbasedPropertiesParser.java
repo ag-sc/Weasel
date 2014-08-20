@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +19,9 @@ public class MappingbasedPropertiesParser {
 	public static void main(String[] args) {		
 		try {
 			//generateDB("../../data/Mappingbased Properties/mappingbased_properties_cleaned_en.nt","../../data/Mappingbased Properties/db/db_01");
-			
-			calculateWeights("../../data/Mappingbased Properties/db/db_01");
+			generateUriMapping("../../data/Mappingbased Properties/mappingbased_properties_cleaned_en.nt",
+								"../../data/Mappingbased Properties/db/db_02");
+//			calculateWeights("../../data/Mappingbased Properties/db/db_01");
 //			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/test");
 //			PrimaryHashMap<Integer, LinkedList<Tuple<Integer, Integer>>> dbMap = recman.hashMap("tuples");
 //			//PrimaryHashMap<Integer, Integer> dbMap = recman.hashMap("tuples");
@@ -49,11 +51,9 @@ public class MappingbasedPropertiesParser {
 		}
 	}
 	
-	private static void generateUriMapping(String source, String DBPath) throws IOException,FileNotFoundException{
+	public static void generateUriMapping(String source, String DBPath) throws IOException,FileNotFoundException{
 		long time = System.currentTimeMillis();
-		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
-		PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
-		PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
+		TreeSet<String> treeSet = new TreeSet<String>();
 		
 		BufferedReader br = new BufferedReader(new FileReader(source));
 		String stringPattern = "<.*?resource/([^>]+)>";
@@ -62,25 +62,42 @@ public class MappingbasedPropertiesParser {
 		String line, subject, latestKey = "";
 		int id = 0, lineCounter = 0;
 		while((line = br.readLine()) != null){
+			if(line.contains("Romeo_and_Juliet")) System.out.println(line);
 			lineCounter++;
 			Matcher matcher1 = resourcePattern.matcher(line);
 			if(matcher1.find()) subject = matcher1.group(1);
 			else continue;
 			if(latestKey.compareTo(subject) != 0){
-				intToUri.put(id, subject);
-				uriToInt.put(subject, id);
 				
-				id++;
+				if(!treeSet.contains(subject)){
+					treeSet.add(subject);
+					
+				}
 				latestKey = subject;
 			}
 			
-			if(lineCounter % 500000 == 0) {
-				recman.commit();
-				System.out.println("lines: " + lineCounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
+			if(lineCounter % 1000000 == 0) {
+				System.out.println("lines: " + lineCounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since start)");
 				//time = System.currentTimeMillis();
 			}
 		}
-		recman.close();
+		
+		System.out.println("TreeSet entries: " + treeSet.size());
+		
+//		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
+//		PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
+//		PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
+//		
+//		time = System.currentTimeMillis();
+//		int counter = 0;
+//		for(String uri: treeSet){
+//			intToUri.put(counter, uri);
+//			uriToInt.put(uri, counter);
+//			counter++;
+//		}
+//		recman.commit();
+//		System.out.println("lines: " + counter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
+//		recman.close();
 	}
 	
 	private static void calculateWeights(String DBPath) throws IOException,FileNotFoundException{

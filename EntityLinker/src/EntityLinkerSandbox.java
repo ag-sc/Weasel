@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.util.LinkedList;
 
+import jdbm.PrimaryHashMap;
+import jdbm.RecordManager;
+import jdbm.RecordManagerFactory;
 import databaseConnectors.DatabaseConnector;
 import databaseConnectors.JDBMConnector;
 import datatypes.EntityOccurance;
@@ -20,18 +23,28 @@ public class EntityLinkerSandbox {
 		LinkedList<EntityOccurance> entityList;
 		DatabaseConnector connector;
 		try {
-			start = System.nanoTime();
-			connector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap",
-															"anchorKeyMap");
-			EntityLinker linker = new EntityLinker(evaluator, connector);
-			entityList = linker.link(input.toLowerCase());
+//			start = System.nanoTime();
+//			connector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap",
+//															"anchorKeyMap");
+//			EntityLinker linker = new EntityLinker(evaluator, connector);
+//			entityList = linker.link(input.toLowerCase());
+//			
+//			end = System.nanoTime();
+//			passedTime = (end - start) / 1000000.0;
+//			System.out.println("Calculation time: " + passedTime + " ms");
+//			for(EntityOccurance eo: entityList){
+//				System.out.println(eo);
+//			}
 			
-			end = System.nanoTime();
-			passedTime = (end - start) / 1000000.0;
-			System.out.println("Calculation time: " + passedTime + " ms");
-			for(EntityOccurance eo: entityList){
-				System.out.println(eo);
-			}
+			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/Mappingbased Properties/db/db_02");
+			PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
+			PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
+			
+			Integer index = uriToInt.get("Romeo_and_Juliet");
+			System.out.println("index: " + index);
+			String value = intToUri.get(index);
+			System.out.println("value: " + value);
+			recman.close();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
