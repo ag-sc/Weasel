@@ -32,9 +32,12 @@ public class DatasetEvaluator {
 			
 			numberOfEntities += parserList.size();
 			for(String entity: parserList){
+				//System.out.print(entity);
 				if(entityDBconnector.lookUpFragment(entity).size() > 0){
+					//System.out.println(" - In DB: " + entity);
 					numberOfPossiblyKnownEntities++;
 				}
+				//System.out.println();
 			}
 			
 			for(EntityOccurance eo: linkerList){

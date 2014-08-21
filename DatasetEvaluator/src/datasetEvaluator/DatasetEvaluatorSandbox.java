@@ -15,10 +15,11 @@ public class DatasetEvaluatorSandbox {
 		try {
 			KORE50Parser parser = new KORE50Parser(new File("../../data/DatasetParser/kore50.tsv"));
 			EvaluationEngine evaluator = new RandomEvaluator();
-			JDBMConnector connector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
-			EntityLinker linker = new EntityLinker(evaluator, connector);
+			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
+			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
+			EntityLinker linker = new EntityLinker(evaluator, linkerConnector);
 			
-			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, connector);
+			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, checkupConnector);
 			dataEvaluator.evaluate();
 			
 		} catch (IOException e) {

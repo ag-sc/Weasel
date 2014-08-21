@@ -23,10 +23,10 @@ public class AnchorParserMain {
 			anchorMap = AnchorMapGenerator.generateURIKeyMap("../../data/Wikipedia Anchor/anchors.txt");
 			
 			System.out.println("AnchorMap generated, writing to disk...");
-			AnchorMapGenerator.saveMapToTextFile(anchorMap, "../../data/Wikipedia Anchor/1_URIKeyMap.txt");
-			/*
-			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/db_01", "uriKeyMap");
-			*/
+			//AnchorMapGenerator.saveMapToTextFile(anchorMap, "../../data/Wikipedia Anchor/1_URIKeyMap.txt");
+			
+			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
+			
 			//anchorMap = AnchorMapGenerator.loadURIKeyMapFromFile("../../data/Wikipedia Anchor/anchors.ukm");
 			//System.out.println("Object generated, looking up...");
 			//LinkedList<TermFrequency> tmp = anchorMap.get("http://dbpedia.org/resource/Lisbon_Treaty");
@@ -35,18 +35,19 @@ public class AnchorParserMain {
 			//anchorMap = null;
 			//System.gc();
 			
-			System.out.println("Generate AnchorKeyMap from text file...");
-			anchorMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("../../data/Wikipedia Anchor/1_URIKeyMap.txt");
-			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
+//			System.out.println("Generate AnchorKeyMap from text file...");
+//			anchorMap = AnchorMapGenerator.generateAnchorKeyMapFromURIKeyMapTextFile("../../data/Wikipedia Anchor/1_URIKeyMap.txt");
+//			AnchorMapGenerator.saveMapToJDMB(anchorMap, "../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
+//			
+//			int counter = 0;
+//			for(Entry<String, LinkedList<TermFrequency>> e: anchorMap.entrySet()){
+//				System.out.println(counter++ + ": " + e.getKey());
+//				System.out.println("/t" + e.getValue());
+//				if(counter > 25) break;
+//			}
+//			
+//			AnchorMapGenerator.saveMapToTextFile(anchorMap, "../../data/Wikipedia Anchor/2_AnchorKeyMap.txt");
 			
-			int counter = 0;
-			for(Entry<String, LinkedList<TermFrequency>> e: anchorMap.entrySet()){
-				System.out.println(counter++ + ": " + e.getKey());
-				System.out.println("/t" + e.getValue());
-				if(counter > 25) break;
-			}
-			
-			AnchorMapGenerator.saveMapToTextFile(anchorMap, "../../data/Wikipedia Anchor/2_AnchorKeyMap.txt");
 //			anchorMap = null;
 //			System.gc();
 			
