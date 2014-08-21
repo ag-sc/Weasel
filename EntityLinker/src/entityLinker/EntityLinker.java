@@ -47,7 +47,6 @@ public class EntityLinker {
 		
 		LinkedList<EntityOccurance> resultingEntities = evaluator.evaluate(allCandidats);
 		
-		// TODO Auto-generated method stub
 		return resultingEntities;
 	}
 

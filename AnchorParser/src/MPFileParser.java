@@ -55,7 +55,7 @@ public class MPFileParser {
 			}
 			linecounter++;
 			if(linecounter % 100000 == 0) {
-				System.out.println("lines: " + linecounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since start)");
+				System.out.println("lines: " + linecounter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
 				time = System.currentTimeMillis();
 			}
 		}
