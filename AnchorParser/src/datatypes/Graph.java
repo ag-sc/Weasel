@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 
 public class Graph <T extends Comparable<T>>{
-	private HashMap<T, Node<T>> nodeMap;
+	public HashMap<T, Node<T>> nodeMap;
 	
 	public Graph(){
 		nodeMap = new HashMap<T, Node<T>>();
