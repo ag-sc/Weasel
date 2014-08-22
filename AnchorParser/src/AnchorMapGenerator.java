@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -32,7 +33,11 @@ public class AnchorMapGenerator {
 			LinkedList<TermFrequency> foundList;
 			TermFrequency termFrequency = new TermFrequency(triplet[0], Integer.parseInt(triplet[2]));
 			
+			if(triplet[1].contains("Eva_Per")) System.out.println(triplet[1]);
+			
 			triplet[1] = java.net.URLDecoder.decode(triplet[1], "UTF-8");
+			
+			if(triplet[1].contains("Eva_Per")) System.out.println(triplet[1]);
 			
 			if((foundList = URIKeyMap.get(triplet[1])) == null){ // key not found, create new list entry
 				LinkedList<TermFrequency> newList = new LinkedList<TermFrequency>();

@@ -2,8 +2,10 @@ package datasetParser;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +18,8 @@ public class KORE50Parser implements DatasetParser{
 	private String line;
 	
 	public KORE50Parser(File file) throws IOException {
-		br = new BufferedReader(new FileReader(file));
+		//br = new BufferedReader(new FileReader(file));
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
 	}
 
 	public boolean goToNext() throws IOException {
@@ -30,8 +33,7 @@ public class KORE50Parser implements DatasetParser{
 						currentSentence = tmpSentence.trim() + ".";
 						currentEntities = tmpEntities;
 						return true;
-					}else{
-						
+					}else{						
 						String tmp;
 						String unicodeString = "\\\\u(\\w\\w\\w\\w)";
 						Pattern unicodePattern = Pattern.compile(unicodeString);
@@ -54,6 +56,7 @@ public class KORE50Parser implements DatasetParser{
 						
 						if(splitLine.length == 4 && !splitLine[3].equals("--NME--")){
 							tmpEntities.add(splitLine[3]);
+							if(splitLine[3].contains("Eva")) System.out.println(splitLine[3]);
 						}
 					}
 				}
