@@ -2,8 +2,6 @@ package databaseConnectors;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-
 import datatypes.TermFrequency;
 import jdbm.PrimaryHashMap;
 import jdbm.RecordManager;

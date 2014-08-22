@@ -1,5 +1,8 @@
 package evaluation;
 
+import graph.Graph;
+import graph.Node;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -7,8 +10,6 @@ import java.util.TreeSet;
 import datatypes.EntityOccurance;
 import datatypes.FragmentCandidateTuple;
 import datatypes.FragmentPlusCandidates;
-import datatypes.Graph;
-import datatypes.Node;
 
 public class BabelfyEvaluation extends EvaluationEngine{
 

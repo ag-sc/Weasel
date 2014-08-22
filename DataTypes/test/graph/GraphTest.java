@@ -1,6 +1,7 @@
-package datatypes;
+package graph;
 
 import static org.junit.Assert.*;
+import graph.Graph;
 
 import org.junit.Test;
 

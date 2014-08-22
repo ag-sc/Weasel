@@ -8,7 +8,6 @@ import java.util.LinkedList;
 
 import databaseConnectors.DatabaseConnector;
 import datasetParser.DatasetParser;
-import datasetParser.KORE50Parser;
 import datatypes.EntityOccurance;
 import entityLinker.EntityLinker;
 

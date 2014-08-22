@@ -1,4 +1,4 @@
-package datatypes;
+package graph;
 
 public class GraphEdge <T extends Comparable<T>>{
 	public Node<T> source;

@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -11,7 +10,6 @@ import java.util.regex.Pattern;
 
 public class AnchorFileReader {
 	private static final Logger logger = Logger.getLogger(AnchorFileReader.class.getName());
-	private static ConsoleHandler consoleHandler = new ConsoleHandler();
 	private BufferedReader br = null;
 	private int lineCounter = 0;
 	

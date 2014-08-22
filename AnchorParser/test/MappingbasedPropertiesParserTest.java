@@ -3,15 +3,12 @@ import static org.junit.Assert.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.TreeSet;
-
 import jdbm.PrimaryHashMap;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 
 import org.junit.Test;
 
-import datatypes.TermFrequency;
 import datatypes.Edge;
 
 

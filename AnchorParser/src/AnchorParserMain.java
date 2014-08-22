@@ -2,12 +2,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-
-import jdbm.PrimaryHashMap;
-import jdbm.PrimaryStoreMap;
-import jdbm.RecordManager;
-import jdbm.RecordManagerFactory;
 import datatypes.TermFrequency;
 
 public class AnchorParserMain {

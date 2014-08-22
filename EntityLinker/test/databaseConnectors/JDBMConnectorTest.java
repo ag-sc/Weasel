@@ -8,7 +8,6 @@ import jdbm.PrimaryHashMap;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 

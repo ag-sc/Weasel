@@ -3,7 +3,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,7 +59,7 @@ public class MappingbasedPropertiesParser {
 		Pattern resourcePattern = Pattern.compile(stringPattern);
 		
 		String line, subject, latestKey = "";
-		int id = 0, lineCounter = 0;
+		int lineCounter = 0;
 		while((line = br.readLine()) != null){
 			if(line.contains("Romeo_and_Juliet")) System.out.println(line);
 			lineCounter++;
@@ -82,6 +81,7 @@ public class MappingbasedPropertiesParser {
 			}
 		}
 		
+		br.close();
 		System.out.println("TreeSet entries: " + treeSet.size());
 		
 //		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
@@ -100,49 +100,6 @@ public class MappingbasedPropertiesParser {
 //		recman.close();
 	}
 	
-	private static void calculateWeights(String DBPath) throws IOException,FileNotFoundException{
-		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
-		PrimaryHashMap<Integer, LinkedList<Edge<Integer, Integer>>> dbMap = recman.hashMap("edges");
-		
-		int counter = 0;
-		long time = System.currentTimeMillis();
-		for(Entry<Integer, LinkedList<Edge<Integer, Integer>>> entry: dbMap.entrySet()){
-			double totalTriangles = 0;
-			
-			for(Edge<Integer, Integer> edge: entry.getValue()){
-				if (edge.target != null) {
-					double weight = 1;
-					System.out.println((int) edge.target);
-					for (Edge<Integer, Integer> otherEdge : dbMap
-							.get((int) edge.target)) {
-						for (Edge<Integer, Integer> firstEdge : entry
-								.getValue()) {
-							if (otherEdge.target == firstEdge.target) {
-								totalTriangles += 1;
-								weight += 1;
-							}
-						}
-					}
-					edge.weight = weight;
-				}
-			}
-			
-			for(Edge<Integer, Integer> edge: entry.getValue()){
-				if(totalTriangles > 0) edge.weight /= totalTriangles;
-				System.out.println(edge.target + " - weight: " + edge.weight);
-			}
-			
-			counter++;
-			if(counter % 100000 == 0){
-				//recman.commit();
-				System.out.println("lines: " + counter + " ("+(System.currentTimeMillis()-time)/1000.0+"s since last)");
-				time = System.currentTimeMillis();
-			}
-		}
-		
-		recman.close();
-	}
-	
 	public static void generateDB(String source, String DBPath) throws IOException,FileNotFoundException{
 		//generateUriMapping(source, DBPath);
 		System.out.println("Done with Uri-ID mapping.");
@@ -150,10 +107,9 @@ public class MappingbasedPropertiesParser {
 		
 		RecordManager recman = RecordManagerFactory.createRecordManager(DBPath);
 		PrimaryHashMap<Integer, LinkedList<Edge<Integer, Integer>>> dbMap = recman.hashMap("edges");
-		PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
 		PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
 
-		String line, subject, predicate, object;
+		String line, subject, object;
 		String latestKey = "";
 		LinkedList<Edge<Integer, Integer>> currentList = new LinkedList<Edge<Integer, Integer>>();
 		BufferedReader br = new BufferedReader(new FileReader(source));
@@ -175,8 +131,8 @@ public class MappingbasedPropertiesParser {
 			if(matcher1.find()) subject = matcher1.group(1);
 			else continue;
 			
-			if(matcher2.find()) predicate = matcher2.group(1);
-			else continue;
+			if(matcher2.find()) {
+			} else continue;
 			
 			if(matcher1.find()) object = matcher1.group(1);
 			else continue;

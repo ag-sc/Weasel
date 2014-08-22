@@ -8,18 +8,18 @@ import org.junit.Test;
 import org.easymock.*;
 
 import datasetParser.KORE50Parser;
-import entityLinker.EntityLinker;
+//import entityLinker.EntityLinker;
 
 
 public class DatasetEvaluatorTest {
 
 	private KORE50Parser parser;
-	private EntityLinker linker;
+	//private EntityLinker linker;
 	
 	@Before
 	public void setup(){
 		parser = EasyMock.createMock(KORE50Parser.class);
-		linker = EasyMock.createMock(EntityLinker.class);
+		//linker = EasyMock.createMock(EntityLinker.class);
 	}
 	
 	@Test
