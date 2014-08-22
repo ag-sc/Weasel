@@ -15,6 +15,10 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	HashMap<String, TreeSet<String>> semanticSignature;
 	Graph<FragmentCandidateTuple> graph;
 	
+	private void trimToDenseSubgraph(Graph<FragmentCandidateTuple> graph){
+		
+	}
+	
 	@Override
 	public LinkedList<EntityOccurance> evaluate(LinkedList<FragmentPlusCandidates> fragments) {
 		// add fragments/candidates to graph
@@ -36,6 +40,9 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				}
 			}
 		}
+		
+		// Trim Graph
+		trimToDenseSubgraph(graph);
 		
 		
 		return null;

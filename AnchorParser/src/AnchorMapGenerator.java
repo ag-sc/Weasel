@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -20,7 +21,7 @@ import datatypes.TermFrequency;
 
 public class AnchorMapGenerator {
 	
-	public static HashMap<String, LinkedList<TermFrequency>> generateURIKeyMap(String fileName) throws FileNotFoundException {
+	public static HashMap<String, LinkedList<TermFrequency>> generateURIKeyMap(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
 		
 		AnchorFileReader anchorReader = new AnchorFileReader(fileName);
 		HashMap<String, LinkedList<TermFrequency>> URIKeyMap = new HashMap<String, LinkedList<TermFrequency>>();
@@ -30,6 +31,8 @@ public class AnchorMapGenerator {
 			//for(String s: triplet) System.out.println(s);
 			LinkedList<TermFrequency> foundList;
 			TermFrequency termFrequency = new TermFrequency(triplet[0], Integer.parseInt(triplet[2]));
+			
+			triplet[1] = java.net.URLDecoder.decode(triplet[1], "UTF-8");
 			
 			if((foundList = URIKeyMap.get(triplet[1])) == null){ // key not found, create new list entry
 				LinkedList<TermFrequency> newList = new LinkedList<TermFrequency>();

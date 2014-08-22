@@ -12,7 +12,7 @@ import evaluation.RandomEvaluator;
 public class DatasetEvaluatorSandbox {
 
 	public static void main(String[] args) {
-		try {
+		try {		
 			KORE50Parser parser = new KORE50Parser(new File("../../data/DatasetParser/kore50.tsv"));
 			EvaluationEngine evaluator = new RandomEvaluator();
 			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");

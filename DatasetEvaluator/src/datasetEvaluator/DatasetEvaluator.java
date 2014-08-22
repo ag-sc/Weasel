@@ -1,6 +1,9 @@
 package datasetEvaluator;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 
 import databaseConnectors.DatabaseConnector;
@@ -25,7 +28,9 @@ public class DatasetEvaluator {
 		this.entityDBconnector = entityDBconnector;
 	}
 
-	public void evaluate() throws IOException{		
+	public void evaluate() throws IOException{	
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("missing URIs.txt")));
+		
 		while(parser.goToNext()){
 			LinkedList<EntityOccurance> linkerList = linker.link(parser.getSentence());
 			LinkedList<String> parserList = parser.getEntities();
@@ -36,6 +41,9 @@ public class DatasetEvaluator {
 				if(entityDBconnector.lookUpFragment(entity).size() > 0){
 					//System.out.println(" - In DB: " + entity);
 					numberOfPossiblyKnownEntities++;
+				}else{
+					System.out.println("not: " + entity);
+					out.println(entity);
 				}
 				//System.out.println();
 			}
@@ -51,7 +59,7 @@ public class DatasetEvaluator {
 			}
 			
 		}
-		
+		out.close();
 		System.out.println(numberOfEntities + " entities in evaluation set.");
 		System.out.println(numberOfPossiblyKnownEntities + " entities are in our database ("+ ((double)numberOfPossiblyKnownEntities / (double)numberOfEntities * 100.00)+"%)");
 		System.out.println(correctEntities + " entities were correctly assigned ("+ ((double)correctEntities / (double)numberOfEntities * 100.00)+"%)");

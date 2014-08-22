@@ -11,6 +11,5 @@
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/neo4j/neo4j-2.1.3-sources.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/neo4j/neo4j-2.1.3-tests.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/neo4j/neo4j-2.1.3-test-sources.jar"/>
-	<classpathentry kind="src" path="/EntityLinker"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

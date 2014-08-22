@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class KORE50Parser implements DatasetParser{
 
@@ -30,6 +32,20 @@ public class KORE50Parser implements DatasetParser{
 						currentEntities = tmpEntities;
 						return true;
 					}else{
+						
+						String tmp;
+						String unicodeString = "\\\\u(\\w\\w\\w\\w)";
+						Pattern unicodePattern = Pattern.compile(unicodeString);
+						Matcher matcher = unicodePattern.matcher(line);
+						while(matcher.find()){
+							tmp = matcher.group(1);
+//							System.out.println("found unicode: " + tmp);
+//							System.out.println("translates to: " + (char)Integer.parseInt(tmp, 16));
+							String tmp3 = "\\\\u" + tmp;
+							String tmp4 = Character.toString((char)Integer.parseInt(tmp, 16));
+							line = line.replaceAll(tmp3, tmp4);
+						}
+						
 						String[] splitLine = line.split("\\t");
 						if(splitLine[0].equals(",")){
 							tmpSentence = tmpSentence.trim() + splitLine[0] + " ";
