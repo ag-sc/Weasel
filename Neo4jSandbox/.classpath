@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/neo4j/neo4j-2.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Neo4j Community/bin/neo4j-desktop-2.1.3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

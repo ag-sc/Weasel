@@ -3,6 +3,9 @@ package evaluation;
 import graph.Graph;
 import graph.Node;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -10,9 +13,11 @@ import java.util.TreeSet;
 import datatypes.EntityOccurance;
 import datatypes.FragmentCandidateTuple;
 import datatypes.FragmentPlusCandidates;
+import datatypes.TinyEdge;
 
 public class BabelfyEvaluation extends EvaluationEngine{
 
+	private String filePath = "../../data/Babelfy/semantic signature.binary";
 	HashMap<String, TreeSet<String>> semanticSignature;
 	Graph<FragmentCandidateTuple> graph;
 	
@@ -20,8 +25,24 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void loadSemanticSignature() throws IOException, ClassNotFoundException{
+		FileInputStream fileInputStream = new FileInputStream(filePath);
+		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+		semanticSignature = (HashMap<String, TreeSet<String>>) objectReader.readObject(); 
+		objectReader.close();
+		fileInputStream.close();
+	}
+	
 	@Override
 	public LinkedList<EntityOccurance> evaluate(LinkedList<FragmentPlusCandidates> fragments) {
+		try {
+			loadSemanticSignature();
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 		// add fragments/candidates to graph
 		graph = new Graph<FragmentCandidateTuple>();
 		for(FragmentPlusCandidates fpc: fragments){
