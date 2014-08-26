@@ -21,7 +21,7 @@ import org.neo4j.graphdb.schema.Schema;
 
 public class Neo4jSandbox {
 	
-	private static final String DB_PATH = "semantic_signature";
+	private static final String DB_PATH = "../../data/Mappingbased Properties/testDB";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
@@ -35,21 +35,21 @@ public class Neo4jSandbox {
 	}
 	
 	public static void main(String[] args) {
-		deleteFileOrDirectory(new File(DB_PATH));
-		
-		HashMap<String, HashMap<String, Integer>> semanticSignature = new HashMap<String, HashMap<String, Integer>>();
-		try {
-			FileInputStream fileInputStream = new FileInputStream("semantic signature.binary");
-			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-			semanticSignature = (HashMap<String, HashMap<String, Integer>>) objectReader.readObject(); 
-			objectReader.close();
-			fileInputStream.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("failure opening semantic signature binary file");
-			return;
-		}
+//		deleteFileOrDirectory(new File(DB_PATH));
+//		
+//		HashMap<String, HashMap<String, Integer>> semanticSignature = new HashMap<String, HashMap<String, Integer>>();
+//		try {
+//			FileInputStream fileInputStream = new FileInputStream("semantic signature.binary");
+//			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+//			semanticSignature = (HashMap<String, HashMap<String, Integer>>) objectReader.readObject(); 
+//			objectReader.close();
+//			fileInputStream.close();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			System.out.println("failure opening semantic signature binary file");
+//			return;
+//		}
 		
 //		TreeSet<String> tmpSet1 = new TreeSet<String>();
 //		tmpSet1.add("B");
@@ -72,59 +72,59 @@ public class Neo4jSandbox {
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( DB_PATH );
 		registerShutdownHook( graphDb );
 		
-		IndexDefinition indexDefinition;
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
-			indexDefinition = schema.indexFor(entityLabel).on("name").create();
-			tx.success();
-		}
-		// END SNIPPET: createIndex
-		// START SNIPPET: wait
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
-			schema.awaitIndexOnline(indexDefinition, 10, TimeUnit.SECONDS);
-		}
+//		IndexDefinition indexDefinition;
+//		try (Transaction tx = graphDb.beginTx()) {
+//			Schema schema = graphDb.schema();
+//			indexDefinition = schema.indexFor(entityLabel).on("name").create();
+//			tx.success();
+//		}
+//		// END SNIPPET: createIndex
+//		// START SNIPPET: wait
+//		try (Transaction tx = graphDb.beginTx()) {
+//			Schema schema = graphDb.schema();
+//			schema.awaitIndexOnline(indexDefinition, 10, TimeUnit.SECONDS);
+//		}
+//		
+//		System.out.println("Create all the entity nodes...");
+//		try (Transaction tx = graphDb.beginTx()) {
+//			for (Entry<String, HashMap<String, Integer>> entry : semanticSignature.entrySet()) {
+//				Node entity = graphDb.createNode(entityLabel);
+//				entity.setProperty("name", entry.getKey());
+//			}
+//			tx.success();
+//		}
+//		
+//		System.out.println("Create all the node relations...");
+//		try (Transaction tx = graphDb.beginTx()) {
+//			for (Entry<String, HashMap<String, Integer>> entry : semanticSignature.entrySet()) {
+//				Node entity = null; 
+//				for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", entry.getKey() ) ){
+//					entity = node;
+//				}
+//				
+//				for(String signatureEntityName: entry.getValue().keySet()){
+//					Node signatureEntity = null;
+//					for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", signatureEntityName ) ){
+//						signatureEntity = node;
+//						entity.createRelationshipTo(signatureEntity, RelTypes.IN_SIGNATURE);
+//					}
+//					
+//				}
+//			}
+//			tx.success();
+//		}
 		
-		System.out.println("Create all the entity nodes...");
-		try (Transaction tx = graphDb.beginTx()) {
-			for (Entry<String, HashMap<String, Integer>> entry : semanticSignature.entrySet()) {
-				Node entity = graphDb.createNode(entityLabel);
-				entity.setProperty("name", entry.getKey());
-			}
-			tx.success();
-		}
-		
-		System.out.println("Create all the node relations...");
-		try (Transaction tx = graphDb.beginTx()) {
-			for (Entry<String, HashMap<String, Integer>> entry : semanticSignature.entrySet()) {
-				Node entity = null; 
-				for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", entry.getKey() ) ){
-					entity = node;
-				}
-				
-				for(String signatureEntityName: entry.getValue().keySet()){
-					Node signatureEntity = null;
-					for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", signatureEntityName ) ){
-						signatureEntity = node;
-						entity.createRelationshipTo(signatureEntity, RelTypes.IN_SIGNATURE);
-					}
-					
-				}
-			}
-			tx.success();
-		}
-		
-		System.out.println("Done! Perform test query for 'Tiger_Woods'.");
+		System.out.println("Done! Perform test query for 'David_Beckham'.");
 		
 		try (Transaction tx = graphDb.beginTx()) {
-			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", "Tiger_Woods" ) ){
+			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", "David_Beckham" ) ){
 				Node entity = node;
 				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
 					System.out.println("out: " + r.getEndNode().getProperty("name"));
 				}
-				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
-					System.out.println("in:  " + r.getStartNode().getProperty("name"));
-				}
+//				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
+//					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+//				}
 			}
 			tx.success();
 		}
@@ -143,14 +143,14 @@ public class Neo4jSandbox {
 		});
 	}
 	
-	private static void deleteFileOrDirectory(File file) {
-		if (file.exists()) {
-			if (file.isDirectory()) {
-				for (File child : file.listFiles()) {
-					deleteFileOrDirectory(child);
-				}
-			}
-			file.delete();
-		}
-	}
+//	private static void deleteFileOrDirectory(File file) {
+//		if (file.exists()) {
+//			if (file.isDirectory()) {
+//				for (File child : file.listFiles()) {
+//					deleteFileOrDirectory(child);
+//				}
+//			}
+//			file.delete();
+//		}
+//	}
 }

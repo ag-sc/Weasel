@@ -10,10 +10,10 @@ import datatypes.TinyEdge;
 public class SemanticSignatureCalculator {
 
 	static double restartProbability = 0.85; // 0.85
-	static int frequencyThreshold = 100; // 100
-	static int numberOfSteps = 1000000; // 1000000
+	static int frequencyThreshold = 5; // 100
+	static int numberOfSteps = 50000; // 1000000
 	
-	private static HashMap<String, Integer> randomWalk(String startNode, GraphAccess graphAccess){
+	public static HashMap<String, Integer> randomWalk(String startNode, GraphAccess graphAccess){
 		String currentNode = startNode;
 		HashMap<String, Integer> tmpSignature = new HashMap<String, Integer>();
 		HashMap<String, Integer> signature = new HashMap<String, Integer>();

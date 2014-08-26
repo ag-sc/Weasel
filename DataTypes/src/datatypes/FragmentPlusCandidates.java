@@ -11,4 +11,10 @@ public class FragmentPlusCandidates {
 		this.fragment = fragment;
 		this.candidates = candidates;
 	}
+	
+	public String toString(){
+		String result = fragment.getFragment() + "\n";
+		for(String s: candidates) result += "	" + s + "\n";
+		return result;
+	}
 }
