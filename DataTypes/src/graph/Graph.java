@@ -11,6 +11,22 @@ public class Graph <T extends Comparable<T>>{
 		nodeMap = new HashMap<T, Node<T>>();
 	}
 	
+	public Graph<T> deepcopy(){
+		Graph<T> newGraph = new Graph<T>();
+		
+		for(Node<T> n: nodeMap.values()){
+			newGraph.addNode(n.content);
+		}
+		
+		for(Node<T> n: nodeMap.values()){
+			for(GraphEdge<T> e: n.outgoingEdges){
+				newGraph.addEdge(e.source.content, e.sink.content);
+			}
+		}
+		
+		return newGraph;
+	}
+	
 	public void addNode(T content){
 		nodeMap.put(content, new Node<T>(content));
 	}

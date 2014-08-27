@@ -44,6 +44,7 @@ public class EntityLinker {
 	public LinkedList<EntityOccurance> link(String sentence) {
 		LinkedList<EntityOccurance> fragments = createFragments(sentence);
 		LinkedList<FragmentPlusCandidates> allCandidats = findAllCandidats(fragments);
+		System.out.println(allCandidats);
 		
 		LinkedList<EntityOccurance> resultingEntities = evaluator.evaluate(allCandidats);
 		

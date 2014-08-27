@@ -28,7 +28,10 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		this.ambiguityLevel = ambiguityLevel;
 	}
 	
-	private void trimToDenseSubgraph(Graph<FragmentCandidateTuple> graph){
+	private Graph<FragmentCandidateTuple> trimToDenseSubgraph(Graph<FragmentCandidateTuple> graph){
+		Graph<FragmentCandidateTuple> trimmedGraph = graph.deepcopy();
+		double avrgDegree = 0.0;
+		
 		for (int sanityCounter = 0; sanityCounter < 100000; sanityCounter++) {
 			// Get mous ambigous fragment
 			EntityOccurance mostAmbigousFragment = null;
@@ -47,7 +50,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				}
 			}
 			
-			if(max < ambiguityLevel) return; // end algorithm if ambiguity low
+			if(max <= ambiguityLevel) return trimmedGraph; // end algorithm if ambiguity low
 			
 			//TODO: only update nodes that are changed
 			scoreAllFragments();
@@ -61,10 +64,15 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				}
 			}
 			graph.removeNode(weakestCandidate);
+			
+			if(graph.avrgDegree() > avrgDegree){
+				avrgDegree = graph.avrgDegree();
+				trimmedGraph = graph.deepcopy();
+			}
 		}
 		
 		System.out.println("		Graph trimming cancelled! Loop too long!");
-		
+		return trimmedGraph;
 	}
 	
 	private void scoreAllFragments(){

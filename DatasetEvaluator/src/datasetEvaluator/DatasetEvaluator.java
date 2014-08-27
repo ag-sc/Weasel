@@ -52,6 +52,8 @@ public class DatasetEvaluator {
 				}
 			}
 			
+			System.out.println("Assigned:");
+			for(EntityOccurance eo: linkerList) System.out.println(eo);
 		}
 		System.out.println(numberOfEntities + " entities in evaluation set.");
 		System.out.println(numberOfPossiblyKnownEntities + " entities are in our database ("+ ((double)numberOfPossiblyKnownEntities / (double)numberOfEntities * 100.00)+"%)");

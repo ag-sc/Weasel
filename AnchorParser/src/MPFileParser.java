@@ -36,6 +36,8 @@ public class MPFileParser {
 			if(matcher1.find()) subject = matcher1.group(1);
 			else continue;
 			
+			if(subject.equals("Ulrike_Meinhof")) System.out.println(line);
+			
 			if(matcher2.find()) predicate = matcher2.group(1);
 			else continue;
 			

@@ -117,7 +117,7 @@ public class Neo4jSandbox {
 		System.out.println("Done! Perform test query for 'David_Beckham'.");
 		
 		try (Transaction tx = graphDb.beginTx()) {
-			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", "David_Beckham" ) ){
+			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", "Ulrike_Meinhof" ) ){
 				Node entity = node;
 				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
 					System.out.println("out: " + r.getEndNode().getProperty("name"));

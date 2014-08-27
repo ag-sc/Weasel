@@ -67,16 +67,23 @@ public class BabelfyEvaluationTest {
 	@Test
 	public void evaluateTest() {
 		
-		BabelfyEvaluation bEval = new BabelfyEvaluation(connector, 0, 0);
+		BabelfyEvaluation bEval = new BabelfyEvaluation(connector, 0, 1);
 		
 		LinkedList<EntityOccurance> list = bEval.evaluate(fpcList);
 		
 		System.out.println(list);
 		assertEquals("List has length 3", 3, list.size());
-		assertEquals("first entry fragment F3", "F3", list.getFirst().getFragment());
-		assertEquals("first entry candidate C5", "C5", list.getFirst().getName());
-		assertEquals("last entry fragment F2", "F2", list.getLast().getFragment());
-		assertEquals("last entry candidate C4", "C4", list.getLast().getName());
+		for (EntityOccurance e : list) {
+			if (e.getFragment().equals("F3")) {
+				assertEquals("first entry candidate C5", "C5", e.getName());
+			} else if (e.getFragment().equals("F2")) {
+				assertEquals("first entry candidate C4", "C4", e.getName());
+			} else if (e.getFragment().equals("F1")) {
+				assertEquals("first entry candidate C3", "C3", e.getName());
+			} else {
+				fail("Incorrect fragment: " + e.getFragment());
+			}
+		}
 		
 	}
 
