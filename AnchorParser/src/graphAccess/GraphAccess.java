@@ -9,11 +9,19 @@ import datatypes.Edge;
 import datatypes.TinyEdge;
 
 public abstract class GraphAccess {
-
-	public abstract void store(String subject, LinkedList<Edge<String, String>> currentList);
 	
-	public abstract TreeSet<TinyEdge> query(String key);
+	public abstract void addNode(String node);
 	
-	public abstract Iterator<Entry<String, TreeSet<TinyEdge>>>  getGraphIterator();
+	public abstract void removeNode(String node);
+	
+	public abstract void addEdge(String nodeSource, String nodeSink);
+	
+	public abstract void removeEdge(String nodeSource, String nodeSink);
+	
+	public abstract TreeSet<String> getIncomingEdges(String node);
+	
+	public abstract TreeSet<String> getOutgoingEdges(String node);
+	
+	public abstract Iterator<String>  getGraphIterator();
 	
 }
