@@ -1,7 +1,10 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -13,12 +16,12 @@ public class AnchorFileReader {
 	private BufferedReader br = null;
 	private int lineCounter = 0;
 	
-	AnchorFileReader(String fileName) throws FileNotFoundException{
+	AnchorFileReader(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
 		//consoleHandler.setLevel(Level.ALL);
 		//logger.addHandler(consoleHandler);
 		//logger.setLevel(Level.ALL);
 		
-		br = new BufferedReader(new FileReader(fileName));
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF8"));
 	}
 
 	public String[] getTriplet() {

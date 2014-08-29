@@ -23,40 +23,36 @@ import org.neo4j.tooling.GlobalGraphOperations;
 
 import datatypes.TinyEdge;
 
-public class Neo4jSemSigBuilder {
-	static long start, end;
-	private static Label entityLabel = DynamicLabel.label( "Entity" );
-	private static GraphDatabaseService sourceDB;
-	private static GraphDatabaseService semsigDB;
-	private static final int transactionBuffer = 500;
-	private static Transaction currentTransaction;
-	private static int changeCounter = 0;
-	private static int totalCounter = 0;
-	
-	private static double restartProbability = 0.85; // 0.85
-	private static int frequencyThreshold = 10; // 100
-	private static int numberOfSteps = 100000; // 1000000
-	
-	private static enum RelTypes implements RelationshipType {
-		CONNECTION
+public class Neo4jSemSigBuilder extends Neo4jPrototype{
+	public Neo4jSemSigBuilder(String dbPath) {
+		super(dbPath);
+		// TODO Auto-generated constructor stub
 	}
+
+	long start, end;
 	
-	private static void explore(Node n, double currentProbability, HashMap<Node,Double> signature, double continueProb){
+	private final double restartProbability = 0.85; // 0.85
+	private final int frequencyThreshold = 10; // 100
+	private final int numberOfSteps = 100000; // 1000000
+
+	
+	private void explore(Node n, double currentProbability, HashMap<Node,Double> signature, double continueProb){
 		double totalWeight = 0.0;
-		for(Relationship r: n.getRelationships(Direction.OUTGOING)){
+		for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.CONNECTION)){
 			totalWeight += (double) r.getProperty("weight", 0);
 		}
 		
-		for(Relationship r: n.getRelationships(Direction.OUTGOING)){
+		for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.CONNECTION)){
 			double tmp = (((double) r.getProperty("weight", 0)) / totalWeight) * continueProb * currentProbability;	
 			if(tmp > (double)frequencyThreshold / (double)numberOfSteps){
-				signature.put(r.getEndNode(), tmp);
+				Double foundValue = signature.get(r.getEndNode());
+				if(foundValue == null || foundValue < tmp) signature.put(r.getEndNode(), tmp);
 				explore(r.getEndNode(), tmp, signature, (1.0 - restartProbability));
 			}
 		}
 	}
 	
-	private static void randomWalkProbability(Node source){
+	private void randomWalkProbability(Node source){
 		HashMap<Node, Double> tmpSignature = new HashMap<Node, Double>();
 		
 		explore(source, 1, tmpSignature, 1);
@@ -66,7 +62,7 @@ public class Neo4jSemSigBuilder {
 		}
 	}
 	
-	private static void randomWalk(Node source){
+	private void randomWalk(Node source){
 		Node currentNode = source;
 		HashMap<Node, Integer> tmpSignature = new HashMap<Node, Integer>();
 		
@@ -111,121 +107,56 @@ public class Neo4jSemSigBuilder {
 		}
 	}
 	
-	private static void checkTransactions(){
-		if(changeCounter >= transactionBuffer){
-			totalCounter += changeCounter;
-			currentTransaction.success();
-			currentTransaction.close();
-			changeCounter = 0;
-			currentTransaction = semsigDB.beginTx();
-			
-			end = System.nanoTime();
-			
-//			if (totalCounter % 10000 == 0) {
-//				double passedTime = (end - start) / 1000000000.0;
-//				System.out.println("processed: " + totalCounter + " passed time: " + passedTime + " s");
-//				start = System.nanoTime();
-//			}
-		}
-	}
-	
-	private static void addRelation(String source, String sink, double count){
+	private void addRelation(String source, String sink, double count){
 		if(source.equals(sink)) return;
 		
 		Node sourceNode = null;
-		for ( Node node : semsigDB.findNodesByLabelAndProperty( entityLabel, "name", source ) ){
+		for ( Node node : graphDB.findNodesByLabelAndProperty( entityLabel, "name", source ) ){
 			sourceNode = node;
 		}
 		if(sourceNode == null){
-			sourceNode = semsigDB.createNode(entityLabel);
+			sourceNode = graphDB.createNode(entityLabel);
 			sourceNode.setProperty("name", source);
 		}
 		
 		Node sinkNode = null;
-		for ( Node node : semsigDB.findNodesByLabelAndProperty( entityLabel, "name", sink ) ){
+		for ( Node node : graphDB.findNodesByLabelAndProperty( entityLabel, "name", sink ) ){
 			sinkNode = node;
 		}
 		if(sinkNode == null){
-			sinkNode = semsigDB.createNode(entityLabel);
+			sinkNode = graphDB.createNode(entityLabel);
 			sinkNode.setProperty("name", sink);
 		}
 		
-		Relationship r = sourceNode.createRelationshipTo(sinkNode, RelTypes.CONNECTION);
-		r.setProperty("count", count);
+		Relationship r = sourceNode.createRelationshipTo(sinkNode, RelTypes.SEMANTIC_SIGNATURE);
+		r.setProperty("probability", count);
 		
 		changeCounter++;
 		checkTransactions();
 	}
-	
-	
-	public static void build(String sourceDBPath, String semsigDBPath){
+
+	@Override
+	void _run(String[] args) {
 		start = System.nanoTime();
-		sourceDB = new GraphDatabaseFactory().newEmbeddedDatabase( sourceDBPath );
-		registerShutdownHook( sourceDB );
 		
-		deleteFileOrDirectory(new File(semsigDBPath));
-		semsigDB = new GraphDatabaseFactory().newEmbeddedDatabase( semsigDBPath );
-		registerShutdownHook( semsigDB );
-		
-		IndexDefinition indexDefinition;
-		try (Transaction tx = semsigDB.beginTx()) {
-			Schema schema = semsigDB.schema();
-			indexDefinition = schema.indexFor(entityLabel).on("name").create();
-			tx.success();
-		}
-		try (Transaction tx = semsigDB.beginTx()) {
-			Schema schema = semsigDB.schema();
-			schema.awaitIndexOnline(indexDefinition, 10, TimeUnit.SECONDS);
-		}
-
-		changeCounter = 0;
-		currentTransaction = semsigDB.beginTx();
-		try (Transaction tx = sourceDB.beginTx()) {
-			GlobalGraphOperations global = GlobalGraphOperations.at(sourceDB);
-			for (Node n : global.getAllNodes()) {
-				//randomWalk(n);
-				randomWalkProbability(n);
-			}
-
-			tx.success();
+		GlobalGraphOperations global = GlobalGraphOperations.at(graphDB);
+		for (Node n : global.getAllNodes()) {
+			//randomWalk(n);
+			randomWalkProbability(n);
 		}
 		
-		GlobalGraphOperations global = GlobalGraphOperations.at(semsigDB);
 		int tmp = 0;
 		for (Node n : global.getAllNodes()) {
 			System.out.println("node: " + n.getProperty("name", "FAILURE"));
-			for(Relationship r: n.getRelationships(Direction.OUTGOING)){
-				System.out.println("	" + (String)r.getEndNode().getProperty("name"));
+			for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.CONNECTION)){
+				System.out.println("Connec	" + (String)r.getEndNode().getProperty("name"));
+			}
+			for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.SEMANTIC_SIGNATURE)){
+				System.out.println("SemSig	" + (String)r.getEndNode().getProperty("name") + "(" + r.getProperty("probability") + ")");
 			}
 			if(tmp++ > 20) break;
 		}
 		
-		currentTransaction.success();
-		currentTransaction.close();
-		semsigDB.shutdown();
-		sourceDB.shutdown();
 	}
-	
-	private static void registerShutdownHook(final GraphDatabaseService graphDb) {
-		// Registers a shutdown hook for the Neo4j instance so that it
-		// shuts down nicely when the VM exits (even if you "Ctrl-C" the
-		// running application).
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				graphDb.shutdown();
-			}
-		});
-	}
-	
-	private static void deleteFileOrDirectory(File file) {
-		if (file.exists()) {
-			if (file.isDirectory()) {
-				for (File child : file.listFiles()) {
-					deleteFileOrDirectory(child);
-				}
-			}
-			file.delete();
-		}
-	}
+
 }
