@@ -38,7 +38,7 @@ public class EntityLinkerSandbox {
 				System.out.println(eo);
 			}
 			
-			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/Mappingbased Properties/db/db_02");
+			RecordManager recman = RecordManagerFactory.createRecordManager("../../data/Wikipedia/Mappingbased Properties/db/db_02");
 			PrimaryHashMap<Integer, String> intToUri = recman.hashMap("intToUri");
 			PrimaryHashMap<String, Integer> uriToInt = recman.hashMap("UriToInt");
 			
