@@ -32,15 +32,15 @@ public class BuildDBSandbox {
 		long start = System.nanoTime();
 		
 		System.out.println("System start");
-		Neo4jDatabaseBuilder dbBuilder = new Neo4jDatabaseBuilder("../../data/DBs/InfoboxPlusCategories");
+		//Neo4jDatabaseBuilder dbBuilder = new Neo4jDatabaseBuilder("../../data/DBs/InfoboxPlusCategories");
 		String stringArray[] = new String[2];
-		stringArray[0] = "../../data/Wikipedia/Raw Infobox Properties/test/raw_infobox_properties_en.nt";
-		stringArray[1] = "../../data/Wikipedia/Article Categories/test/article_categories_en.nt";	
-		dbBuilder.run(stringArray);
+		stringArray[0] = "../../data/Wikipedia/Raw Infobox Properties/raw_infobox_properties_en.nt";
+		stringArray[1] = "../../data/Wikipedia/Article Categories/article_categories_en.nt";	
+		//dbBuilder.run(stringArray);
 		
 		System.out.println("GraphDB build, build Semantic Signature DB.");
-		Neo4jSemSigBuilder semSig = new Neo4jSemSigBuilder("../../data/DBs/InfoboxPlusCategories");
-		semSig.run(null);
+		//Neo4jSemSigBuilder semSig = new Neo4jSemSigBuilder("../../data/DBs/InfoboxPlusCategories");
+		//semSig.run(null);
 		
 //		Neo4jDatabaseBuilder.run("InfoboxPlusCategories",
 //				"raw_infobox_properties_en.nt",

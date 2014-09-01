@@ -13,6 +13,7 @@ import jdbm.RecordManagerFactory;
 import org.junit.Test;
 
 import datatypes.TermFrequency;
+import fileparser.AnchorFileParser;
 
 
 public class AnchorMapGeneratorTest {
@@ -89,7 +90,7 @@ public class AnchorMapGeneratorTest {
 	@Test
 	public void dbTest(){
 		try {
-			AnchorFileReader anchorReader = new AnchorFileReader("data/testFiles/anchors_test.txt");
+			AnchorFileParser anchorReader = new AnchorFileParser("data/testFiles/anchors_test.txt");
 			AnchorMapGenerator.generateDatabase(anchorReader, "data/jdbm/testDB");
 			
 			RecordManager recman = RecordManagerFactory.createRecordManager("data/jdbm/testDB");

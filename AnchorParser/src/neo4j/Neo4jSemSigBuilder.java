@@ -145,17 +145,17 @@ public class Neo4jSemSigBuilder extends Neo4jPrototype{
 			randomWalkProbability(n);
 		}
 		
-		int tmp = 0;
-		for (Node n : global.getAllNodes()) {
-			System.out.println("node: " + n.getProperty("name", "FAILURE"));
-			for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.CONNECTION)){
-				System.out.println("Connec	" + (String)r.getEndNode().getProperty("name"));
-			}
-			for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.SEMANTIC_SIGNATURE)){
-				System.out.println("SemSig	" + (String)r.getEndNode().getProperty("name") + "(" + r.getProperty("probability") + ")");
-			}
-			if(tmp++ > 20) break;
-		}
+//		int tmp = 0;
+//		for (Node n : global.getAllNodes()) {
+//			System.out.println("node: " + n.getProperty("name", "FAILURE"));
+//			for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.CONNECTION)){
+//				System.out.println("Connec	" + (String)r.getEndNode().getProperty("name"));
+//			}
+//			for(Relationship r: n.getRelationships(Direction.OUTGOING, RelTypes.SEMANTIC_SIGNATURE)){
+//				System.out.println("SemSig	" + (String)r.getEndNode().getProperty("name") + "(" + r.getProperty("probability") + ")");
+//			}
+//			if(tmp++ > 20) break;
+//		}
 		
 	}
 

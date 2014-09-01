@@ -1,8 +1,11 @@
 import static org.junit.Assert.*;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.junit.Test;
+
+import fileparser.AnchorFileParser;
 
 
 public class AnchorFileReaderTest {
@@ -10,27 +13,28 @@ public class AnchorFileReaderTest {
 	@Test
 	public void testGetTriplet() {
 		try{
-			AnchorFileReader reader = new AnchorFileReader("data/testFiles/anchors_test.txt");
-			String[] output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
-			assertEquals("Retur valid triplets", 3, output.length);
-			output = reader.getTriplet();
+			AnchorFileParser reader = new AnchorFileParser("data/testFiles/anchors_test.txt");
+			String[] output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
+			assertEquals("Retur valid tuple", 2, output.length);
+			output = reader.parseTuple();
 			assertNull("Last line was empty", output);
-		}catch(FileNotFoundException e){
-			fail("File not found exception");
+		}catch(IOException e){
+			e.printStackTrace();
+			fail("IOexception");
 		}
 	}
 	

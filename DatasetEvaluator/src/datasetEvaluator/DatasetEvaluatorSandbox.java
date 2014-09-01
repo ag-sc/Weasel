@@ -20,7 +20,7 @@ public class DatasetEvaluatorSandbox {
 	public static void main(String[] args) {
 		try {					
 			KORE50Parser parser = new KORE50Parser(new File("../../data/DatasetParser/test/kore50.tsv"));
-			Neo4jConnector connector = new Neo4jConnector("../../data/Mappingbased Properties/testDB");
+			Neo4jConnector connector = new Neo4jConnector("../../data/DBs/InfoboxPlusCategories");
 			EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.8, 10);
 			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");

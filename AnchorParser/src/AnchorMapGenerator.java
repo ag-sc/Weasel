@@ -17,26 +17,23 @@ import jdbm.PrimaryHashMap;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import datatypes.TermFrequency;
+import fileparser.AnchorFileParser;
 
 
 public class AnchorMapGenerator {
 	
 	public static HashMap<String, LinkedList<TermFrequency>> generateURIKeyMap(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
 		
-		AnchorFileReader anchorReader = new AnchorFileReader(fileName);
+		AnchorFileParser anchorReader = new AnchorFileParser(fileName);
 		HashMap<String, LinkedList<TermFrequency>> URIKeyMap = new HashMap<String, LinkedList<TermFrequency>>();
 		String[] triplet;
 		
-		while((triplet = anchorReader.getTriplet()) != null){
+		while((triplet = anchorReader.parseTuple()) != null){
 			//for(String s: triplet) System.out.println(s);
 			LinkedList<TermFrequency> foundList;
 			TermFrequency termFrequency = new TermFrequency(triplet[0], Integer.parseInt(triplet[2]));
 			
-			if(triplet[1].contains("Eva_Per")) System.out.println(triplet[1]);
-			
 			triplet[1] = java.net.URLDecoder.decode(triplet[1], "UTF-8");
-			
-			if(triplet[1].contains("Eva_Per")) System.out.println(triplet[1]);
 			
 			if((foundList = URIKeyMap.get(triplet[1])) == null){ // key not found, create new list entry
 				LinkedList<TermFrequency> newList = new LinkedList<TermFrequency>();
@@ -126,7 +123,7 @@ public class AnchorMapGenerator {
 	}
 
 	public static HashMap<String, LinkedList<TermFrequency>> generateAnchorKeyMapFromURIKeyMapTextFile(String fileName) throws FileNotFoundException{
-		AnchorFileReader anchorReader = new AnchorFileReader(fileName);
+		AnchorFileParser anchorReader = new AnchorFileParser(fileName);
 		HashMap<String, LinkedList<TermFrequency>> AnchorKeyMap = new HashMap<String, LinkedList<TermFrequency>>();
 		String[] splitLine;
 
@@ -154,7 +151,7 @@ public class AnchorMapGenerator {
 	}
 
 	public static HashMap<String, LinkedList<String>> generatePartialAnchorKeyMapFromAnchorKeyMapTextFile(String fileName) throws FileNotFoundException {
-		AnchorFileReader anchorReader = new AnchorFileReader(fileName);
+		AnchorFileParser anchorReader = new AnchorFileParser(fileName);
 		HashMap<String, LinkedList<String>> partialAnchorKeyMap = new HashMap<String, LinkedList<String>>();
 		String[] splitLine;
 		int counter = 0;
@@ -187,7 +184,7 @@ public class AnchorMapGenerator {
 		return partialAnchorKeyMap;
 	}
 
-	public static void generateDatabase(AnchorFileReader anchorReader, String dbPath) throws FileNotFoundException, IOException {
+	public static void generateDatabase(AnchorFileParser anchorReader, String dbPath) throws FileNotFoundException, IOException {
 		/// URI table
 		String[] triplet;
 		int counter = 0;
@@ -195,7 +192,7 @@ public class AnchorMapGenerator {
 		RecordManager recman = RecordManagerFactory.createRecordManager(dbPath);
 		PrimaryHashMap<String, TreeSet<TermFrequency>> uriMap = recman.hashMap("uri");
 		
-		while((triplet = anchorReader.getTriplet()) != null){
+		while((triplet = anchorReader.parseTuple()) != null){
 			TreeSet<TermFrequency> foundTreeSet;
 			TermFrequency termFrequency = new TermFrequency(triplet[0].toLowerCase(), Integer.parseInt(triplet[2]));
 			

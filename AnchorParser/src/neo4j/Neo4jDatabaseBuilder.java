@@ -8,6 +8,7 @@ import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.graphdb.schema.Schema;
@@ -34,7 +35,7 @@ public class Neo4jDatabaseBuilder extends Neo4jPrototype {
 	
 
 	@Override
-	void buildIndex(){
+	protected void buildIndex(){
 		IndexDefinition indexDefinition;
 		try (Transaction tx = graphDB.beginTx()) {
 			Schema schema = graphDB.schema();
@@ -48,7 +49,7 @@ public class Neo4jDatabaseBuilder extends Neo4jPrototype {
 	}
 	
 	@Override
-	void _run(String[] args) {
+	protected void _run(String[] args) {
 		start = System.nanoTime();
 		
 		current = "read file 1";
@@ -57,7 +58,7 @@ public class Neo4jDatabaseBuilder extends Neo4jPrototype {
 		try{
 			WikiParser infoboxParser = new WikiParser(args[0]);
 			while((tuple = infoboxParser.parseTuple()) != null){
-				addRelation(tuple);
+				if(tuple.length == 2) addRelation(tuple, RelTypes.CONNECTION);
 			}
 			infoboxParser.close();
 		}catch (IOException e){
@@ -71,7 +72,7 @@ public class Neo4jDatabaseBuilder extends Neo4jPrototype {
 			WikiParser infoboxParser = new WikiParser(args[1]);
 			infoboxParser.setPatters("<.*?resource/([^>]+)>", "<.*?resource/Category:([^>]+)>");
 			while ((tuple = infoboxParser.parseTuple()) != null) {
-				addRelation(tuple);
+				if(tuple.length == 2) addRelation(tuple, RelTypes.CONNECTION);
 			}
 			infoboxParser.close();
 		} catch (IOException e) {
@@ -101,14 +102,14 @@ public class Neo4jDatabaseBuilder extends Neo4jPrototype {
 		System.out.println("Nr of nodes: " + nrOfNodes + " - nr of edges: " + nrOfEdges);
 	}
 	
-	private void setWeight(Relationship r, double weight){
+	protected void setWeight(Relationship r, double weight){
 		r.setProperty("weight", weight);
 		
 		changeCounter++;
 		checkTransactions();
 	}
 	
-	private void addRelation(String[] tuple){
+	protected void addRelation(String[] tuple, RelationshipType relType){
 		//if(!treeSet.contains(tuple[0]) && !treeSet.contains(tuple[1])) return;
 		nrOfEdges++;
 		
@@ -132,7 +133,7 @@ public class Neo4jDatabaseBuilder extends Neo4jPrototype {
 			nrOfNodes++;
 		}
 		
-		if(!sourceNode.equals(sinkNode)) sourceNode.createRelationshipTo(sinkNode, RelTypes.CONNECTION);
+		if(!sourceNode.equals(sinkNode)) sourceNode.createRelationshipTo(sinkNode, relType);
 		
 		changeCounter++;
 		checkTransactions();

@@ -17,11 +17,12 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.graphdb.schema.Schema;
+import org.neo4j.tooling.GlobalGraphOperations;
 
 
 public class Neo4jSandbox {
 	
-	private static final String DB_PATH = "../../data/Mappingbased Properties/testDB";
+	private static final String DB_PATH = "../../data/DBs/Anchors";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
@@ -30,104 +31,52 @@ public class Neo4jSandbox {
 	
 	static Label entityLabel = DynamicLabel.label( "Entity" );
 	
-	private static enum RelTypes implements RelationshipType {
-		IN_SIGNATURE
+	static enum RelTypes implements RelationshipType {
+		CONNECTION,
+		PARTIALMATCH,
+		SEMANTIC_SIGNATURE,
+		ANCHOR
 	}
 	
 	public static void main(String[] args) {
-//		deleteFileOrDirectory(new File(DB_PATH));
-//		
-//		HashMap<String, HashMap<String, Integer>> semanticSignature = new HashMap<String, HashMap<String, Integer>>();
-//		try {
-//			FileInputStream fileInputStream = new FileInputStream("semantic signature.binary");
-//			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-//			semanticSignature = (HashMap<String, HashMap<String, Integer>>) objectReader.readObject(); 
-//			objectReader.close();
-//			fileInputStream.close();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			System.out.println("failure opening semantic signature binary file");
-//			return;
-//		}
 		
-//		TreeSet<String> tmpSet1 = new TreeSet<String>();
-//		tmpSet1.add("B");
-//		tmpSet1.add("C");
-//		TreeSet<String> tmpSet2 = new TreeSet<String>();
-//		tmpSet2.add("A");
-//		TreeSet<String> tmpSet3 = new TreeSet<String>();
-//		tmpSet3.add("B");
-//		tmpSet3.add("D");
-//		TreeSet<String> tmpSet4 = new TreeSet<String>();
-//		tmpSet4.add("A");
-//		tmpSet4.add("B");
-//		
-//		semanticSignature.put("A", tmpSet1);
-//		semanticSignature.put("B", tmpSet2);
-//		semanticSignature.put("C", tmpSet3);
-//		semanticSignature.put("D", tmpSet4);
-		
-		
+		System.out.println("about to open db");
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( DB_PATH );
 		registerShutdownHook( graphDb );
-		
-//		IndexDefinition indexDefinition;
-//		try (Transaction tx = graphDb.beginTx()) {
-//			Schema schema = graphDb.schema();
-//			indexDefinition = schema.indexFor(entityLabel).on("name").create();
-//			tx.success();
-//		}
-//		// END SNIPPET: createIndex
-//		// START SNIPPET: wait
-//		try (Transaction tx = graphDb.beginTx()) {
-//			Schema schema = graphDb.schema();
-//			schema.awaitIndexOnline(indexDefinition, 10, TimeUnit.SECONDS);
-//		}
-//		
-//		System.out.println("Create all the entity nodes...");
-//		try (Transaction tx = graphDb.beginTx()) {
-//			for (Entry<String, HashMap<String, Integer>> entry : semanticSignature.entrySet()) {
-//				Node entity = graphDb.createNode(entityLabel);
-//				entity.setProperty("name", entry.getKey());
-//			}
-//			tx.success();
-//		}
-//		
-//		System.out.println("Create all the node relations...");
-//		try (Transaction tx = graphDb.beginTx()) {
-//			for (Entry<String, HashMap<String, Integer>> entry : semanticSignature.entrySet()) {
-//				Node entity = null; 
-//				for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", entry.getKey() ) ){
-//					entity = node;
-//				}
-//				
-//				for(String signatureEntityName: entry.getValue().keySet()){
-//					Node signatureEntity = null;
-//					for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", signatureEntityName ) ){
-//						signatureEntity = node;
-//						entity.createRelationshipTo(signatureEntity, RelTypes.IN_SIGNATURE);
-//					}
-//					
-//				}
-//			}
-//			tx.success();
-//		}
-		
-		System.out.println("Done! Perform test query for 'David_Beckham'.");
+// Anchor Test	
+		Label anchorLabel = DynamicLabel.label( "Anchor" );
+		Label partialAnchorLabel = DynamicLabel.label( "PartialAnchor" );
 		
 		try (Transaction tx = graphDb.beginTx()) {
-			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", "Ulrike_Meinhof" ) ){
-				Node entity = node;
-				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
-					System.out.println("out: " + r.getEndNode().getProperty("name"));
+			GlobalGraphOperations global = GlobalGraphOperations.at(graphDb);
+			for(Node n: global.getAllNodesWithLabel(partialAnchorLabel)){
+				System.out.println(n.getProperty("name"));
+				for(Relationship toAnchor: n.getRelationships(Direction.OUTGOING, RelTypes.PARTIALMATCH)){
+					Node anchor = toAnchor.getEndNode();
+					System.out.println("	" + anchor.getProperty("name"));
 				}
-//				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
-//					System.out.println("in:  " + r.getStartNode().getProperty("name"));
-//				}
 			}
 			tx.success();
 		}
+		
+// SemSig Test
+//		System.out.println("Done! Perform test query for 'David_Beckham'.");
+//		
+//		try (Transaction tx = graphDb.beginTx()) {
+//			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", "Red_Army_Faction" ) ){
+//				Node entity = node;
+//				int counter = 0;
+//				for(Relationship r: entity.getRelationships(Direction.OUTGOING, RelTypes.SEMANTIC_SIGNATURE)){
+//					System.out.println("out: " + r.getEndNode().getProperty("name"));
+//					counter++;
+//				}
+//				System.out.println("number of rels in semsig: " + counter);
+//				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
+//					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+//				}
+//			}
+//			tx.success();
+//		}
 		
 	}
 	
@@ -143,14 +92,4 @@ public class Neo4jSandbox {
 		});
 	}
 	
-//	private static void deleteFileOrDirectory(File file) {
-//		if (file.exists()) {
-//			if (file.isDirectory()) {
-//				for (File child : file.listFiles()) {
-//					deleteFileOrDirectory(child);
-//				}
-//			}
-//			file.delete();
-//		}
-//	}
 }

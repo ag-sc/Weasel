@@ -36,18 +36,17 @@ public class WikiParser extends FileParser implements Closeable{
 		
 		if((line = br.readLine()) != null){
 			String[] splitLine = line.split(" ");
-			if(splitLine.length != 4) return null;
+			if(splitLine.length != 4) return new String[1];
 			
 			matcher1 = resourcePattern1.matcher(splitLine[0]);
 			matcher2 = resourcePattern2.matcher(splitLine[2]);
 			
 			if(matcher1.find()) tuple[0] = matcher1.group(1);
-			else return null;
+			else return new String[1];
 			
 			if(matcher2.find()) tuple[1] = matcher2.group(1);
 			else{
-				br.close();
-				return null;
+				return new String[1];
 			}
 			
 		}else return null;

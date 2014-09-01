@@ -19,11 +19,13 @@ public abstract class Neo4jPrototype {
 	Label entityLabel = DynamicLabel.label( "Entity" );
 	int changeCounter = 0;
 	int totalCounter = 0;
+	long timeStart, timeEnd;
 	
 	static enum RelTypes implements RelationshipType {
 		CONNECTION,
 		PARTIALMATCH,
-		SEMANTIC_SIGNATURE
+		SEMANTIC_SIGNATURE,
+		ANCHOR
 	}
 	
 	public Neo4jPrototype(String dbPath){
@@ -40,6 +42,7 @@ public abstract class Neo4jPrototype {
 		buildIndex();
 		currentTransaction = graphDB.beginTx();
 		try{
+			timeStart = System.nanoTime();
 			_run(args);
 		}finally{
 			currentTransaction.success();
@@ -57,6 +60,13 @@ public abstract class Neo4jPrototype {
 			currentTransaction.close();
 			changeCounter = 0;
 			currentTransaction = graphDB.beginTx();
+			
+			if(totalCounter %1000000 == 0){
+				timeEnd = System.nanoTime();
+				double passedTime = (timeEnd - timeStart) / 60000000000.0;
+				System.out.println("Processed: " + totalCounter + "\t - time: " + passedTime + " mins");
+				timeStart = System.nanoTime();
+			}
 		}
 		
 	}
