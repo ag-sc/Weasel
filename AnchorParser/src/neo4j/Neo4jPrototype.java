@@ -9,24 +9,16 @@ import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-public abstract class Neo4jPrototype {
+public abstract class Neo4jPrototype extends Neo4jCore{
 	
 	final int transactionBuffer = 500;
 	String dbPath;
 	
 	GraphDatabaseService graphDB;
 	Transaction currentTransaction;
-	Label entityLabel = DynamicLabel.label( "Entity" );
 	int changeCounter = 0;
 	int totalCounter = 0;
 	long timeStart, timeEnd;
-	
-	static enum RelTypes implements RelationshipType {
-		CONNECTION,
-		PARTIALMATCH,
-		SEMANTIC_SIGNATURE,
-		ANCHOR
-	}
 	
 	public Neo4jPrototype(String dbPath){
 		this.dbPath = dbPath;

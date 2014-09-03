@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import neo4j.Neo4jCore;
+
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -20,9 +22,9 @@ import org.neo4j.graphdb.schema.Schema;
 import org.neo4j.tooling.GlobalGraphOperations;
 
 
-public class Neo4jSandbox {
+public class Neo4jSandbox extends Neo4jCore{
 	
-	private static final String DB_PATH = "../../data/DBs/Anchors";
+	private static final String DB_PATH = "../../data/DBs/BatchTest";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
@@ -30,13 +32,6 @@ public class Neo4jSandbox {
 	static Relationship relationship;
 	
 	static Label entityLabel = DynamicLabel.label( "Entity" );
-	
-	static enum RelTypes implements RelationshipType {
-		CONNECTION,
-		PARTIALMATCH,
-		SEMANTIC_SIGNATURE,
-		ANCHOR
-	}
 	
 	public static void main(String[] args) {
 		
@@ -47,36 +42,45 @@ public class Neo4jSandbox {
 		Label anchorLabel = DynamicLabel.label( "Anchor" );
 		Label partialAnchorLabel = DynamicLabel.label( "PartialAnchor" );
 		
-		try (Transaction tx = graphDb.beginTx()) {
-			GlobalGraphOperations global = GlobalGraphOperations.at(graphDb);
-			for(Node n: global.getAllNodesWithLabel(partialAnchorLabel)){
-				System.out.println(n.getProperty("name"));
-				for(Relationship toAnchor: n.getRelationships(Direction.OUTGOING, RelTypes.PARTIALMATCH)){
-					Node anchor = toAnchor.getEndNode();
-					System.out.println("	" + anchor.getProperty("name"));
-				}
-			}
-			tx.success();
-		}
-		
-// SemSig Test
-//		System.out.println("Done! Perform test query for 'David_Beckham'.");
-//		
 //		try (Transaction tx = graphDb.beginTx()) {
-//			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", "Red_Army_Faction" ) ){
-//				Node entity = node;
-//				int counter = 0;
-//				for(Relationship r: entity.getRelationships(Direction.OUTGOING, RelTypes.SEMANTIC_SIGNATURE)){
-//					System.out.println("out: " + r.getEndNode().getProperty("name"));
-//					counter++;
-//				}
-//				System.out.println("number of rels in semsig: " + counter);
-//				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
-//					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+//			GlobalGraphOperations global = GlobalGraphOperations.at(graphDb);
+//			for(Node n: global.getAllNodesWithLabel(partialAnchorLabel)){
+//				System.out.println(n.getProperty("name"));
+//				for(Relationship toAnchor: n.getRelationships(Direction.OUTGOING, RelTypes.PARTIALMATCH)){
+//					Node anchor = toAnchor.getEndNode();
+//					System.out.println("	" + anchor.getProperty("name"));
 //				}
 //			}
 //			tx.success();
 //		}
+		
+// SemSig Test
+		String search = "Aristotle";
+		System.out.println("Done! Perform test query for '" + search + "'.");
+		System.out.println("Entity:");
+		try (Transaction tx = graphDb.beginTx()) {
+			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", search ) ){
+				Node entity = node;
+				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
+					System.out.println("anchor of: " + r.getEndNode().getProperty("name"));
+				}
+				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
+					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+				}
+			}
+			
+			System.out.println("Anchor");
+			for ( Node node : graphDb.findNodesByLabelAndProperty( anchorLabel, "name", search ) ){
+				Node entity = node;
+				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
+					System.out.println("anchor of: " + r.getEndNode().getProperty("name"));
+				}
+				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
+					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+				}
+			}
+			tx.success();
+		}
 		
 	}
 	

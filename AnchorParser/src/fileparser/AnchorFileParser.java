@@ -19,8 +19,16 @@ public class AnchorFileParser extends FileParser{
 	public AnchorFileParser(String filePath) throws FileNotFoundException, UnsupportedEncodingException{
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 	}
-
+	
 	public String[] parseTuple() throws IOException {
+		String[] triplet = parseTriplet();
+		String[] tuple = new String[2];
+		tuple[0] = triplet[0];
+		tuple[1] = triplet[1];
+		return tuple;
+	}
+
+	public String[] parseTriplet() throws IOException {
 		String line;
 		String[] triplet;
 
@@ -43,11 +51,7 @@ public class AnchorFileParser extends FileParser{
 			lineCounter++;
 		} while (triplet.length != 3);
 
-		String[] tuple = new String[2];
-		tuple[0] = triplet[0];
-		tuple[1] = triplet[1];
-		
-		return tuple;
+		return triplet;
 	}
 	
 	public String[] getLine() {

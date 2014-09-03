@@ -23,10 +23,12 @@ public class Neo4jAnchorBuilder extends Neo4jDatabaseBuilder{
 
 	@Override
 	protected void _run(String[] args) {
+		int nrAnchor = 0, nrAdditional = 0;
+		
 		long localstart = System.nanoTime();
 		TreeSet<String> stopWords = new TreeSet<String>();
 		try {
-			stopWords = StopWordParser.parseStopwords("stopwords.txt");
+			stopWords = StopWordParser.parseStopwords("../../data/stopwords.txt");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -37,7 +39,8 @@ public class Neo4jAnchorBuilder extends Neo4jDatabaseBuilder{
 			AnchorFileParser anchorParser = new AnchorFileParser(args[0]);
 			while((tuple = anchorParser.parseTuple()) != null){
 				lineCounter++;
-				addRelation(tuple, anchorLabel, entityLabel, RelTypes.ANCHOR);
+				//addRelation(tuple, anchorLabel, entityLabel, RelTypes.ANCHOR);
+				nrAnchor++;
 				
 				String[] splitAnchor = tuple[0].split(" ");
 				if(splitAnchor.length > 1){
@@ -45,7 +48,10 @@ public class Neo4jAnchorBuilder extends Neo4jDatabaseBuilder{
 					newTuple[1] = tuple[0];
 					for(String partialAnchor: splitAnchor){
 						newTuple[0] = partialAnchor;
-						if(!stopWords.contains(partialAnchor.toLowerCase())) addRelation(newTuple, partialAnchorLabel, anchorLabel, RelTypes.PARTIALMATCH);
+						if(!stopWords.contains(partialAnchor.toLowerCase())) {
+							nrAdditional++;
+							//addRelation(newTuple, partialAnchorLabel, anchorLabel, RelTypes.PARTIALMATCH);
+						}
 					}
 				}
 				
@@ -60,6 +66,7 @@ public class Neo4jAnchorBuilder extends Neo4jDatabaseBuilder{
 		double passedTime = (localend - localstart) / 60000000000.0;
 		System.out.println("Total time: " + passedTime + " min");
 		System.out.println("nr of nodes: " + nrOfNodes + " - nrOfEdges: " + nrOfEdges);
+		System.out.println("nrAnchor: " + nrAnchor + " - nrAdditional: " + nrAdditional);
 	}
 	
 	protected void addRelation(String[] tuple, Label labelSource, Label labelSink, RelationshipType relType){
@@ -93,9 +100,9 @@ public class Neo4jAnchorBuilder extends Neo4jDatabaseBuilder{
 	}
 	
 	public static void main(String[] args) {
-		Neo4jAnchorBuilder builder = new Neo4jAnchorBuilder("Anchors");
+		Neo4jAnchorBuilder builder = new Neo4jAnchorBuilder("../../data/DBs/AnchorsTest");
 		String[] tmp = new String[1];
-		tmp[0] = "anchors.txt";
+		tmp[0] = "../../data/Wikipedia Anchor/anchors.txt";
 		builder.run(tmp);
 	}
 }
