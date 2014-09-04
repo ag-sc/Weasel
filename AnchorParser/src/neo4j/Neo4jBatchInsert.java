@@ -1,7 +1,9 @@
 package neo4j;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +23,11 @@ import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import fileparser.AnchorFileParser;
+import fileparser.FileParser;
 import fileparser.StopWordParser;
 
 public class Neo4jBatchInsert extends Neo4jCore{
-	
+	//TODO: assign nonglobal variables in functions
 	String dbPath;
 	
 	BatchInserter inserter;
@@ -35,13 +38,22 @@ public class Neo4jBatchInsert extends Neo4jCore{
 	
 	int nodeCounter = 0;
 	
-	public Neo4jBatchInsert(String dbPath, String anchorFilePath, String stopWordsPath) throws IOException{
+	protected void assignParser(String anchorFilePath) throws IOException{
+		anchorParser = new AnchorFileParser(anchorFilePath);
+	}
+	
+	public Neo4jBatchInsert(String dbPath, String anchorFilePath) throws IOException {
 		this.dbPath = dbPath;
 		deleteFileOrDirectory(new File(dbPath));
 		inserter = BatchInserters.inserter(dbPath);
-		anchorParser = new AnchorFileParser(anchorFilePath);
+		assignParser(anchorFilePath);
 		
 		idMap = new HashMap<String, HashMap<Label, Long>>();
+		stopWords = new TreeSet<String>();
+	}
+	
+	public Neo4jBatchInsert(String dbPath, String anchorFilePath, String stopWordsPath) throws IOException{
+		this(dbPath, anchorFilePath);
 		
 		stopWords = StopWordParser.parseStopwords(stopWordsPath);
 	}
@@ -120,14 +132,14 @@ public class Neo4jBatchInsert extends Neo4jCore{
 	
 	public static void main(String[] args) {
 		
-		try {
-			Neo4jBatchInsert inserter = new Neo4jBatchInsert("../../data/DBs/BatchAnchors",
-															"../../data/Wikipedia Anchor/anchors.txt",
-															"../../data/stopwords.txt");
-			inserter.run();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Neo4jBatchInsert inserter = new Neo4jBatchInsert("BatchAnchors",
+//															"anchors.txt",
+//															"stopwords.txt");
+//			inserter.run();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 }

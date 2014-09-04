@@ -24,14 +24,12 @@ import org.neo4j.tooling.GlobalGraphOperations;
 
 public class Neo4jSandbox extends Neo4jCore{
 	
-	private static final String DB_PATH = "../../data/DBs/BatchTest";
+	private static final String DB_PATH = "../../data/DBs/BatchAnchors";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
 	static Node secondNode;
 	static Relationship relationship;
-	
-	static Label entityLabel = DynamicLabel.label( "Entity" );
 	
 	public static void main(String[] args) {
 		
@@ -39,8 +37,6 @@ public class Neo4jSandbox extends Neo4jCore{
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( DB_PATH );
 		registerShutdownHook( graphDb );
 // Anchor Test	
-		Label anchorLabel = DynamicLabel.label( "Anchor" );
-		Label partialAnchorLabel = DynamicLabel.label( "PartialAnchor" );
 		
 //		try (Transaction tx = graphDb.beginTx()) {
 //			GlobalGraphOperations global = GlobalGraphOperations.at(graphDb);
@@ -55,7 +51,7 @@ public class Neo4jSandbox extends Neo4jCore{
 //		}
 		
 // SemSig Test
-		String search = "Aristotle";
+		String search = "Berlin";
 		System.out.println("Done! Perform test query for '" + search + "'.");
 		System.out.println("Entity:");
 		try (Transaction tx = graphDb.beginTx()) {
