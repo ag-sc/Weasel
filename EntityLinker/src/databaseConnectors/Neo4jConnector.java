@@ -15,12 +15,13 @@ public class Neo4jConnector extends DatabaseConnector{
 
 	private String dbPath = null;
 	private GraphDatabaseService graphDB;
-	private Label entityLabel = DynamicLabel.label( "Entity" );
+	private Label label;
 	
-	public Neo4jConnector(String dbPath){
+	public Neo4jConnector(String dbPath, Label label){
 		this.dbPath = dbPath;
 		graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( dbPath );
 		registerShutdownHook(graphDB);
+		this.label = label;
 	}
 	
 	@Override
@@ -29,7 +30,7 @@ public class Neo4jConnector extends DatabaseConnector{
 		
 		try (Transaction tx = graphDB.beginTx()) {
 			Node entity = null;
-			for ( Node node : graphDB.findNodesByLabelAndProperty( entityLabel, "name", fragment ) ){
+			for ( Node node : graphDB.findNodesByLabelAndProperty( label, "name", fragment ) ){
 				entity = node;
 			}
 			if(entity != null) for (Relationship r : entity.getRelationships(Direction.OUTGOING)) {

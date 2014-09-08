@@ -2,8 +2,10 @@ package fileparser;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +20,7 @@ public class WikiParser extends FileParser implements Closeable{
 	private Matcher matcher2;
 	
 	public WikiParser(String filePath) throws IOException{
-		br = new BufferedReader(new FileReader(filePath));
+		br  = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 		setPatters(stringPattern1, stringPattern2);
 	}
 	

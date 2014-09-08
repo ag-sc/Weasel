@@ -24,7 +24,7 @@ import org.neo4j.tooling.GlobalGraphOperations;
 
 public class Neo4jSandbox extends Neo4jCore{
 	
-	private static final String DB_PATH = "../../data/DBs/BatchPageLinks2";
+	private static final String DB_PATH = "../../data/DBs/test/AnchorsDavid";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
@@ -51,18 +51,31 @@ public class Neo4jSandbox extends Neo4jCore{
 //		}
 		
 // SemSig Test
-		String search = "David_Beckham";
+		String search = "David";
 		System.out.println("Done! Perform test query for '" + search + "'.");
 		System.out.println("Entity:");
 		try (Transaction tx = graphDb.beginTx()) {
-			for ( Node node : graphDb.findNodesByLabelAndProperty( wikiLinkLabel, "name", search ) ){
+			for ( Node node : graphDb.findNodesByLabelAndProperty( Neo4jCore.partialAnchorLabel, "name", search ) ){
 				Node entity = node;
+				int partialcount = 0;
 				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
-					System.out.println("out: " + r.getEndNode().getProperty("name"));
+					//System.out.println("out: " + r.getEndNode().getProperty("name"));
+					partialcount++;
 				}
+				
+				System.out.println("nr of out relations for " + search + " - partial: " + partialcount);
+//				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
+//					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+//				}
+			}
+			for ( Node node : graphDb.findNodesByLabelAndProperty( Neo4jCore.entityLabel, "name", search ) ){
+				Node entity = node;
+				int anchorcount = 0;
 				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
-					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+					System.out.println("out: " + r.getStartNode().getProperty("name"));
+					anchorcount++;
 				}
+				System.out.println("nr of out relations for " + search + " - entity: " + anchorcount);
 			}
 			
 //			System.out.println("Anchor");

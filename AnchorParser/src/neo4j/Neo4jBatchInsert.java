@@ -67,6 +67,12 @@ public class Neo4jBatchInsert extends Neo4jCore{
 
 		if(id != null){
 			return id;
+		}else if(tmp != null && id == null){
+			HashMap<String, Object> properties = new HashMap<>();
+			properties.put( "name", name );
+			id = inserter.createNode( properties, label );
+			tmp.put(label, id);
+			return id;
 		}else{
 			HashMap<String, Object> properties = new HashMap<>();
 			properties.put( "name", name );
@@ -133,14 +139,14 @@ public class Neo4jBatchInsert extends Neo4jCore{
 	
 	public static void main(String[] args) {
 		
-//		try {
-//			Neo4jBatchInsert inserter = new Neo4jBatchInsert("BatchAnchors",
-//															"anchors.txt",
-//															"stopwords.txt");
-//			inserter.run();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			Neo4jBatchInsert inserter = new Neo4jBatchInsert("../../data/DBs/test/AnchorsDavid",
+															"../../data/Wikipedia Anchor/test/david.txt",
+															"../../data/stopwords.txt");
+			inserter.run();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
