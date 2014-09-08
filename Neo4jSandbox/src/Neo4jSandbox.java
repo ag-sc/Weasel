@@ -24,7 +24,7 @@ import org.neo4j.tooling.GlobalGraphOperations;
 
 public class Neo4jSandbox extends Neo4jCore{
 	
-	private static final String DB_PATH = "../../data/DBs/BatchAnchors";
+	private static final String DB_PATH = "../../data/DBs/BatchPageLinks2";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
@@ -51,45 +51,34 @@ public class Neo4jSandbox extends Neo4jCore{
 //		}
 		
 // SemSig Test
-		String search = "Berlin";
+		String search = "David_Beckham";
 		System.out.println("Done! Perform test query for '" + search + "'.");
 		System.out.println("Entity:");
 		try (Transaction tx = graphDb.beginTx()) {
-			for ( Node node : graphDb.findNodesByLabelAndProperty( entityLabel, "name", search ) ){
+			for ( Node node : graphDb.findNodesByLabelAndProperty( wikiLinkLabel, "name", search ) ){
 				Node entity = node;
 				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
-					System.out.println("anchor of: " + r.getEndNode().getProperty("name"));
+					System.out.println("out: " + r.getEndNode().getProperty("name"));
 				}
 				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
 					System.out.println("in:  " + r.getStartNode().getProperty("name"));
 				}
 			}
 			
-			System.out.println("Anchor");
-			for ( Node node : graphDb.findNodesByLabelAndProperty( anchorLabel, "name", search ) ){
-				Node entity = node;
-				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
-					System.out.println("anchor of: " + r.getEndNode().getProperty("name"));
-				}
-				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
-					System.out.println("in:  " + r.getStartNode().getProperty("name"));
-				}
-			}
+//			System.out.println("Anchor");
+//			for ( Node node : graphDb.findNodesByLabelAndProperty( anchorLabel, "name", search ) ){
+//				Node entity = node;
+//				for(Relationship r: entity.getRelationships(Direction.OUTGOING)){
+//					System.out.println("anchor of: " + r.getEndNode().getProperty("name"));
+//				}
+//				for(Relationship r: entity.getRelationships(Direction.INCOMING)){
+//					System.out.println("in:  " + r.getStartNode().getProperty("name"));
+//				}
+//			}
 			tx.success();
 		}
-		
+		System.out.println("all done");
 	}
 	
-	private static void registerShutdownHook(final GraphDatabaseService graphDb) {
-		// Registers a shutdown hook for the Neo4j instance so that it
-		// shuts down nicely when the VM exits (even if you "Ctrl-C" the
-		// running application).
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				graphDb.shutdown();
-			}
-		});
-	}
 	
 }

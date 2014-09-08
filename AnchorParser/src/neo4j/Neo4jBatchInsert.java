@@ -43,10 +43,11 @@ public class Neo4jBatchInsert extends Neo4jCore{
 	}
 	
 	public Neo4jBatchInsert(String dbPath, String anchorFilePath) throws IOException {
+		assignParser(anchorFilePath);
 		this.dbPath = dbPath;
 		deleteFileOrDirectory(new File(dbPath));
 		inserter = BatchInserters.inserter(dbPath);
-		assignParser(anchorFilePath);
+		
 		
 		idMap = new HashMap<String, HashMap<Label, Long>>();
 		stopWords = new TreeSet<String>();

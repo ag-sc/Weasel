@@ -2,6 +2,7 @@ package neo4j;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import neo4j.Neo4jCore.RelTypes;
 import fileparser.WikiParser;
@@ -24,6 +25,10 @@ public class Neo4jBatchPageLinks extends Neo4jBatchInsert {
 		long timeStart = System.nanoTime();
 		int lineCounter = 0;
 		String tuple[];
+		int relationsCounter = 0;
+		
+		TreeSet<Long> set = new TreeSet<Long>();
+		long lastSeen = -1;
 		
 		long intervalStart = System.nanoTime(), intervalEnd;;
 		while ((tuple = parser.parseTuple()) != null) {
@@ -32,7 +37,20 @@ public class Neo4jBatchPageLinks extends Neo4jBatchInsert {
 				Long source, sink;
 				source = getId(tuple[0], wikiLinkLabel);
 				sink = getId(tuple[1], wikiLinkLabel);
-				inserter.createRelationship(source, sink, RelTypes.LINK_TO, null);
+				
+				if(lastSeen == -1) lastSeen = source;
+				if(source != lastSeen){
+					for(Long l: set){
+						inserter.createRelationship(source, l, RelTypes.LINK_TO, null);
+						relationsCounter++;
+					}
+					
+					set = new TreeSet<Long>();
+					lastSeen = source;
+					set.add(sink);
+				}else{
+					set.add(sink);
+				}
 			}
 			
 			if (lineCounter % 1000000 == 0){
@@ -43,19 +61,26 @@ public class Neo4jBatchPageLinks extends Neo4jBatchInsert {
 			}	
 		}
 		
+		// last remaining one
+		for(Long l: set){
+			inserter.createRelationship(lastSeen, l, RelTypes.LINK_TO, null);
+			relationsCounter++;
+		}
+		
 		System.out.println("Create index and shut down...");
 		inserter.createDeferredSchemaIndex( wikiLinkLabel ).on( "name" ).create();
-		
+		inserter.shutdown();
 		long timeEnd = System.nanoTime();
 		double passedTime = (timeEnd - timeStart) / 60000000000.0;
 		System.out.println("Passed time: " + passedTime + " mins");
+		System.out.println("Nr of nodes: " + nodeCounter + "	 - nr of relations: " + relationsCounter);
 	}
 	
 	public static void main(String[] args) {
 		
 		try {
-			Neo4jBatchPageLinks inserter = new Neo4jBatchPageLinks("BatchPageLinks",
-																"page_links_en.nt");
+			Neo4jBatchPageLinks inserter = new Neo4jBatchPageLinks("../../data/DBs/BatchPageLinksTest",
+																"../../data/Wikipedia/Pagelinks/test/page_links_en.nt");
 			inserter.run();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
