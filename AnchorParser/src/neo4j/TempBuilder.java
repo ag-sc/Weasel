@@ -20,12 +20,12 @@ public class TempBuilder extends Neo4jCore{
 		
 		
 		try {
-			Neo4jBatchInsert anchorsinserter = new Neo4jBatchInsert("Anchors",
-									"anchors.txt",
-									"stopwords.txt");
-			anchorsinserter.run();
-			
-			System.out.println("\nFinished Anchors.\n");
+//			Neo4jBatchInsert anchorsinserter = new Neo4jBatchInsert("Anchors",
+//									"anchors.txt",
+//									"stopwords.txt");
+//			anchorsinserter.run();
+//			
+//			System.out.println("\nFinished Anchors.\n");
 			
 			Neo4jBatchPageLinks inserter = new Neo4jBatchPageLinks("BatchPageLinks", "page_links_en.nt");
 			inserter.run();

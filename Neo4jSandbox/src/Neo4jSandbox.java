@@ -21,10 +21,12 @@ import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.graphdb.schema.Schema;
 import org.neo4j.tooling.GlobalGraphOperations;
 
+import algorithm.RandomWalk;
+
 
 public class Neo4jSandbox extends Neo4jCore{
 	
-	private static final String DB_PATH = "../../data/DBs/test/AnchorsDavid";
+	private static final String DB_PATH = "../../data/DBs/test/MerkelLinks";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
@@ -51,10 +53,25 @@ public class Neo4jSandbox extends Neo4jCore{
 //		}
 		
 // SemSig Test
-		String search = "David";
-		System.out.println("Done! Perform test query for '" + search + "'.");
+		String searchString = "Angela_Merkel";
+		System.out.println("Done! Perform test query for '" + searchString + "'.");
 		System.out.println("Entity:");
 		try (Transaction tx = graphDb.beginTx()) {
+			for ( Node node : graphDb.findNodesByLabelAndProperty( Neo4jCore.wikiLinkLabel, "name", searchString ) ){
+				Node entity = node;
+				System.out.println("id: " + entity.getId());
+				int outgoingCount = 0;
+				for(Relationship r: entity.getRelationships(Direction.OUTGOING, RelTypes.LINK_TO)){
+					System.out.println("out: " + r.getEndNode().getProperty("name"));//) + " - weight: " + r.getProperty("weight"));
+					outgoingCount++;
+				}
+				System.out.println("outgoing: " + outgoingCount);
+				
+				HashMap<Node, Double> semSig = RandomWalk.calcProbSignature(entity, 1000000, 100, 0.85);
+				for(Entry<Node, Double> e: semSig.entrySet()) System.out.println(e.getKey().getProperty("name") + " - " + e.getValue());
+			}
+			
+			/* anchor temp
 			for ( Node node : graphDb.findNodesByLabelAndProperty( Neo4jCore.partialAnchorLabel, "name", search ) ){
 				Node entity = node;
 				int partialcount = 0;
@@ -75,7 +92,7 @@ public class Neo4jSandbox extends Neo4jCore{
 					System.out.println("out: " + r.getStartNode().getProperty("name"));
 					anchorcount++;
 				}
-				System.out.println("nr of out relations for " + search + " - entity: " + anchorcount);
+				System.out.println("nr of in relations for " + search + " - entity: " + anchorcount);
 			}
 			
 //			System.out.println("Anchor");
@@ -88,6 +105,7 @@ public class Neo4jSandbox extends Neo4jCore{
 //					System.out.println("in:  " + r.getStartNode().getProperty("name"));
 //				}
 //			}
+			*/
 			tx.success();
 		}
 		System.out.println("all done");

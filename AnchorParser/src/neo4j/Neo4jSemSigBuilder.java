@@ -22,6 +22,7 @@ import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.graphdb.schema.Schema;
 import org.neo4j.tooling.GlobalGraphOperations;
 
+import algorithm.RandomWalk;
 import datatypes.TinyEdge;
 
 public class Neo4jSemSigBuilder extends Neo4jPrototype {
@@ -36,27 +37,8 @@ public class Neo4jSemSigBuilder extends Neo4jPrototype {
 	private final int frequencyThreshold = 10; // 100
 	private final int numberOfSteps = 100000; // 1000000
 
-	private void explore(Node n, double currentProbability, HashMap<Node, Double> signature, double continueProb) {
-		double totalWeight = 0.0;
-		for (Relationship r : n.getRelationships(Direction.OUTGOING, RelTypes.LINK_TO)) {
-			totalWeight += ((Integer) r.getProperty("weight", 0)).doubleValue();
-		}
-
-		for (Relationship r : n.getRelationships(Direction.OUTGOING, RelTypes.LINK_TO)) {
-			double tmp = (((Integer) r.getProperty("weight", 0)).doubleValue() / totalWeight) * continueProb * currentProbability;
-			if (tmp > (double) frequencyThreshold / (double) numberOfSteps) {
-				Double foundValue = signature.get(r.getEndNode());
-				if (foundValue == null || foundValue < tmp)
-					signature.put(r.getEndNode(), tmp);
-				explore(r.getEndNode(), tmp, signature, (1.0 - restartProbability));
-			}
-		}
-	}
-
 	private void randomWalkProbability(Node source) {
-		HashMap<Node, Double> tmpSignature = new HashMap<Node, Double>();
-
-		explore(source, 1, tmpSignature, 1);
+		HashMap<Node, Double> tmpSignature = RandomWalk.calcProbSignature(source, numberOfSteps, frequencyThreshold, restartProbability);
 
 		for (Entry<Node, Double> e : tmpSignature.entrySet()) {
 			addRelation(source, e.getKey(), e.getValue());
@@ -160,7 +142,7 @@ public class Neo4jSemSigBuilder extends Neo4jPrototype {
 
 	public static void main(String[] args) {
 
-		Neo4jSemSigBuilder builder = new Neo4jSemSigBuilder("../../data/DBs/BatchPageLinksTest");
+		Neo4jSemSigBuilder builder = new Neo4jSemSigBuilder("../../data/DBs/test/BatchPageLinksTest");
 		builder.run(new String[1]);
 	}
 }

@@ -4,20 +4,40 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import org.neo4j.graphdb.Label;
+
 import neo4j.Neo4jCore.RelTypes;
 import fileparser.WikiParser;
 
 public class Neo4jBatchPageLinks extends Neo4jBatchInsert {
 
-	private WikiParser parser;
+	public WikiParser parser;
+	HashMap<String, Long> idMap;
 	
 	public Neo4jBatchPageLinks(String dbPath, String pageLinksFilePath) throws IOException {
 		super(dbPath, pageLinksFilePath);
+		idMap = new HashMap<String, Long>();
 	}
 
 	@Override
 	protected void assignParser(String pageLinksFilePath) throws IOException{
 		parser = new WikiParser(pageLinksFilePath);
+	}
+	
+	@Override
+	protected long getId(String name, Label label){
+		Long id = null;
+		id = idMap.get(name);
+		if(id != null) return id;
+		else{
+			HashMap<String, Object> properties = new HashMap<>();
+			properties.put( "name", name );
+			id = inserter.createNode( properties, label );
+			idMap.put(name, id);
+			nodeCounter++;
+			return id;
+		}
+		
 	}
 	
 	@Override
@@ -41,7 +61,7 @@ public class Neo4jBatchPageLinks extends Neo4jBatchInsert {
 				if(lastSeen == -1) lastSeen = source;
 				if(source != lastSeen){
 					for(Long l: set){
-						inserter.createRelationship(source, l, RelTypes.LINK_TO, null);
+						inserter.createRelationship(lastSeen, l, RelTypes.LINK_TO, null);
 						relationsCounter++;
 					}
 					
@@ -79,8 +99,9 @@ public class Neo4jBatchPageLinks extends Neo4jBatchInsert {
 	public static void main(String[] args) {
 		
 		try {
-			Neo4jBatchPageLinks inserter = new Neo4jBatchPageLinks("../../data/DBs/BatchPageLinksTest",
-																"../../data/Wikipedia/Pagelinks/test/page_links_en.nt");
+			Neo4jBatchPageLinks inserter = new Neo4jBatchPageLinks("PageLinks",
+																"page_links_en.nt");
+//			inserter.parser.setPatters("<resource/([^>]+)>", "<resource/([^>]+)>");
 			inserter.run();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
