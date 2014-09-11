@@ -1,26 +1,23 @@
 package evaluation;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
+import datatypes.AnnotatedSentence;
 import datatypes.EntityOccurance;
 import datatypes.FragmentPlusCandidates;
 
 public class RandomEvaluator extends EvaluationEngine{
 
 	@Override
-	public LinkedList<EntityOccurance> evaluate(
-			LinkedList<FragmentPlusCandidates> fragments) {
-		LinkedList<EntityOccurance> entities = new LinkedList<EntityOccurance>();
-		
-		for(FragmentPlusCandidates fpc: fragments){
-			int index = (int)Math.floor(Math.random() * (double)fpc.candidates.size());
-			String entityName = fpc.candidates.get(index);
-			EntityOccurance tmp = new EntityOccurance(fpc.fragment);
-			tmp.setName(entityName);
-			entities.add(tmp);
+	public void evaluate(HashMap<String, LinkedList<String>> fragments, AnnotatedSentence annotatedSentence) {
+		for(int i = 0; i < annotatedSentence.length(); i++){
+			LinkedList<String> candidates = fragments.get(annotatedSentence.getToken(i));
+			if(candidates != null){
+				int index = (int)Math.floor(Math.random() * (double)candidates.size());
+				annotatedSentence.setEntity(i, candidates.get(index));
+			}
 		}
-		
-		return entities;
 	}
 
 }

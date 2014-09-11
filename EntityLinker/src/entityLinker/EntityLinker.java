@@ -1,7 +1,9 @@
 package entityLinker;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import databaseConnectors.DatabaseConnector;
+import datatypes.AnnotatedSentence;
 import datatypes.EntityOccurance;
 import datatypes.FragmentPlusCandidates;
 import evaluation.EvaluationEngine;
@@ -30,25 +32,26 @@ public class EntityLinker {
 		return fragments;
 	}
 	
-	private LinkedList<FragmentPlusCandidates> findAllCandidats(LinkedList<EntityOccurance> fragments){
-		LinkedList<FragmentPlusCandidates> allCandidats = new LinkedList<FragmentPlusCandidates>();
+	private HashMap<String, LinkedList<String>> findAllCandidats(LinkedList<EntityOccurance> fragments){
+		HashMap<String, LinkedList<String>> allCandidats = new HashMap<String, LinkedList<String>>();
 		
 		for(EntityOccurance eo: fragments){
 			LinkedList<String> candidats = connector.lookUpFragment(eo.getFragment());
-			if(candidats.size() > 0) allCandidats.addLast(new FragmentPlusCandidates(eo, candidats));
+			if(candidats.size() > 0) allCandidats.put(eo.getFragment(), candidats);
 		}
 		
 		return allCandidats;
 	}
 
-	public LinkedList<EntityOccurance> link(String sentence) {
+	public HashMap<String, LinkedList<String>> getFragmentPlusCandidates(String sentence) {
 		LinkedList<EntityOccurance> fragments = createFragments(sentence);
-		LinkedList<FragmentPlusCandidates> allCandidats = findAllCandidats(fragments);
-		System.out.println(allCandidats);
-		
-		LinkedList<EntityOccurance> resultingEntities = evaluator.evaluate(allCandidats);
-		
-		return resultingEntities;
+		HashMap<String, LinkedList<String>> allCandidats = findAllCandidats(fragments);
+		//System.out.println(allCandidats);
+		return allCandidats;
+	}
+	
+	public void link(HashMap<String, LinkedList<String>> fragmentPlusCandidates, AnnotatedSentence annotatedSentence) {
+		evaluator.evaluate(fragmentPlusCandidates, annotatedSentence);
 	}
 
 }

@@ -1,8 +1,10 @@
 package datasetEvaluator;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.TreeSet;
@@ -20,9 +22,11 @@ public class DatasetEvaluatorSandbox {
 
 	public static void main(String[] args) {
 		try {					
-			KORE50Parser parser = new KORE50Parser(new File("../../data/DatasetParser/test/kore50.tsv"));
-			Neo4jConnector connector = new Neo4jConnector("../../data/DBs/BatchPageLinks2", Neo4jCore.wikiLinkLabel);
-			EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.0, 10);
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/kore50.tsv"), "UTF8"));
+			KORE50Parser parser = new KORE50Parser(br);
+			//Neo4jConnector connector = new Neo4jConnector("../../data/DBs/BatchPageLinks2", Neo4jCore.wikiLinkLabel);
+			//EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.0, 10);
+			EvaluationEngine evaluator = new RandomEvaluator();
 			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
 			EntityLinker linker = new EntityLinker(evaluator, linkerConnector);
