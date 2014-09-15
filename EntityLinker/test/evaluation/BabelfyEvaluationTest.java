@@ -41,26 +41,26 @@ public class BabelfyEvaluationTest {
 		
 		LinkedList<String> returnListC2 = new LinkedList<String>();
 		returnListC2.add("C1");
-		EasyMock.expect(connector.lookUpFragment("C2")).andReturn(returnListC2);
+		EasyMock.expect(connector.getFragmentTargets("C2")).andReturn(returnListC2);
 		
 		LinkedList<String> returnListC1 = new LinkedList<String>();
 		returnListC1.add("C2");
-		EasyMock.expect(connector.lookUpFragment("C1")).andReturn(returnListC1);	
+		EasyMock.expect(connector.getFragmentTargets("C1")).andReturn(returnListC1);	
 		
 		LinkedList<String> returnListC3 = new LinkedList<String>();
 		returnListC3.add("C2");
 		returnListC3.add("C4");
 		returnListC3.add("C5");
-		EasyMock.expect(connector.lookUpFragment("C3")).andReturn(returnListC3);
+		EasyMock.expect(connector.getFragmentTargets("C3")).andReturn(returnListC3);
 		
 		LinkedList<String> returnListC4 = new LinkedList<String>();
 		returnListC4.add("C1");
 		returnListC4.add("C3");
-		EasyMock.expect(connector.lookUpFragment("C4")).andReturn(returnListC4);
+		EasyMock.expect(connector.getFragmentTargets("C4")).andReturn(returnListC4);
 		
 		LinkedList<String> returnListC5 = new LinkedList<String>();
 		returnListC5.add("C4");
-		EasyMock.expect(connector.lookUpFragment("C5")).andReturn(returnListC5);
+		EasyMock.expect(connector.getFragmentTargets("C5")).andReturn(returnListC5);
 		EasyMock.replay(connector);
 	}
 	

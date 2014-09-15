@@ -36,7 +36,7 @@ public class EntityLinker {
 		HashMap<String, LinkedList<String>> allCandidats = new HashMap<String, LinkedList<String>>();
 		
 		for(EntityOccurance eo: fragments){
-			LinkedList<String> candidats = connector.lookUpFragment(eo.getFragment());
+			LinkedList<String> candidats = connector.getFragmentTargets(eo.getFragment());
 			if(candidats.size() > 0) allCandidats.put(eo.getFragment(), candidats);
 		}
 		

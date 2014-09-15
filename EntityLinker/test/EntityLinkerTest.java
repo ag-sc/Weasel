@@ -34,11 +34,11 @@ public class EntityLinkerTest {
 		juliaList.add("Julia");
 		juliaList.add("Julia Roberts");
 		
-		EasyMock.expect(connector.lookUpFragment("Romeo")).andReturn(romeoList);
-		EasyMock.expect(connector.lookUpFragment("and")).andReturn(new LinkedList<String>());
-		EasyMock.expect(connector.lookUpFragment("Julia")).andReturn(juliaList);
-		EasyMock.expect(connector.lookUpFragment("are")).andReturn(new LinkedList<String>());
-		EasyMock.expect(connector.lookUpFragment("happy")).andReturn(new LinkedList<String>());
+		EasyMock.expect(connector.getFragmentTargets("Romeo")).andReturn(romeoList);
+		EasyMock.expect(connector.getFragmentTargets("and")).andReturn(new LinkedList<String>());
+		EasyMock.expect(connector.getFragmentTargets("Julia")).andReturn(juliaList);
+		EasyMock.expect(connector.getFragmentTargets("are")).andReturn(new LinkedList<String>());
+		EasyMock.expect(connector.getFragmentTargets("happy")).andReturn(new LinkedList<String>());
 		EasyMock.replay(connector);
 		
 		EntityLinker linker = new EntityLinker(evaluator, connector);

@@ -123,7 +123,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		// build edges
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
 			TreeSet<String> semSig = new TreeSet<String>();
-			LinkedList<String> tmp = semanticSignatureDB.lookUpFragment(nodeSource.content.candidate);
+			LinkedList<String> tmp = semanticSignatureDB.getFragmentTargets(nodeSource.content.candidate);
 			for (String s : tmp) {
 				semSig.add(s);
 			}

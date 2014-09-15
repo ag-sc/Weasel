@@ -9,6 +9,9 @@ import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
 import neo4j.Neo4jCore;
 import databaseConnectors.JDBMConnector;
 import databaseConnectors.Neo4jConnector;
@@ -27,8 +30,12 @@ public class DatasetEvaluatorSandbox {
 			//Neo4jConnector connector = new Neo4jConnector("../../data/DBs/BatchPageLinks2", Neo4jCore.wikiLinkLabel);
 			//EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.0, 10);
 			EvaluationEngine evaluator = new RandomEvaluator();
-			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
-			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
+//			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
+//			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
+			GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/Anchors" );
+			Neo4jCore.registerShutdownHook( graphDB );
+			Neo4jConnector linkerConnector = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
+			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
 			EntityLinker linker = new EntityLinker(evaluator, linkerConnector);
 			
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, checkupConnector);

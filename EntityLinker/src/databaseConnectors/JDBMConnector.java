@@ -26,7 +26,7 @@ public class JDBMConnector extends DatabaseConnector{
 	}
 
 	@Override
-	public LinkedList<String> lookUpFragment(String fragment) {
+	public LinkedList<String> getFragmentTargets(String fragment) {
 		LinkedList<String> list = new LinkedList<String>();
 		
 		LinkedList<TermFrequency> tmp = dbMap.get(fragment);

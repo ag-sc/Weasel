@@ -47,7 +47,7 @@ public class JDBMConnectorTest {
 		try {
 			JDBMConnector connector = new JDBMConnector(dbName, tableName);
 			
-			LinkedList<String> lookup = connector.lookUpFragment("romeo");
+			LinkedList<String> lookup = connector.getFragmentTargets("romeo");
 			
 			assertTrue("First entry 'Romeo'", lookup.getFirst().equals("Romeo"));
 			assertTrue("Last entry 'Romeo Must Die'", lookup.getLast().equals("Romeo Must Die"));

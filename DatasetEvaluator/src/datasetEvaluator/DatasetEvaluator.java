@@ -48,7 +48,7 @@ public class DatasetEvaluator {
 						numberOfCorrectCandidates++;
 					}
 
-					if (entityDBconnector.lookUpFragment(entity).size() > 0) {
+					if (entityDBconnector.fragmentExists(entity)) {
 						// System.out.println(" - In DB: " + entity);
 						numberOfPossiblyKnownEntities++;
 					} else {
