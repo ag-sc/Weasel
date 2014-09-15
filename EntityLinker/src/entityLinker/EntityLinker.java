@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import databaseConnectors.DatabaseConnector;
-import datatypes.AnnotatedSentence;
+import datatypes.AnnotatedSentenceDeprecated;
 import datatypes.EntityOccurance;
 import datatypes.FragmentPlusCandidates;
 import evaluation.EvaluationEngine;
@@ -13,10 +13,12 @@ public class EntityLinker {
 
 	private EvaluationEngine evaluator;
 	private DatabaseConnector connector;
+	private DatabaseConnector partialAnchors;
 	
-	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector) {
+	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector, DatabaseConnector partialAnchors) {
 		this.evaluator = evaluator;
 		this.connector = connector;
+		this.partialAnchors = partialAnchors;
 	}
 	
 	private LinkedList<EntityOccurance> createFragments(String sentence){
@@ -44,13 +46,19 @@ public class EntityLinker {
 	}
 
 	public HashMap<String, LinkedList<String>> getFragmentPlusCandidates(String sentence) {
-		LinkedList<EntityOccurance> fragments = createFragments(sentence);
+		//LinkedList<EntityOccurance> fragments = createFragments(sentence);
+		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
+		for(int i = 0; i < splitSentence.length; i++){
+			LinkedList<String> candidats = partialAnchors.getFragmentTargets(splitSentence[i]);
+		}
+		
+		
 		HashMap<String, LinkedList<String>> allCandidats = findAllCandidats(fragments);
 		//System.out.println(allCandidats);
 		return allCandidats;
 	}
 	
-	public void link(HashMap<String, LinkedList<String>> fragmentPlusCandidates, AnnotatedSentence annotatedSentence) {
+	public void link(HashMap<String, LinkedList<String>> fragmentPlusCandidates, AnnotatedSentenceDeprecated annotatedSentence) {
 		evaluator.evaluate(fragmentPlusCandidates, annotatedSentence);
 	}
 

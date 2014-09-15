@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import databaseConnectors.DatabaseConnector;
 import datasetParser.DatasetParser;
-import datatypes.AnnotatedSentence;
+import datatypes.AnnotatedSentenceDeprecated;
 import datatypes.EntityOccurance;
 import datatypes.FragmentPlusCandidates;
 import entityLinker.EntityLinker;
@@ -30,10 +30,10 @@ public class DatasetEvaluator {
 	// TODO: fix the counting so that double entries are not counted twice
 	public void evaluate() throws IOException{	
 		
-		AnnotatedSentence parserSentence = new AnnotatedSentence();
+		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
 		while((parserSentence = parser.parse()).length() > 0){
 			HashMap<String, LinkedList<String>> fragmentPlusCandidates = linker.getFragmentPlusCandidates(parserSentence.getSentence());
-			AnnotatedSentence result = new AnnotatedSentence(parserSentence.getSentence());
+			AnnotatedSentenceDeprecated result = new AnnotatedSentenceDeprecated(parserSentence.getSentence());
 			linker.link(fragmentPlusCandidates, result);
 			
 			for(int i = 0; i < result.length(); i++){

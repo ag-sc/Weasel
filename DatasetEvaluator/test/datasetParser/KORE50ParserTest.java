@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import databaseConnectors.DatabaseConnector;
-import datatypes.AnnotatedSentence;
+import datatypes.AnnotatedSentenceDeprecated;
 import evaluation.RandomEvaluator;
 
 public class KORE50ParserTest {
@@ -41,7 +41,7 @@ public class KORE50ParserTest {
 	public void test() {
 		try {
 			KORE50Parser parser = new KORE50Parser(br);
-			AnnotatedSentence sentence = parser.parse();
+			AnnotatedSentenceDeprecated sentence = parser.parse();
 			assertEquals("Sentence correct", "David and Victoria added spice", sentence.getSentence());
 			assertEquals("David = David_Beckham", "David", sentence.getToken(0));
 			assertEquals("David = David_Beckham", "David_Beckham", sentence.getEntity(0));

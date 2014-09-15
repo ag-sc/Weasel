@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import datatypes.AnnotatedSentence;
+import datatypes.AnnotatedSentenceDeprecated;
 
 public class KORE50Parser implements DatasetParser{
 
@@ -18,8 +18,8 @@ public class KORE50Parser implements DatasetParser{
 	}
 
 	@Override
-	public AnnotatedSentence parse() throws IOException {
-		AnnotatedSentence annotatedSentence = new AnnotatedSentence();
+	public AnnotatedSentenceDeprecated parse() throws IOException {
+		AnnotatedSentenceDeprecated annotatedSentence = new AnnotatedSentenceDeprecated();
 		
 		while((line = br.readLine()) != null){
 			if(line.split(" ")[0].equals("-DOCSTART-")){

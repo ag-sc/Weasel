@@ -1,3 +1,4 @@
+package entityLinker;
 import static org.junit.Assert.*;
 
 import java.util.LinkedList;

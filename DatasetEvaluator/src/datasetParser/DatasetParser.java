@@ -3,10 +3,10 @@ package datasetParser;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import datatypes.AnnotatedSentence;
+import datatypes.AnnotatedSentenceDeprecated;
 
 public abstract interface DatasetParser {
 	
-	public abstract AnnotatedSentence parse() throws IOException;
+	public abstract AnnotatedSentenceDeprecated parse() throws IOException;
 	
 }

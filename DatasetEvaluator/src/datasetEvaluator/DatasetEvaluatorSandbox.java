@@ -34,9 +34,10 @@ public class DatasetEvaluatorSandbox {
 //			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
 			GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/Anchors" );
 			Neo4jCore.registerShutdownHook( graphDB );
-			Neo4jConnector linkerConnector = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
+			Neo4jConnector anchors = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
+			Neo4jConnector partialAnchors = new Neo4jConnector(graphDB, Neo4jCore.partialAnchorLabel, null);
 			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
-			EntityLinker linker = new EntityLinker(evaluator, linkerConnector);
+			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors);
 			
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, checkupConnector);
 			dataEvaluator.evaluate();

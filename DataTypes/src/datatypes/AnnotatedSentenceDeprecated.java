@@ -2,18 +2,18 @@ package datatypes;
 
 import java.util.LinkedList;
 
-public class AnnotatedSentence {
+public class AnnotatedSentenceDeprecated {
 	LinkedList<String> tokens;
 	LinkedList<String> entities;
 
-	public AnnotatedSentence(String sentence){
+	public AnnotatedSentenceDeprecated(String sentence){
 		this();
 		for(String word: sentence.split(" ")){
 			addToken(word);
 		}
 	}
 	
-	public AnnotatedSentence() {
+	public AnnotatedSentenceDeprecated() {
 		tokens = new LinkedList<String>();
 		entities = new LinkedList<String>();
 	}
