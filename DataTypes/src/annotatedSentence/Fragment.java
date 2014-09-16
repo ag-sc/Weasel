@@ -8,8 +8,7 @@ public class Fragment implements Comparable<Fragment>{
 
 	public double probability = 0.0;
 	public TreeSet<String> candidates;
-	int start;
-	int stop;
+	public int start, stop;
 	String value;
 	
 	public Fragment(int start, int stop, String value, double probability) {

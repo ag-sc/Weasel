@@ -27,9 +27,11 @@ public class DatasetEvaluatorSandbox {
 		try {					
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/test/kore50.tsv"), "UTF8"));
 			KORE50Parser parser = new KORE50Parser(br);
-			//Neo4jConnector connector = new Neo4jConnector("../../data/DBs/BatchPageLinks2", Neo4jCore.wikiLinkLabel);
-			//EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.0, 10);
-			EvaluationEngine evaluator = new RandomEvaluator();
+			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/PageLinksWithWeights" );
+			Neo4jCore.registerShutdownHook( graphDB2 );
+			Neo4jConnector connector = new Neo4jConnector(graphDB2, Neo4jCore.wikiLinkLabel, null);
+			EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.3, 10);
+			//EvaluationEngine evaluator = new RandomEvaluator();
 //			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 //			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
 			GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/Anchors" );

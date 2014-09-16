@@ -4,11 +4,14 @@ import graph.Graph;
 import graph.GraphEdge;
 import graph.Node;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import annotatedSentence.AnnotatedSentence;
+import annotatedSentence.Fragment;
 import databaseConnectors.DatabaseConnector;
 import datatypes.EntityOccurance;
 import datatypes.FragmentCandidateTuple;
@@ -33,17 +36,17 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		double avrgDegree = 0.0;
 		
 		for (int sanityCounter = 0; sanityCounter < 100000; sanityCounter++) {
-			// Get mous ambigous fragment
-			EntityOccurance mostAmbigousFragment = null;
-			HashMap<EntityOccurance, Integer> tmpMap = new HashMap<EntityOccurance, Integer>();
+			// Get most ambiguous fragment
+			Fragment mostAmbigousFragment = null;
+			HashMap<Fragment, Integer> tmpMap = new HashMap<Fragment, Integer>();
 			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
-				if (tmpMap.get(fct.entityOccurance) == null)
-					tmpMap.put(fct.entityOccurance, 1);
+				if (tmpMap.get(fct.fragment) == null)
+					tmpMap.put(fct.fragment, 1);
 				else
-					tmpMap.put(fct.entityOccurance, tmpMap.get(fct.entityOccurance) + 1);
+					tmpMap.put(fct.fragment, tmpMap.get(fct.fragment) + 1);
 			}
 			int max = 0;
-			for (Entry<EntityOccurance, Integer> e : tmpMap.entrySet()) {
+			for (Entry<Fragment, Integer> e : tmpMap.entrySet()) {
 				if (e.getValue() > max) {
 					max = e.getValue();
 					mostAmbigousFragment = e.getKey();
@@ -58,7 +61,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			double score = 1000000;
 			FragmentCandidateTuple weakestCandidate = null;
 			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
-				if(fct.entityOccurance == mostAmbigousFragment && fct.score < score){
+				if(fct.fragment == mostAmbigousFragment && fct.score < score){
 					score = fct.score;
 					weakestCandidate = fct;
 				}
@@ -92,14 +95,22 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		}
 	}
 	
-	private double weight(FragmentCandidateTuple fct){
+	private double weight(FragmentCandidateTuple fct) {
 		Node<FragmentCandidateTuple> node = graph.getNode(fct);
-		TreeSet<String> connectingFragments = new TreeSet<String>();
-		for(GraphEdge<FragmentCandidateTuple> edge: node.incomingEdges){
-			connectingFragments.add(edge.source.content.entityOccurance.getFragment());
+		TreeSet<Fragment> connectingFragments = new TreeSet<Fragment>(new Comparator<Fragment>() {
+			@Override
+			public int compare(Fragment f1, Fragment f2) {
+				if(f1 == f2) return 0;
+				else if(f1.start - f2.start != 0){
+					return f1.start - f2.start;
+				}else return f1.stop - f2.stop;
+			}
+		});
+		for (GraphEdge<FragmentCandidateTuple> edge : node.incomingEdges) {
+			connectingFragments.add(edge.source.content.fragment);
 		}
-		for(GraphEdge<FragmentCandidateTuple> edge: node.outgoingEdges){
-			connectingFragments.add(edge.sink.content.entityOccurance.getFragment());
+		for (GraphEdge<FragmentCandidateTuple> edge: node.outgoingEdges){
+			connectingFragments.add(edge.source.content.fragment);
 		}
 		//TODO: check division by 0?
 		double weight = (double)connectingFragments.size() / (double)(numberOfFragments - 1);
@@ -107,14 +118,16 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	}
 	
 	@Override
-	public LinkedList<EntityOccurance> evaluate(LinkedList<FragmentPlusCandidates> fragments) {
+	//public LinkedList<EntityOccurance> evaluate(LinkedList<FragmentPlusCandidates> fragments) {
+	public void evaluate(AnnotatedSentence annotatedSentence) {
 		System.out.println("Starting evaluation... ");
-		numberOfFragments = fragments.size();
+		LinkedList<Fragment> fragmentList = annotatedSentence.buildFragmentList();
+		numberOfFragments = fragmentList.size();
 		// add fragments/candidates to graph
 		graph = new Graph<FragmentCandidateTuple>();
-		for(FragmentPlusCandidates fpc: fragments){
-			for(String candidate: fpc.candidates){
-				graph.addNode(new FragmentCandidateTuple(candidate, fpc.fragment));
+		for(Fragment fragment: fragmentList){
+			for(String candidate: fragment.candidates){
+				graph.addNode(new FragmentCandidateTuple(candidate, fragment));
 			}
 		}
 		
@@ -130,7 +143,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 
 			for(Node<FragmentCandidateTuple> nodeSink: graph.nodeMap.values()){
 				// if fragment is the same, skip
-				if(nodeSource.content.entityOccurance.getFragment().equals(nodeSink.content.entityOccurance.getFragment())) continue;
+				if(nodeSource.content.fragment == nodeSink.content.fragment) continue;
 				
 				if(semSig.contains(nodeSink.content.candidate)){ // conditions fullfilled, build edge
 					System.out.println("		Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
@@ -145,22 +158,19 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		System.out.println("	Graph trimmed.");
 		scoreAllFragments();
 		
-		HashMap<EntityOccurance, Double> scoreMap = new HashMap<EntityOccurance, Double>();
+		HashMap<Fragment, Double> scoreMap = new HashMap<Fragment, Double>();
 		for(Node<FragmentCandidateTuple> node: graph.nodeMap.values()){
-			Double tmp = scoreMap.get(node.content.entityOccurance);
+			Double tmp = scoreMap.get(node.content.fragment);
 			if(tmp == null || tmp < node.content.score){
-				node.content.entityOccurance.setName(node.content.candidate);
-				scoreMap.put(node.content.entityOccurance, node.content.score);
+				node.content.fragment.probability = node.content.score;
+				node.content.fragment.setValue(node.content.candidate);
+				scoreMap.put(node.content.fragment, node.content.score);
 			}
 		}
 		
-		LinkedList<EntityOccurance> tmp = new LinkedList<EntityOccurance>();
-		for(Entry<EntityOccurance, Double> e: scoreMap.entrySet()){
-			if(e.getValue() > minimumScore) tmp.add(e.getKey());
-		}
+		annotatedSentence.assign(minimumScore);
 		
 		System.out.println("	Evaluation complete.");
-		return tmp;
 	}
 
 }

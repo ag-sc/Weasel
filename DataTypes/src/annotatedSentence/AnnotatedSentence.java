@@ -44,7 +44,7 @@ public class AnnotatedSentence {
 		return fragmentList;
 	}
 	
-	public void assign() {
+	public void assign(double minimumScore) {
 		// create fragment list
 		fragmentList = buildFragmentList();
 		
@@ -52,6 +52,7 @@ public class AnnotatedSentence {
 		Collections.reverse(fragmentList);
 
 		for (Fragment f : fragmentList) {
+			if(f.probability < minimumScore) break;
 			boolean dominated = false;
 			for (int i = f.start; i <= f.stop; i++) {
 				if (getWordList().get(i).getDominantFragment() != null) {

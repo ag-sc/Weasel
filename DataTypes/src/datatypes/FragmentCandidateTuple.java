@@ -1,15 +1,17 @@
 package datatypes;
 
+import annotatedSentence.Fragment;
+
 public class FragmentCandidateTuple implements Comparable<FragmentCandidateTuple>{
 	public String candidate;
-	public EntityOccurance entityOccurance;
+	public Fragment fragment;
 	
 	public double weight;
 	public double score;
 	
-	public FragmentCandidateTuple(String candidate, EntityOccurance entityOccurance){
+	public FragmentCandidateTuple(String candidate, Fragment fragment){
 		this.candidate = candidate;
-		this.entityOccurance = entityOccurance;
+		this.fragment = fragment;
 	}
 
 	@Override
