@@ -26,7 +26,7 @@ import algorithm.RandomWalk;
 
 public class Neo4jSandbox extends Neo4jCore{
 	
-	private static final String DB_PATH = "../../data/DBs/test/MerkelLinks";
+	private static final String DB_PATH = "../../data/DBs/PageLinksWithWeights";
 	
 	static GraphDatabaseService graphDb;
 	static Node firstNode;
@@ -60,15 +60,26 @@ public class Neo4jSandbox extends Neo4jCore{
 			for ( Node node : graphDb.findNodesByLabelAndProperty( Neo4jCore.wikiLinkLabel, "name", searchString ) ){
 				Node entity = node;
 				System.out.println("id: " + entity.getId());
+				TreeSet<String> tmp = new TreeSet<String>();
+				TreeSet<String> tmp2 = new TreeSet<String>();
 				int outgoingCount = 0;
 				for(Relationship r: entity.getRelationships(Direction.OUTGOING, RelTypes.LINK_TO)){
-					System.out.println("out: " + r.getEndNode().getProperty("name"));//) + " - weight: " + r.getProperty("weight"));
+					System.out.println("out: " + r.getEndNode().getProperty("name") + " - weight: " + r.getProperty("weight"));
 					outgoingCount++;
+					tmp.add((String) r.getEndNode().getProperty("name"));
 				}
 				System.out.println("outgoing: " + outgoingCount);
 				
-				HashMap<Node, Double> semSig = RandomWalk.calcProbSignature(entity, 1000000, 100, 0.85);
-				for(Entry<Node, Double> e: semSig.entrySet()) System.out.println(e.getKey().getProperty("name") + " - " + e.getValue());
+				HashMap<Node, Double> semSig = RandomWalk.calcProbSignature(entity, 1000000, 100, 0.7); // original: 0.85
+				for(Entry<Node, Double> e: semSig.entrySet()){
+					System.out.println(e.getKey().getProperty("name") + " - " + e.getValue());
+					if(!tmp.contains((String)e.getKey().getProperty("name"))){
+						tmp2.add((String)e.getKey().getProperty("name"));
+					}
+				}
+				for(String s: tmp2){
+					System.out.println("no direct link: " + s);
+				}
 			}
 			
 			/* anchor temp
