@@ -14,7 +14,7 @@ import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import annotatedSentence.Word;
 
-public class EntityLinkerFramentedSentenceTest extends EntityLinkerBaseTest{
+public class EntityLinkerFragmentedSentenceTest extends EntityLinkerBaseTest{
 
 	String sentence = "a b c d e f";
 	

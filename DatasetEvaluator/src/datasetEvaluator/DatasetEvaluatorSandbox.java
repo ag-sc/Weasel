@@ -25,7 +25,7 @@ public class DatasetEvaluatorSandbox {
 
 	public static void main(String[] args) {
 		try {					
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/kore50.tsv"), "UTF8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/test/kore50.tsv"), "UTF8"));
 			KORE50Parser parser = new KORE50Parser(br);
 			//Neo4jConnector connector = new Neo4jConnector("../../data/DBs/BatchPageLinks2", Neo4jCore.wikiLinkLabel);
 			//EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.0, 10);

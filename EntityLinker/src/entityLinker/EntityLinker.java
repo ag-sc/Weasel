@@ -23,29 +23,29 @@ public class EntityLinker {
 		this.partialAnchors = partialAnchors;
 	}
 	
-	private LinkedList<EntityOccurance> createFragments(String sentence){
-		LinkedList<EntityOccurance> fragments = new LinkedList<EntityOccurance>();
-		
-		//TODO: implement sophisticated version
-		//TODO: fix string index
-		for(String s: sentence.replace(",", "").replace(".", "").split(" ")){
-			int start = sentence.indexOf(s);
-			fragments.add(new EntityOccurance(s, start, start + s.length()));
-		}
-		
-		return fragments;
-	}
+//	private LinkedList<EntityOccurance> createFragments(String sentence){
+//		LinkedList<EntityOccurance> fragments = new LinkedList<EntityOccurance>();
+//		
+//		//TODO: implement sophisticated version
+//		//TODO: fix string index
+//		for(String s: sentence.replace(",", "").replace(".", "").split(" ")){
+//			int start = sentence.indexOf(s);
+//			fragments.add(new EntityOccurance(s, start, start + s.length()));
+//		}
+//		
+//		return fragments;
+//	}
 	
-	private HashMap<String, LinkedList<String>> findAllCandidats(LinkedList<EntityOccurance> fragments){
-		HashMap<String, LinkedList<String>> allCandidats = new HashMap<String, LinkedList<String>>();
-		
-		for(EntityOccurance eo: fragments){
-			LinkedList<String> candidats = anchors.getFragmentTargets(eo.getFragment());
-			if(candidats.size() > 0) allCandidats.put(eo.getFragment(), candidats);
-		}
-		
-		return allCandidats;
-	}
+//	private HashMap<String, LinkedList<String>> findAllCandidats(LinkedList<EntityOccurance> fragments){
+//		HashMap<String, LinkedList<String>> allCandidats = new HashMap<String, LinkedList<String>>();
+//		
+//		for(EntityOccurance eo: fragments){
+//			LinkedList<String> candidats = anchors.getFragmentTargets(eo.getFragment());
+//			if(candidats.size() > 0) allCandidats.put(eo.getFragment(), candidats);
+//		}
+//		
+//		return allCandidats;
+//	}
 
 //	public HashMap<String, LinkedList<String>> getFragmentPlusCandidates(String sentence) {
 //		//LinkedList<EntityOccurance> fragments = createFragments(sentence);
@@ -86,7 +86,7 @@ public class EntityLinker {
 				boolean validCandidate = true;
 				for (int j = 0; j < splitCandidat.length; j++) {
 					int tmpIndex = i - candidatIndex + j;
-					if (tmpIndex < 0 || tmpIndex > splitSentence.length || !splitSentence[tmpIndex].equals(splitCandidat[j])) {
+					if (tmpIndex < 0 || tmpIndex >= splitSentence.length || !splitSentence[tmpIndex].equals(splitCandidat[j])) {
 						validCandidate = false;
 						break;
 					}
@@ -103,8 +103,10 @@ public class EntityLinker {
 		return as;
 	}
 	
-	public void link(HashMap<String, LinkedList<String>> fragmentPlusCandidates, AnnotatedSentenceDeprecated annotatedSentence) {
-		evaluator.evaluate(fragmentPlusCandidates, annotatedSentence);
+	public AnnotatedSentence link(String sentence) {
+		AnnotatedSentence as = getFragmentedSentence(sentence);
+		evaluator.evaluate(as);
+		return as;
 	}
 
 }

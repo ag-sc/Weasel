@@ -34,14 +34,19 @@ public class AnnotatedSentence {
 		return fragmentMap;
 	} // getFragmentMap
 
-	public void assign() {
-		// create fragment list
+	public LinkedList<Fragment> buildFragmentList(){
 		fragmentList = new LinkedList<Fragment>();
 		for(HashMap<Integer, Fragment> submap: fragmentMap.values()){
 			for(Fragment f: submap.values()){
 				fragmentList.add(f);
 			}
 		}
+		return fragmentList;
+	}
+	
+	public void assign() {
+		// create fragment list
+		fragmentList = buildFragmentList();
 		
 		Collections.sort(fragmentList);
 		Collections.reverse(fragmentList);

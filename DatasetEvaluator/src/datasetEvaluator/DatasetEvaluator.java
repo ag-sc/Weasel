@@ -3,7 +3,11 @@ package datasetEvaluator;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
+import annotatedSentence.AnnotatedSentence;
+import annotatedSentence.Fragment;
+import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
 import datasetParser.DatasetParser;
 import datatypes.AnnotatedSentenceDeprecated;
@@ -32,20 +36,17 @@ public class DatasetEvaluator {
 		
 		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
 		while((parserSentence = parser.parse()).length() > 0){
-			HashMap<String, LinkedList<String>> fragmentPlusCandidates = linker.getFragmentPlusCandidates(parserSentence.getSentence());
-			AnnotatedSentenceDeprecated result = new AnnotatedSentenceDeprecated(parserSentence.getSentence());
-			linker.link(fragmentPlusCandidates, result);
+			AnnotatedSentence as = linker.link(parserSentence.getSentence());
+			LinkedList<Word> result = as.getWordList();
 			
-			for(int i = 0; i < result.length(); i++){
+			for(int i = 0; i < result.size(); i++){
 				String entity = parserSentence.getEntity(i);
-				String candidate = result.getEntity(i);
+				String candidate = result.get(i).getValue();
 
 				if (entity.length() != 0) {
-					String tmp = parserSentence.getToken(i);
-					LinkedList<String> tmplist = fragmentPlusCandidates.get(tmp);
-					if (tmplist != null && tmplist.contains(entity)) {
-						// correct candidate is available for token i
-						numberOfCorrectCandidates++;
+					Fragment f = result.get(i).getDominantFragment();
+					if(f != null){
+						if(f.candidates.contains(entity)) numberOfCorrectCandidates++;
 					}
 
 					if (entityDBconnector.fragmentExists(entity)) {

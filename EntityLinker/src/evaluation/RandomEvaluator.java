@@ -1,21 +1,22 @@
 package evaluation;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-
-import datatypes.AnnotatedSentenceDeprecated;
-import datatypes.EntityOccurance;
-import datatypes.FragmentPlusCandidates;
+import annotatedSentence.AnnotatedSentence;
+import annotatedSentence.Fragment;
 
 public class RandomEvaluator extends EvaluationEngine{
 
 	@Override
-	public void evaluate(HashMap<String, LinkedList<String>> fragments, AnnotatedSentenceDeprecated annotatedSentence) {
-		for(int i = 0; i < annotatedSentence.length(); i++){
-			LinkedList<String> candidates = fragments.get(annotatedSentence.getToken(i));
-			if(candidates != null){
-				int index = (int)Math.floor(Math.random() * (double)candidates.size());
-				annotatedSentence.setEntity(i, candidates.get(index));
+	public void evaluate(AnnotatedSentence annotatedSentence) {
+		for(Fragment f: annotatedSentence.buildFragmentList()){
+			int index = (int) Math.floor(f.candidates.size() * Math.random());
+			int counter = 0;
+			for(String s: f.candidates){
+				if(counter == index){
+					f.setValue(s);
+					f.probability = Math.random();
+					break;
+				}
+				counter++;
 			}
 		}
 	}
