@@ -22,5 +22,11 @@ public class Word {
 		return value;
 	}	
 	
+	public String toString() {
+		if (dominantFragment != null && dominantFragment.value != null)
+			return value + "\t" + dominantFragment.value;
+		else
+			return value;
+	}
 	
 }

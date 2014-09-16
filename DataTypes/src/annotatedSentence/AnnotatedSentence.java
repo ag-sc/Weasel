@@ -1,30 +1,52 @@
 package annotatedSentence;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class AnnotatedSentence {
 
 	private LinkedList<Word> wordList;
+	private HashMap<Integer, HashMap<Integer, Fragment>> fragmentMap;
 	private LinkedList<Fragment> fragmentList;
 	
 	public AnnotatedSentence(String sentence[]) {
 		wordList = new LinkedList<Word>();
-		for(String word: sentence){
+		for (String word : sentence) {
 			getWordList().add(new Word(word));
 		}
-		fragmentList = new LinkedList<Fragment>();
+		fragmentMap = new HashMap<Integer, HashMap<Integer, Fragment>>();
+		for (int i = 0; i < sentence.length; i++)
+			fragmentMap.put(i, new HashMap<Integer, Fragment>());
 	} // AnnotatedSentence
 
 	public void addFragment(Fragment f) {
-		getFragmentList().add(f);
+		HashMap<Integer, Fragment> tmp = fragmentMap.get(f.start);
+		Fragment retrievedFragment = tmp.get(f.stop);
+		if(retrievedFragment != null){
+			retrievedFragment.addCandidats(f.candidates);
+		}else{
+			tmp.put(f.stop, f);
+		}
 	} // addFragment
+	
+	public HashMap<Integer, HashMap<Integer, Fragment>> getFragmentMap(){
+		return fragmentMap;
+	} // getFragmentMap
 
 	public void assign() {
-		Collections.sort(getFragmentList());
-		Collections.reverse(getFragmentList());
+		// create fragment list
+		fragmentList = new LinkedList<Fragment>();
+		for(HashMap<Integer, Fragment> submap: fragmentMap.values()){
+			for(Fragment f: submap.values()){
+				fragmentList.add(f);
+			}
+		}
+		
+		Collections.sort(fragmentList);
+		Collections.reverse(fragmentList);
 
-		for (Fragment f : getFragmentList()) {
+		for (Fragment f : fragmentList) {
 			boolean dominated = false;
 			for (int i = f.start; i <= f.stop; i++) {
 				if (getWordList().get(i).getDominantFragment() != null) {
@@ -46,9 +68,9 @@ public class AnnotatedSentence {
 		return wordList;
 	}
 
-	public LinkedList<Fragment> getFragmentList() {
-		return fragmentList;
-	}
+//	public LinkedList<Fragment> getFragmentList() {
+//		return fragmentList;
+//	}
 
 	
 }

@@ -14,20 +14,15 @@ import evaluation.EvaluationEngine;
 import evaluation.RandomEvaluator;
 
 
-public class EntityLinkerTest {
-	
-	EvaluationEngine evaluator;
-	DatabaseConnector connector;
+public class EntityLinkerTest extends EntityLinkerBaseTest {
 
-	@Before
-	public void setup(){
-		//evaluator = EasyMock.createMock(EvaluationEngine.class);
-		evaluator = new RandomEvaluator();
-		connector = EasyMock.createMock(DatabaseConnector.class);
-	}
 	
 	@Test
 	public void linkTest() {
+		evaluator = new RandomEvaluator();
+		anchors = EasyMock.createMock(DatabaseConnector.class);
+		partialAnchors = EasyMock.createMock(DatabaseConnector.class);
+		
 		LinkedList<String> romeoList = new LinkedList<String>();
 		romeoList.add("Romeo");
 		romeoList.add("Romeo Must Die");
@@ -35,14 +30,14 @@ public class EntityLinkerTest {
 		juliaList.add("Julia");
 		juliaList.add("Julia Roberts");
 		
-		EasyMock.expect(connector.getFragmentTargets("Romeo")).andReturn(romeoList);
-		EasyMock.expect(connector.getFragmentTargets("and")).andReturn(new LinkedList<String>());
-		EasyMock.expect(connector.getFragmentTargets("Julia")).andReturn(juliaList);
-		EasyMock.expect(connector.getFragmentTargets("are")).andReturn(new LinkedList<String>());
-		EasyMock.expect(connector.getFragmentTargets("happy")).andReturn(new LinkedList<String>());
-		EasyMock.replay(connector);
+		EasyMock.expect(anchors.getFragmentTargets("Romeo")).andReturn(romeoList);
+		EasyMock.expect(anchors.getFragmentTargets("and")).andReturn(new LinkedList<String>());
+		EasyMock.expect(anchors.getFragmentTargets("Julia")).andReturn(juliaList);
+		EasyMock.expect(anchors.getFragmentTargets("are")).andReturn(new LinkedList<String>());
+		EasyMock.expect(anchors.getFragmentTargets("happy")).andReturn(new LinkedList<String>());
+		EasyMock.replay(anchors);
 		
-		EntityLinker linker = new EntityLinker(evaluator, connector);
+		EntityLinker linker = new EntityLinker(evaluator, anchors);
 		LinkedList<EntityOccurance> entityList = linker.link("Romeo and Julia are happy.");
 		assertEquals("Two candidates found.", 2, entityList.size());
 		
