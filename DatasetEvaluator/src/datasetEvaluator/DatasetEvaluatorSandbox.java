@@ -39,7 +39,7 @@ public class DatasetEvaluatorSandbox {
 			Neo4jConnector anchors = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
 			Neo4jConnector partialAnchors = new Neo4jConnector(graphDB, Neo4jCore.partialAnchorLabel, null);
 			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
-			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors);
+			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, "../../data/stopwords.txt");
 			
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, checkupConnector);
 			dataEvaluator.evaluate();

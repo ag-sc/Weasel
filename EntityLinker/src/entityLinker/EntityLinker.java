@@ -1,6 +1,8 @@
 package entityLinker;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
@@ -9,6 +11,7 @@ import datatypes.AnnotatedSentenceDeprecated;
 import datatypes.EntityOccurance;
 import datatypes.FragmentPlusCandidates;
 import evaluation.EvaluationEngine;
+import fileparser.StopWordParser;
 
 
 public class EntityLinker {
@@ -16,11 +19,23 @@ public class EntityLinker {
 	private EvaluationEngine evaluator;
 	private DatabaseConnector anchors;
 	private DatabaseConnector partialAnchors;
+	private TreeSet<String> stopWords;
 	
-	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector, DatabaseConnector partialAnchors) {
+	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector, DatabaseConnector partialAnchors, String stopWordsTextFile) {
 		this.evaluator = evaluator;
 		this.anchors = connector;
 		this.partialAnchors = partialAnchors;
+		if(stopWordsTextFile != null) {
+			try {
+				stopWords = StopWordParser.parseStopwords("../../data/stopwords.txt");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector, DatabaseConnector partialAnchors) {
+		this(evaluator, connector, partialAnchors, null);
 	}
 	
 //	private LinkedList<EntityOccurance> createFragments(String sentence){
@@ -65,39 +80,42 @@ public class EntityLinker {
 		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
 
 		for (int i = 0; i < splitSentence.length; i++) {
-			Fragment f = new Fragment(i, i);
-			f.candidates.addAll(anchors.getFragmentTargets(splitSentence[i]));
-			as.addFragment(f);
+			if (stopWords == null || !stopWords.contains(splitSentence[i])) {
+				Fragment f = new Fragment(i, i);
+				f.candidates.addAll(anchors.getFragmentTargets(splitSentence[i]));
+				as.addFragment(f);
+			}
 		}
 
 		for (int i = 0; i < splitSentence.length; i++) {
-			String fragment = splitSentence[i];
-			LinkedList<String> candidats = partialAnchors.getFragmentTargets(fragment);
-			for (String candidat : candidats) {
-				String splitCandidat[] = candidat.split(" ");
-				int candidatIndex = -1;
-				for (int j = 0; j < splitCandidat.length; j++) {
-					if (splitCandidat[j].equals(fragment)) {
-						candidatIndex = j;
-						break;
+			if (stopWords == null || !stopWords.contains(splitSentence[i])) {
+				String fragment = splitSentence[i];
+				LinkedList<String> candidats = partialAnchors.getFragmentTargets(fragment);
+				for (String candidat : candidats) {
+					String splitCandidat[] = candidat.split(" ");
+					int candidatIndex = -1;
+					for (int j = 0; j < splitCandidat.length; j++) {
+						if (splitCandidat[j].equals(fragment)) {
+							candidatIndex = j;
+							break;
+						}
 					}
-				}
-				assert (candidatIndex >= 0);
-				boolean validCandidate = true;
-				for (int j = 0; j < splitCandidat.length; j++) {
-					int tmpIndex = i - candidatIndex + j;
-					if (tmpIndex < 0 || tmpIndex >= splitSentence.length || !splitSentence[tmpIndex].equals(splitCandidat[j])) {
-						validCandidate = false;
-						break;
+					assert (candidatIndex >= 0);
+					boolean validCandidate = true;
+					for (int j = 0; j < splitCandidat.length; j++) {
+						int tmpIndex = i - candidatIndex + j;
+						if (tmpIndex < 0 || tmpIndex >= splitSentence.length || !splitSentence[tmpIndex].equals(splitCandidat[j])) {
+							validCandidate = false;
+							break;
+						}
 					}
-				}
-				if (validCandidate) {
-					Fragment f = new Fragment(i - candidatIndex, i - candidatIndex + splitCandidat.length - 1);
-					f.candidates.addAll(anchors.getFragmentTargets(candidat));
-					as.addFragment(f);
+					if (validCandidate) {
+						Fragment f = new Fragment(i - candidatIndex, i - candidatIndex + splitCandidat.length - 1);
+						f.candidates.addAll(anchors.getFragmentTargets(candidat));
+						as.addFragment(f);
+					}
 				}
 			}
-
 		}
 
 		return as;
