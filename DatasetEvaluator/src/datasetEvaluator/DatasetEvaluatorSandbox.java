@@ -14,6 +14,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import neo4j.Neo4jCore;
 import databaseConnectors.JDBMConnector;
+import databaseConnectors.JustInTimeSemSigConnector;
 import databaseConnectors.Neo4jConnector;
 import datasetParser.KORE50Parser;
 import entityLinker.EntityLinker;
@@ -29,8 +30,8 @@ public class DatasetEvaluatorSandbox {
 			KORE50Parser parser = new KORE50Parser(br);
 			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/PageLinksWithWeights" );
 			Neo4jCore.registerShutdownHook( graphDB2 );
-			Neo4jConnector connector = new Neo4jConnector(graphDB2, Neo4jCore.wikiLinkLabel, null);
-			EvaluationEngine evaluator = new BabelfyEvaluation(connector, 0.3, 10);
+			JustInTimeSemSigConnector semSigConnector = new JustInTimeSemSigConnector(graphDB2, Neo4jCore.wikiLinkLabel, null, 0.8, 100000, 10);
+			EvaluationEngine evaluator = new BabelfyEvaluation(semSigConnector, 0.3, 10);
 			//EvaluationEngine evaluator = new RandomEvaluator();
 //			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 //			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");

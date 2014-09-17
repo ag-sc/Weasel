@@ -12,9 +12,9 @@ import org.neo4j.graphdb.Transaction;
 
 public class Neo4jConnector extends DatabaseConnector{
 
-	private GraphDatabaseService graphDB;
-	private Label label;
-	private RelationshipType relType = null;
+	protected GraphDatabaseService graphDB;
+	protected Label label;
+	protected RelationshipType relType = null;
 	
 	public Neo4jConnector(GraphDatabaseService graphDB, Label label, RelationshipType relType){
 		this.graphDB = graphDB;

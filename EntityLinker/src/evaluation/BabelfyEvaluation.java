@@ -136,7 +136,12 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		// build edges
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
 			TreeSet<String> semSig = new TreeSet<String>();
+			long start = System.nanoTime();
 			LinkedList<String> tmp = semanticSignatureDB.getFragmentTargets(nodeSource.content.candidate);
+			long end = System.nanoTime();
+			double passedTime = (end - start) / 1000000000.0;
+			System.out.println("Passed time: " + passedTime + " s");
+			
 			for (String s : tmp) {
 				semSig.add(s);
 			}
