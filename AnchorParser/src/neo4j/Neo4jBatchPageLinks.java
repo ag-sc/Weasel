@@ -99,8 +99,8 @@ public class Neo4jBatchPageLinks extends Neo4jBatchInsert {
 	public static void main(String[] args) {
 		
 		try {
-			Neo4jBatchPageLinks inserter = new Neo4jBatchPageLinks("PageLinks",
-																"page_links_en.nt");
+			Neo4jBatchPageLinks inserter = new Neo4jBatchPageLinks("../../data/DBs/ToySemSig",
+																"../../data/Wikipedia/Pagelinks/test/toyset.txt");
 //			inserter.parser.setPatters("<resource/([^>]+)>", "<resource/([^>]+)>");
 			inserter.run();
 		} catch (IOException e) {

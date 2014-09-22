@@ -4,6 +4,7 @@ import graph.Graph;
 import graph.GraphEdge;
 import graph.Node;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -83,10 +84,29 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			node.content.weight = weight(node.content);
 		}
 		
+		// debug start
+//		Node<FragmentCandidateTuple> david;
+//		LinkedList<Node<FragmentCandidateTuple>> list = new LinkedList<Node<FragmentCandidateTuple>>();
+//		for(Node<FragmentCandidateTuple> node: graph.nodeMap.values()){
+//			list.add(node);
+//			if(node.content.candidate.equals("David_Beckham")) david = node;
+//		}
+//		Collections.sort(list, new Comparator<Node<FragmentCandidateTuple>>(){
+//			@Override
+//			public int compare(Node<FragmentCandidateTuple> o1, Node<FragmentCandidateTuple> o2) {
+//				if(o2.content.weight > o1.content.weight) return 1;
+//				else if(o2.content.weight < o1.content.weight) return -1;
+//				else return 0;
+//			}
+//			
+//		});
+		
+		// debug end
+		
 		for(Node<FragmentCandidateTuple> nodeOrigin: graph.nodeMap.values()){
 			double tmp = 0.0;
 			for(Node<FragmentCandidateTuple> otherNode: graph.nodeMap.values()){
-				if(nodeOrigin != otherNode) tmp += otherNode.degree() * otherNode.content.weight;
+				if(nodeOrigin.content.fragment == otherNode.content.fragment) tmp += otherNode.degree() * otherNode.content.weight;
 			}
 			
 			double part1 = (nodeOrigin.degree() * nodeOrigin.content.weight);
@@ -110,7 +130,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			connectingFragments.add(edge.source.content.fragment);
 		}
 		for (GraphEdge<FragmentCandidateTuple> edge: node.outgoingEdges){
-			connectingFragments.add(edge.source.content.fragment);
+			connectingFragments.add(edge.sink.content.fragment);
 		}
 		//TODO: check division by 0?
 		double weight = (double)connectingFragments.size() / (double)(numberOfFragments - 1);
@@ -136,11 +156,11 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		// build edges
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
 			TreeSet<String> semSig = new TreeSet<String>();
-			long start = System.nanoTime();
+			//long start = System.nanoTime();
 			LinkedList<String> tmp = semanticSignatureDB.getFragmentTargets(nodeSource.content.candidate);
-			long end = System.nanoTime();
-			double passedTime = (end - start) / 1000000000.0;
-			System.out.println("Passed time: " + passedTime + " s");
+			//long end = System.nanoTime();
+			//double passedTime = (end - start) / 1000000000.0;
+			//System.out.println("Passed time: " + passedTime + " s");
 			
 			for (String s : tmp) {
 				semSig.add(s);

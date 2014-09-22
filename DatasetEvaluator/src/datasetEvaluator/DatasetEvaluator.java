@@ -41,7 +41,7 @@ public class DatasetEvaluator {
 			
 			for(int i = 0; i < result.size(); i++){
 				String entity = parserSentence.getEntity(i);
-				String candidate = result.get(i).getValue();
+				String candidate = result.get(i).getDominantFragment().getValue();
 
 				if (entity.length() != 0) {
 					Fragment f = result.get(i).getDominantFragment();

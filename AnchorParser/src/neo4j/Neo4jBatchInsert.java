@@ -140,9 +140,9 @@ public class Neo4jBatchInsert extends Neo4jCore{
 	public static void main(String[] args) {
 		
 		try {
-			Neo4jBatchInsert inserter = new Neo4jBatchInsert("../../data/DBs/test/AnchorsDavid",
-															"../../data/Wikipedia Anchor/test/david.txt",
-															"../../data/stopwords.txt");
+			Neo4jBatchInsert inserter = new Neo4jBatchInsert("../../data/DBs/test/ToysetAnchor",
+															"../../data/Wikipedia Anchor/test/toyset.txt");
+															//"../../data/stopwords.txt");
 			inserter.run();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
