@@ -26,9 +26,9 @@ public class DatasetEvaluatorSandbox {
 
 	public static void main(String[] args) {
 		try {					
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/test/toySentence.tsv"), "UTF8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/test/kore50.tsv"), "UTF8"));
 			KORE50Parser parser = new KORE50Parser(br);
-			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/test/ToySemSig" );
+			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/PageLinksWithWeights" );
 			Neo4jCore.registerShutdownHook( graphDB2 );
 			//JustInTimeSemSigConnector semSigConnector = new JustInTimeSemSigConnector(graphDB2, Neo4jCore.wikiLinkLabel, null, 0.8, 100000, 10);
 			Neo4jConnector semSigConnector = new Neo4jConnector(graphDB2, Neo4jCore.wikiLinkLabel, null);
@@ -36,13 +36,12 @@ public class DatasetEvaluatorSandbox {
 			//EvaluationEngine evaluator = new RandomEvaluator();
 //			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
 //			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
-			GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/test/ToysetAnchor" );
+			GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/Anchors_old" );
 			Neo4jCore.registerShutdownHook( graphDB );
 			Neo4jConnector anchors = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
 			Neo4jConnector partialAnchors = new Neo4jConnector(graphDB, Neo4jCore.partialAnchorLabel, null);
 			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
-			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors);
-			//EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, "../../data/stopwords.txt");
+			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, "../../data/stopwords.txt");
 			
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, checkupConnector);
 			dataEvaluator.evaluate();
