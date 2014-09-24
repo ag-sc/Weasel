@@ -138,7 +138,6 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	}
 	
 	@Override
-	//public LinkedList<EntityOccurance> evaluate(LinkedList<FragmentPlusCandidates> fragments) {
 	public void evaluate(AnnotatedSentence annotatedSentence) {
 		System.out.println("Starting evaluation... ");
 		LinkedList<Fragment> fragmentList = annotatedSentence.buildFragmentList();

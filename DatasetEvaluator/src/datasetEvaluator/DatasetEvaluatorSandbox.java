@@ -25,24 +25,28 @@ import evaluation.RandomEvaluator;
 public class DatasetEvaluatorSandbox {
 
 	public static void main(String[] args) {
-		try {					
+		try {
+			// TestSet
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/test/kore50.tsv"), "UTF8"));
 			KORE50Parser parser = new KORE50Parser(br);
+			
+			// PageLinks
 			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/PageLinksWithWeights" );
 			Neo4jCore.registerShutdownHook( graphDB2 );
-			//JustInTimeSemSigConnector semSigConnector = new JustInTimeSemSigConnector(graphDB2, Neo4jCore.wikiLinkLabel, null, 0.8, 100000, 10);
+			
+			// Semantic Signature
 			Neo4jConnector semSigConnector = new Neo4jConnector(graphDB2, Neo4jCore.wikiLinkLabel, null);
 			EvaluationEngine evaluator = new BabelfyEvaluation(semSigConnector, 0.3, 10);
-			//EvaluationEngine evaluator = new RandomEvaluator();
-//			JDBMConnector linkerConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/anchorKeyMap", "anchorKeyMap");
-//			JDBMConnector checkupConnector = new JDBMConnector("../../data/Wikipedia Anchor/db/uriKeyMap", "uriKeyMap");
 			GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/Anchors_old" );
 			Neo4jCore.registerShutdownHook( graphDB );
+			
+			// Connectors
 			Neo4jConnector anchors = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
 			Neo4jConnector partialAnchors = new Neo4jConnector(graphDB, Neo4jCore.partialAnchorLabel, null);
 			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
-			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, "../../data/stopwords.txt");
 			
+			// Linker & Evaluation
+			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, "../../data/stopwords.txt");
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, checkupConnector);
 			dataEvaluator.evaluate();
 			

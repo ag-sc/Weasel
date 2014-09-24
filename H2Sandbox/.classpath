@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/H2/bin/h2-1.4.181.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DatabaseBuilder"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EntityLinker"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

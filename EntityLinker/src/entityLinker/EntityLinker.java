@@ -126,5 +126,10 @@ public class EntityLinker {
 		evaluator.evaluate(as);
 		return as;
 	}
+	
+	public void closeConnectors(){
+		anchors.close();
+		partialAnchors.close();
+	}
 
 }

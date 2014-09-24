@@ -61,5 +61,10 @@ public class Neo4jConnector extends DatabaseConnector{
 		return list;
 	}
 
+	@Override
+	public void close() {
+		graphDB.shutdown();		
+	}
+
 
 }
