@@ -20,7 +20,7 @@ public class DatasetEvaluator {
 
 	private DatasetParser parser;
 	private EntityLinker linker;
-	private DatabaseConnector entityDBconnector;
+	private DatabaseConnector checkupConnector;
 	private int numberOfEntities = 0;
 	private int numberOfPossiblyKnownEntities = 0;
 	private int numberOfCorrectCandidates = 0;
@@ -29,7 +29,7 @@ public class DatasetEvaluator {
 	public DatasetEvaluator(DatasetParser parser, EntityLinker linker, DatabaseConnector entityDBconnector) {
 		this.parser = parser;
 		this.linker = linker;
-		this.entityDBconnector = entityDBconnector;
+		this.checkupConnector = entityDBconnector;
 	}
 	// TODO: fix the counting so that double entries are not counted twice
 	public void evaluate() throws IOException{	
@@ -41,16 +41,19 @@ public class DatasetEvaluator {
 			
 			for(int i = 0; i < result.size(); i++){
 				String entity = parserSentence.getEntity(i);
-				String candidate = result.get(i).getDominantFragment().getValue();
+				Fragment tmp = result.get(i).getDominantFragment();
+				if (tmp == null) continue;
+				String candidate = tmp.getValue();
 
 				if (entity.length() != 0) {
 					Fragment f = result.get(i).getDominantFragment();
-					if(f != null){
-						if(f.candidates.contains(entity)) numberOfCorrectCandidates++;
+					if (f != null) {
+						if (f.candidates.contains(entity))
+							numberOfCorrectCandidates++;
 					}
 
-					if (entityDBconnector.fragmentExists(entity)) {
-						// System.out.println(" - In DB: " + entity);
+					if (checkupConnector.fragmentExists(entity)) {
+		// System.out.println(" - In DB: " + entity);
 						numberOfPossiblyKnownEntities++;
 					} else {
 						System.out.println("not in db: " + entity);
@@ -72,7 +75,7 @@ public class DatasetEvaluator {
 		System.out.println(numberOfCorrectCandidates + " fragments have the correct entity in their candidate list ("+ ((double)numberOfCorrectCandidates / (double)numberOfEntities * 100.00)+"%)");
 		System.out.println(correctEntities + " entities were correctly assigned ("+ ((double)correctEntities / (double)numberOfEntities * 100.00)+"%)");
 	
-		entityDBconnector.close();
+		checkupConnector.close();
 		linker.closeConnectors();
 	}
 	

@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import databaseConnectors.DatabaseConnector;
@@ -80,8 +81,17 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	}
 	
 	private void scoreAllFragments(){
+		HashMap<Fragment, Double> fragmentWeight = new HashMap<Fragment, Double>();
+		
 		for(Node<FragmentCandidateTuple> node: graph.nodeMap.values()){
 			node.content.weight = weight(node.content);
+			
+			double tmpScore = node.degree() * node.content.weight;
+			if(fragmentWeight.containsKey(node.content.fragment)){	
+				fragmentWeight.put(node.content.fragment, fragmentWeight.get(node.content.fragment) + tmpScore);
+			}else{
+				fragmentWeight.put(node.content.fragment, tmpScore);
+			}
 		}
 		
 		// debug start
@@ -105,9 +115,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		
 		for(Node<FragmentCandidateTuple> nodeOrigin: graph.nodeMap.values()){
 			double tmp = 0.0;
-			for(Node<FragmentCandidateTuple> otherNode: graph.nodeMap.values()){
-				if(nodeOrigin.content.fragment == otherNode.content.fragment) tmp += otherNode.degree() * otherNode.content.weight;
-			}
+			tmp = fragmentWeight.get(nodeOrigin.content.fragment);
 			
 			double part1 = (nodeOrigin.degree() * nodeOrigin.content.weight);
 			double score = part1 / tmp;
@@ -140,6 +148,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	@Override
 	public void evaluate(AnnotatedSentence annotatedSentence) {
 		System.out.println("Starting evaluation... ");
+		Stopwatch stopwatch = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		LinkedList<Fragment> fragmentList = annotatedSentence.buildFragmentList();
 		numberOfFragments = fragmentList.size();
 		// add fragments/candidates to graph
@@ -150,7 +159,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			}
 		}
 		
-		System.out.println("	Graph nodes added.");
+		System.out.println("	Graph nodes added. " + stopwatch.stop() + " s");
 		
 		// build edges
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
@@ -164,7 +173,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			for (String s : tmp) {
 				semSig.add(s);
 			}
-
+			
 			for(Node<FragmentCandidateTuple> nodeSink: graph.nodeMap.values()){
 				// if fragment is the same, skip
 				if(nodeSource.content.fragment == nodeSink.content.fragment) continue;
