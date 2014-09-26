@@ -46,8 +46,8 @@ public class DatasetEvaluatorSandbox {
 //			Neo4jConnector anchors = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
 //			Neo4jConnector partialAnchors = new Neo4jConnector(graphDB, Neo4jCore.partialAnchorLabel, null);
 //			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
-			String dbPathH2 = "E:/Master Project//data/H2/Anchors/h2Anchors";
-			String partialAnchorSQL = "select ANCHOR  from ANCHORID where ID in (select PARTIALANCHORTOANCHOR.ANCHORID from PARTIALANCHORTOANCHOR, PARTIALANCHORID where PARTIALANCHORID.ID = PARTIALANCHORTOANCHOR.PARTIALANCHORID and PARTIALANCHOR is (?)) ";
+			String dbPathH2 = "E:/Master Project/data/H2/Anchors/h2Anchors";
+			String partialAnchorSQL = "select ANCHOR  from ANCHORID where ID in (select PARTIALANCHORTOANCHOR.ANCHORID from PARTIALANCHORTOANCHOR, PARTIALANCHORID where PARTIALANCHORID.ID = PARTIALANCHORTOANCHOR.PARTIALANCHORID and PARTIALANCHOR is (?))";
 			H2Connector partialAnchors = new H2Connector(dbPathH2, "sa", "", partialAnchorSQL);
 			String anchorSQL = "select ENTITY from ENTITYID where ID in (select ANCHORTOENTITY.ENTITYID from ANCHORID , ANCHORTOENTITY where ANCHORID.ID = ANCHORTOENTITY.ANCHORID and ANCHOR is (?))";
 			H2Connector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);

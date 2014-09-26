@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/H2/bin/h2-1.4.181.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Neo4j Community/bin/neo4j-desktop-2.1.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DatabaseBuilder"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EntityLinker"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>

@@ -1,17 +1,13 @@
 package h2;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.TreeSet;
 
-import neo4j.Neo4jCore.RelTypes;
 import fileparser.AnchorFileParser;
 import fileparser.StopWordParser;
 

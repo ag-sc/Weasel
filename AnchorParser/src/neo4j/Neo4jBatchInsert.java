@@ -105,6 +105,8 @@ public class Neo4jBatchInsert extends Neo4jCore{
 			if (splitAnchor.length > 1) {
 				for (String partialAnchor : splitAnchor) {
 					if (!stopWords.contains(partialAnchor.toLowerCase())) {
+						// TODO: we are getting doubled relationships for partialAnchors since we're not checking whether
+						// a relationship already exists. Possible solution: iterate through all nodes after DB creation and remove doubles.
 						Long newSource = getId(partialAnchor, partialAnchorLabel);
 						inserter.createRelationship( newSource, source, RelTypes.PARTIALMATCH_OF, null);
 					}
