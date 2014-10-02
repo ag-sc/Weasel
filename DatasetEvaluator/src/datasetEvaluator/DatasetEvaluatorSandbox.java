@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
+import stopwatch.Stopwatch;
 import neo4j.Neo4jCore;
 import databaseConnectors.H2Connector;
 import databaseConnectors.JDBMConnector;
@@ -56,7 +57,9 @@ public class DatasetEvaluatorSandbox {
 			System.out.println("About to start evaluation.");
 			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, "../../data/stopwords.txt");
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, anchors); // checkupConnector);
+			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			dataEvaluator.evaluate();
+			System.out.println("Evaluation time: " + sw.stop() + " minutes");
 				
 		} catch (IOException e) {
 			e.printStackTrace();

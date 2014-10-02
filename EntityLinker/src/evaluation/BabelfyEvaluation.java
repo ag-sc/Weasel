@@ -159,8 +159,8 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			}
 		}
 		
-		System.out.println("	Graph nodes added. " + stopwatch.stop() + " s");
-		
+		System.out.println(graph.nodeMap.size() + " graph nodes added. " + stopwatch.stop() + " s");
+		stopwatch.start();
 		// build edges
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
 			TreeSet<String> semSig = new TreeSet<String>();
@@ -179,17 +179,18 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				if(nodeSource.content.fragment == nodeSink.content.fragment) continue;
 				
 				if(semSig.contains(nodeSink.content.candidate)){ // conditions fullfilled, build edge
-					System.out.println("		Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
+					//System.out.println("	Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
 					graph.addEdge(nodeSource, nodeSink);
 				}
 			}
 		}
-		System.out.println("	Graph edges added.");
+		System.out.println("Graph edges added. Time: " + stopwatch.stop() + " s");
 		
 		// Trim Graph
+		stopwatch.start();
 		trimToDenseSubgraph(graph);
-		System.out.println("	Graph trimmed.");
 		scoreAllFragments();
+		System.out.println("Graph trimmed. Time: " + stopwatch.stop() + " s");
 		
 		HashMap<Fragment, Double> scoreMap = new HashMap<Fragment, Double>();
 		for(Node<FragmentCandidateTuple> node: graph.nodeMap.values()){

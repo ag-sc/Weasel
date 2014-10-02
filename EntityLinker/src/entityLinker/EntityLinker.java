@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
+import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import databaseConnectors.DatabaseConnector;
@@ -78,7 +79,9 @@ public class EntityLinker {
 	public AnnotatedSentence getFragmentedSentence(String sentence) {
 		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
 		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
-
+		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
+		
+		sw.start();
 		for (int i = 0; i < splitSentence.length; i++) {
 			if (stopWords == null || !stopWords.contains(splitSentence[i])) {
 				Fragment f = new Fragment(i, i);
@@ -86,6 +89,9 @@ public class EntityLinker {
 				as.addFragment(f);
 			}
 		}
+		
+		System.out.println("Added all anchor candidates - Time: "+sw.stop() + " s");
+		sw.start();
 
 		for (int i = 0; i < splitSentence.length; i++) {
 			if (stopWords == null || !stopWords.contains(splitSentence[i])) {
@@ -113,11 +119,12 @@ public class EntityLinker {
 						Fragment f = new Fragment(i - candidatIndex, i - candidatIndex + splitCandidat.length - 1);
 						f.candidates.addAll(anchors.getFragmentTargets(candidat));
 						as.addFragment(f);
-					}
+					}				
 				}
 			}
 		}
-
+		
+		System.out.println("Added all partialAnchor candidates - Time: "+sw.stop() + " s");
 		return as;
 	}
 	
