@@ -18,29 +18,30 @@ public class H2Sandbox {
 	}
 
 	public static void main(String[] args){
-//		String dbPath = "../../data/H2/test/test2";
-		String dbPath = "/media/data/shared/ftristram/pageLinks/H2 Anchors/h2Anchors";
-//		String filePath = "../../data/Wikipedia/Pagelinks/test/toyset.txt";		
+		String dbPath = "../../data/H2/test/test3";
+//		String dbPath = "/media/data/shared/ftristram/pageLinks/H2 Anchors/h2Anchors";
+		String filePath = "../../data/Wikipedia/Pagelinks/test/toyset.txt";		
 //		String filePath = "anchors.txt";
-		String filePath = "page_links_en.nt";
+//		String filePath = "page_links_en.nt";
 		
 		
-//        H2DBCreator dbCreator = new H2DBCreator(dbPath);
-//        try {
-//			dbCreator.create();
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+        H2DBCreator dbCreator = new H2DBCreator(dbPath);
+        try {
+			dbCreator.create();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
         try {
-//        	String filePath2 = "../../data/Wikipedia Anchor/test/toyset.txt";	
-//			H2AnchorBuilder builder2 = new H2AnchorBuilder(dbPath, filePath2, "sa", "", "../../data/stopwords.txt");
-//			builder2.run();
+        	String filePath2 = "../../data/Wikipedia Anchor/test/toyset.txt";	
+			H2AnchorBuilder builder2 = new H2AnchorBuilder(dbPath, filePath2, "sa", "", "../../data/stopwords.txt");
+			builder2.run();
 //			H2AnchorBuilder builder = new H2AnchorBuilder(dbPath, filePath, "sa", "", "stopwords.txt");
+			
         	H2PageLinksBuilder builder = new H2PageLinksBuilder(dbPath, filePath, "sa", "");
 			builder.run();
 		} catch (Exception e) {

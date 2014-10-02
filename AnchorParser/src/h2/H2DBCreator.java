@@ -31,7 +31,7 @@ public class H2DBCreator {
         // EntityId Table
         stmt = conn.createStatement();  
         sql = "CREATE TABLE EntityId " +
-              "(entity VARCHAR(10000) not NULL, " +
+              "(entity VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
               " PRIMARY KEY ( entity ))"; 
         stmt.executeUpdate(sql);
@@ -39,7 +39,7 @@ public class H2DBCreator {
         // AnchorId Table
         stmt = conn.createStatement();  
         sql = "CREATE TABLE AnchorId " +
-              "(anchor VARCHAR(10000) not NULL, " +
+              "(anchor VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
               " PRIMARY KEY ( anchor ))"; 
         stmt.executeUpdate(sql);
@@ -47,7 +47,7 @@ public class H2DBCreator {
         // PartialAnchorId Table
         stmt = conn.createStatement();  
         sql = "CREATE TABLE PartialAnchorId " +
-              "(partialAnchor VARCHAR(1024) not NULL, " +
+              "(partialAnchor VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
               " PRIMARY KEY ( partialAnchor ))"; 
         stmt.executeUpdate(sql);
@@ -57,16 +57,16 @@ public class H2DBCreator {
         sql = "CREATE TABLE AnchorToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " anchorId INTEGER not NULL, " + 
-              " entityId INTEGER not NULL, " + 
+              " entityIdList VARCHAR(MAX) not NULL, " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
         
-        // PartialAnchorToAnchor Table
+        // PartialAnchorToEntity Table
         stmt = conn.createStatement();  
-        sql = "CREATE TABLE PartialAnchorToAnchor " +
+        sql = "CREATE TABLE PartialAnchorToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " partialAnchorId INTEGER not NULL, " + 
-              " anchorId INTEGER not NULL, " + 
+              " entityIdList VARCHAR(MAX) not NULL, " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
         
@@ -75,7 +75,7 @@ public class H2DBCreator {
         sql = "CREATE TABLE EntityToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " entitySourceId INTEGER not NULL, " + 
-              " entitySinkId INTEGER not NULL, " + 
+              " entitySinkIdList VARCHAR(MAX) not NULL, " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
         

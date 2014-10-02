@@ -3,59 +3,24 @@ package h2;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import stopwatch.Stopwatch;
 import fileparser.WikiParser;
 
-public class H2PageLinksBuilder {
+public class H2PageLinksBuilder extends H2BuilderCore {
 
-	String dbPath, username, password;
 	WikiParser parser;
-	PreparedStatement preparedStatement;
-	Statement stmt;
-	String sql;
-	ResultSet generatedKeys, result;
 
 	public H2PageLinksBuilder(String dbPath, String pageLinksFilePath, String username, String password) throws IOException {
-		this.dbPath = dbPath;
-		this.username = username;
-		this.password = password;
+		super(dbPath, username, password);
 		parser = new WikiParser(pageLinksFilePath);
-	}
-
-	private int getId(String s, Connection connection) throws Exception {
-		int value = -1;
-		sql = "SELECT ID FROM ENTITYID WHERE ENTITY IS (?)";
-		preparedStatement = connection.prepareStatement(sql);
-		preparedStatement.setString(1, s);
-		preparedStatement.executeQuery();
-		result = preparedStatement.getResultSet();
-		while (result.next()) {
-			value = result.getInt("ID");
-		}
-		if (value == -1) {
-			sql = "INSERT INTO ENTITYID(ENTITY) VALUES (?)";
-			preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, s);
-			preparedStatement.executeUpdate();
-			generatedKeys = preparedStatement.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				value = generatedKeys.getInt(1);
-			} else {
-				throw new Exception("No return id.");
-			}
-		}
-
-		return value;
 	}
 
 	public void run() throws Exception {
 		long timeStart = System.nanoTime();
 		int lineCounter = 0;
 		String tuple[];
+		String searchQuery, insertQuery, updateQuery;
 
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 
@@ -65,15 +30,15 @@ public class H2PageLinksBuilder {
 			if (tuple.length == 2) {
 				lineCounter++;
 
-				int source = getId(tuple[0], connection);
-				int sink = getId(tuple[1], connection);
+				searchQuery = "SELECT ID FROM ENTITYID WHERE ENTITY IS (?)";
+				insertQuery = "INSERT INTO ENTITYID(ENTITY) VALUES (?)";
+				int source = getId(tuple[0], searchQuery, insertQuery, connection);
+				int sink = getId(tuple[1], searchQuery, insertQuery, connection);
 
-				// add connection
-				sql = "INSERT INTO ENTITYTOENTITY(ENTITYSOURCEID, ENTITYSINKID) VALUES(?, ?)";
-				preparedStatement = connection.prepareStatement(sql);
-				preparedStatement.setInt(1, source);
-				preparedStatement.setInt(2, sink);
-				preparedStatement.execute();
+				searchQuery = "SELECT entitySinkIdList FROM EntityToEntity WHERE entitySourceId IS (?)";
+				insertQuery = "INSERT INTO EntityToEntity(entitySourceId, entitySinkIdList) VALUES (?,?)";
+				updateQuery = "UPDATE EntityToEntity SET entitySinkIdList = (?) WHERE entitySourceId = (?)";
+				addListEntry(source, sink, searchQuery, insertQuery, updateQuery, connection);
 
 				if (lineCounter % 1000000 == 0) {
 					sw.stop();
@@ -83,6 +48,11 @@ public class H2PageLinksBuilder {
 			}
 		}
 
+		System.out.println("Create index for EntityToEntity...");
+		stmt = connection.createStatement();
+		sql = "CREATE INDEX entitySourceIndex ON EntityToEntity(entitySourceId)";
+		stmt.executeUpdate(sql);
+		
 		connection.close();
 
 		long timeEnd = System.nanoTime();
