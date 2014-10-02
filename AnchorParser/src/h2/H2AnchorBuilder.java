@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.TreeSet;
 
+import stopwatch.Stopwatch;
 import fileparser.AnchorFileParser;
 import fileparser.StopWordParser;
 
@@ -23,6 +24,7 @@ public class H2AnchorBuilder extends H2BuilderCore{
 		int lineCounter = 0;
 		String triplet[];
 		String searchQuery, insertQuery, updateQuery;
+		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 
 		Class.forName("org.h2.Driver");
 		Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath + ";LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0", username, password);
@@ -42,6 +44,7 @@ public class H2AnchorBuilder extends H2BuilderCore{
 
 			addListEntry(source, sink, searchQuery, insertQuery, updateQuery, connection);
 			
+			
 			String[] splitAnchor = triplet[0].split(" ");
 			if (splitAnchor.length > 1) {
 				for (String partialAnchor : splitAnchor) {
@@ -55,8 +58,11 @@ public class H2AnchorBuilder extends H2BuilderCore{
 				}
 			}
 
-			if (lineCounter % 100000 == 0)
-				System.out.println("	processed lines: " + lineCounter);
+			if (lineCounter % 1000000 == 0){
+				System.out.println("	processed lines: " + lineCounter + "\ttime passed: " + sw.stop());
+				sw.start();
+			}
+				
 		}
 
 		// create indices
@@ -73,16 +79,6 @@ public class H2AnchorBuilder extends H2BuilderCore{
 		System.out.println("Create index for PartialAnchorId...");
 		stmt = connection.createStatement();
 		sql = "CREATE INDEX indexPartialAnchorID ON PartialAnchorId(id)";
-		stmt.executeUpdate(sql);
-		
-		System.out.println("Create index for AnchorToEntity...");
-		stmt = connection.createStatement();
-		sql = "CREATE INDEX indexAnchor ON AnchorToEntity(anchorId)";
-		stmt.executeUpdate(sql);
-
-		System.out.println("Create index for PartialAnchorToAnchor...");
-		stmt = connection.createStatement();
-		sql = "CREATE INDEX indexPartialAnchor ON PartialAnchorToEntity(partialAnchorId)";
 		stmt.executeUpdate(sql);
 
 		connection.close();

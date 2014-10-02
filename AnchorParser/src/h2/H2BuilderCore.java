@@ -61,7 +61,7 @@ public class H2BuilderCore {
 		preparedStatement.executeQuery();
 		result = preparedStatement.getResultSet();
 		while (result.next()) {
-			list = result.getString(1);
+			list = result.getString(1); break;
 		}
 		if (list == null) {
 			preparedStatement = connection.prepareStatement(insertQuery);

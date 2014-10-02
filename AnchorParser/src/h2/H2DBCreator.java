@@ -2,8 +2,11 @@ package h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import stopwatch.Stopwatch;
 
 public class H2DBCreator {
 
@@ -26,10 +29,10 @@ public class H2DBCreator {
 	
 	public void create() throws SQLException, ClassNotFoundException{
 		Class.forName("org.h2.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:h2:" + dbPath, username, password);
+        Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath, username, password);
 
         // EntityId Table
-        stmt = conn.createStatement();  
+        stmt = connection.createStatement();  
         sql = "CREATE TABLE EntityId " +
               "(entity VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
@@ -37,7 +40,7 @@ public class H2DBCreator {
         stmt.executeUpdate(sql);
         
         // AnchorId Table
-        stmt = conn.createStatement();  
+        stmt = connection.createStatement();  
         sql = "CREATE TABLE AnchorId " +
               "(anchor VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
@@ -45,7 +48,7 @@ public class H2DBCreator {
         stmt.executeUpdate(sql);
         
         // PartialAnchorId Table
-        stmt = conn.createStatement();  
+        stmt = connection.createStatement();  
         sql = "CREATE TABLE PartialAnchorId " +
               "(partialAnchor VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
@@ -53,7 +56,7 @@ public class H2DBCreator {
         stmt.executeUpdate(sql);
         
         // AnchorToEntity Table
-        stmt = conn.createStatement();  
+        stmt = connection.createStatement();  
         sql = "CREATE TABLE AnchorToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " anchorId INTEGER not NULL, " + 
@@ -62,7 +65,7 @@ public class H2DBCreator {
         stmt.executeUpdate(sql);
         
         // PartialAnchorToEntity Table
-        stmt = conn.createStatement();  
+        stmt = connection.createStatement();  
         sql = "CREATE TABLE PartialAnchorToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " partialAnchorId INTEGER not NULL, " + 
@@ -71,15 +74,31 @@ public class H2DBCreator {
         stmt.executeUpdate(sql);
         
      // EntityToEntity Table
-        stmt = conn.createStatement();  
+        stmt = connection.createStatement();  
         sql = "CREATE TABLE EntityToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " entitySourceId INTEGER not NULL, " + 
               " entitySinkIdList VARCHAR(MAX) not NULL, " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
+    
+        // Build the important indices to speed up database building
+        System.out.println("Create index for AnchorToEntity...");
+		stmt = connection.createStatement();
+		sql = "CREATE INDEX indexAnchor ON AnchorToEntity(anchorId)";
+		stmt.executeUpdate(sql);
+		
+		System.out.println("Create index for PartialAnchorToAnchor...");
+		stmt = connection.createStatement();
+		sql = "CREATE INDEX indexPartialAnchor ON PartialAnchorToEntity(partialAnchorId)";
+		stmt.executeUpdate(sql);
+		
+		System.out.println("Create index for EntityToEntity...");
+		stmt = connection.createStatement();
+		sql = "CREATE INDEX entitySourceIndex ON EntityToEntity(entitySourceId)";
+		stmt.executeUpdate(sql);
         
-        conn.close();
+        connection.close();
         
         System.out.println("All done.");
 	}

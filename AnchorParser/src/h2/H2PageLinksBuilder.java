@@ -47,11 +47,6 @@ public class H2PageLinksBuilder extends H2BuilderCore {
 				}
 			}
 		}
-
-		System.out.println("Create index for EntityToEntity...");
-		stmt = connection.createStatement();
-		sql = "CREATE INDEX entitySourceIndex ON EntityToEntity(entitySourceId)";
-		stmt.executeUpdate(sql);
 		
 		connection.close();
 
