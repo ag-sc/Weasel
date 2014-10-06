@@ -1,18 +1,13 @@
 package datasetEvaluator;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.TreeSet;
-
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
 import datasetParser.DatasetParser;
 import datatypes.AnnotatedSentenceDeprecated;
-import datatypes.EntityOccurance;
-import datatypes.FragmentPlusCandidates;
 import entityLinker.EntityLinker;
 
 

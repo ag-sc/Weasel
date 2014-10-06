@@ -49,6 +49,10 @@ public class H2AnchorBuilder extends H2BuilderCore{
 			if (splitAnchor.length > 1) {
 				for (String partialAnchor : splitAnchor) {
 					if (!stopWords.contains(partialAnchor.toLowerCase())) {
+						searchQuery = "SELECT ID FROM PartialAnchorID WHERE PartialAnchor IS (?)";
+						insertQuery = "INSERT INTO PartialAnchorID(PartialAnchor) VALUES (?)";
+						source = getId(partialAnchor, searchQuery, insertQuery, connection);
+						
 						searchQuery = "SELECT entityIdList FROM PartialAnchorToEntity WHERE partialAnchorId IS (?)";
 						insertQuery = "INSERT INTO PartialAnchorToEntity(partialAnchorId, entityIdList) VALUES (?,?)";
 						updateQuery = "UPDATE PartialAnchorToEntity SET entityIdList = (?) WHERE partialAnchorId = (?)";

@@ -179,7 +179,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				if(nodeSource.content.fragment == nodeSink.content.fragment) continue;
 				
 				if(semSig.contains(nodeSink.content.candidate)){ // conditions fullfilled, build edge
-					//System.out.println("	Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
+					System.out.println("	Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
 					graph.addEdge(nodeSource, nodeSink);
 				}
 			}

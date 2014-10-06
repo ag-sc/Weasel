@@ -34,12 +34,13 @@ public class DatasetEvaluatorSandbox {
 			KORE50Parser parser = new KORE50Parser(br);
 			
 			// PageLinks
-			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/PageLinksWithWeights" );
-			Neo4jCore.registerShutdownHook( graphDB2 );
+//			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/PageLinksWithWeights" );
+//			Neo4jCore.registerShutdownHook( graphDB2 );
+//			
+//			// Evaluation Engine
+//			Neo4jConnector semSigConnector = new Neo4jConnector(graphDB2, Neo4jCore.wikiLinkLabel, null);
 			
-			// Evaluation Engine
-			Neo4jConnector semSigConnector = new Neo4jConnector(graphDB2, Neo4jCore.wikiLinkLabel, null);
-			EvaluationEngine evaluator = new BabelfyEvaluation(semSigConnector, 0.3, 10);
+			
 			
 			// Connectors
 //			GraphDatabaseService graphDB = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/Anchors_old" );
@@ -47,11 +48,15 @@ public class DatasetEvaluatorSandbox {
 //			Neo4jConnector anchors = new Neo4jConnector(graphDB, Neo4jCore.anchorLabel, null);
 //			Neo4jConnector partialAnchors = new Neo4jConnector(graphDB, Neo4jCore.partialAnchorLabel, null);
 //			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
-			String dbPathH2 = "E:/Master Project/data/H2/Anchors/h2Anchors";
-			String partialAnchorSQL = "select ANCHOR  from ANCHORID where ID in (select PARTIALANCHORTOANCHOR.ANCHORID from PARTIALANCHORTOANCHOR, PARTIALANCHORID where PARTIALANCHORID.ID = PARTIALANCHORTOANCHOR.PARTIALANCHORID and PARTIALANCHOR is (?))";
+			String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
+			String partialAnchorSQL = "SELECT EntityIdList FROM PartialAnchorToEntity where id is (select id from partialAnchorID where partialAnchor is (?))";
 			H2Connector partialAnchors = new H2Connector(dbPathH2, "sa", "", partialAnchorSQL);
-			String anchorSQL = "select ENTITY from ENTITYID where ID in (select ANCHORTOENTITY.ENTITYID from ANCHORID , ANCHORTOENTITY where ANCHORID.ID = ANCHORTOENTITY.ANCHORID and ANCHOR is (?))";
+			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
 			H2Connector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
+			
+			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
+			H2Connector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
+			EvaluationEngine evaluator = new BabelfyEvaluation(semSigConnector, 0.3, 10);
 			
 			// Linker & Evaluation
 			System.out.println("About to start evaluation.");

@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.TreeSet;
+
+import datatypes.H2List;
 
 public class H2Connector extends DatabaseConnector {
 
@@ -29,9 +32,12 @@ public class H2Connector extends DatabaseConnector {
 			preparedStatement.setString(1, fragment);
 			preparedStatement.executeQuery();
 			ResultSet result = preparedStatement.getResultSet();
+			String tmp ="";
 			while (result.next()) {
-				list.add(result.getString(1));
+				tmp = result.getString(1);
 			}
+			TreeSet<String> tmpSet = H2List.stringToSet(tmp);
+			list = new LinkedList<String>(tmpSet);
 		} catch (SQLException e) {
 			// TODO: handle exception
 			e.printStackTrace();
