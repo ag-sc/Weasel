@@ -53,9 +53,8 @@ public class H2BuilderCore {
 		return value;
 	}
 	
-	protected void addListEntry(int id, int newListEntry, String searchQuery, String insertQuery, String updateQuery, Connection connection) throws SQLException{
+	protected void addListEntry(int id, String newEntry, String searchQuery, String insertQuery, String updateQuery, Connection connection) throws SQLException{
 		String list = null;
-		String newEntry = Integer.toString(newListEntry);
 		preparedStatement = connection.prepareStatement(searchQuery);
 		preparedStatement.setInt(1, id);
 		preparedStatement.executeQuery();

@@ -38,7 +38,7 @@ public class H2PageLinksBuilder extends H2BuilderCore {
 				searchQuery = "SELECT entitySinkIdList FROM EntityToEntity WHERE entitySourceId IS (?)";
 				insertQuery = "INSERT INTO EntityToEntity(entitySourceId, entitySinkIdList) VALUES (?,?)";
 				updateQuery = "UPDATE EntityToEntity SET entitySinkIdList = (?) WHERE entitySourceId = (?)";
-				addListEntry(source, sink, searchQuery, insertQuery, updateQuery, connection);
+				addListEntry(source, Integer.toString(sink), searchQuery, insertQuery, updateQuery, connection);
 
 				if (lineCounter % 1000000 == 0) {
 					sw.stop();

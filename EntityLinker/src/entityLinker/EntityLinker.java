@@ -79,13 +79,14 @@ public class EntityLinker {
 	public AnnotatedSentence getFragmentedSentence(String sentence) {
 		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
 		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
-		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
+		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
 		
 		sw.start();
 		for (int i = 0; i < splitSentence.length; i++) {
 			if (stopWords == null || !stopWords.contains(splitSentence[i])) {
 				Fragment f = new Fragment(i, i);
 				f.candidates.addAll(anchors.getFragmentTargets(splitSentence[i]));
+				if(f.candidates.isEmpty()) continue;
 				as.addFragment(f);
 			}
 		}

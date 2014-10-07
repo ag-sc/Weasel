@@ -1,6 +1,5 @@
 package annotatedSentence;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -44,6 +43,10 @@ public class Fragment implements Comparable<Fragment>{
 	
 	public void addCandidats(TreeSet<String> newCandidates){
 		candidates.addAll(newCandidates);
+	}
+	
+	public int length(){
+		return stop - start + 1;
 	}
 
 }

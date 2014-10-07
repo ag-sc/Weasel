@@ -70,6 +70,7 @@ public class H2DBCreator {
               "(id INTEGER AUTO_INCREMENT, " +
               " partialAnchorId INTEGER not NULL, " + 
               " entityIdList VARCHAR(MAX) not NULL, " + 
+              " entityList VARCHAR(MAX) default '', " +
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
         

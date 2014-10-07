@@ -42,7 +42,7 @@ public class H2AnchorBuilder extends H2BuilderCore{
 			insertQuery = "INSERT INTO AnchorToEntity(anchorId, entityIdList) VALUES (?,?)";
 			updateQuery = "UPDATE anchorToEntity SET entityIdList = (?) WHERE anchorId = (?)";
 
-			addListEntry(source, sink, searchQuery, insertQuery, updateQuery, connection);
+			addListEntry(source, Integer.toString(sink), searchQuery, insertQuery, updateQuery, connection);
 			
 			
 			String[] splitAnchor = triplet[0].split(" ");
@@ -57,7 +57,25 @@ public class H2AnchorBuilder extends H2BuilderCore{
 						insertQuery = "INSERT INTO PartialAnchorToEntity(partialAnchorId, entityIdList) VALUES (?,?)";
 						updateQuery = "UPDATE PartialAnchorToEntity SET entityIdList = (?) WHERE partialAnchorId = (?)";
 
-						addListEntry(source, sink, searchQuery, insertQuery, updateQuery, connection);
+						addListEntry(source, Integer.toString(sink), searchQuery, insertQuery, updateQuery, connection);
+						
+						sql = "SELECT entityList FROM PartialAnchorToEntity WHERE partialAnchorId IS (?)";
+						preparedStatement = connection.prepareStatement(sql);
+						preparedStatement.setInt(1, source);
+						preparedStatement.executeQuery();
+						result = preparedStatement.getResultSet();
+						String value = "";
+						while (result.next()) {
+							value = result.getString(1); break;
+						}
+						
+						value = value + triplet[0] + ";";
+						
+						sql = "UPDATE PartialAnchorToEntity SET entityList = (?) WHERE partialAnchorId = (?)";
+						preparedStatement = connection.prepareStatement(sql);
+						preparedStatement.setString(1, value);
+						preparedStatement.setInt(2, source);
+						preparedStatement.execute();
 					}
 				}
 			}

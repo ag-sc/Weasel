@@ -8,7 +8,7 @@ public class H2List {
 	
 	public static TreeSet<String> stringToSet(String sqlList){
 		TreeSet<String> set = new TreeSet<String>();
-		for(String s: sqlList.split(delimiter)) set.add(s);
+		if(sqlList != null) for(String s: sqlList.split(delimiter)) set.add(s);
 		return set;
 	}
 	

@@ -55,7 +55,8 @@ public class AnnotatedSentence {
 			if(f.probability < minimumScore) break;
 			boolean dominated = false;
 			for (int i = f.start; i <= f.stop; i++) {
-				if (getWordList().get(i).getDominantFragment() != null) {
+				if (getWordList().get(i).getDominantFragment() != null
+						&& getWordList().get(i).getDominantFragment().length() >= f.length()) {
 					dominated = true;
 					break;
 				}

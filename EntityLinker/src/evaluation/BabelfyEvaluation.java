@@ -14,7 +14,9 @@ import java.util.TreeSet;
 import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
+import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
+import databaseConnectors.H2Connector;
 import datatypes.EntityOccurance;
 import datatypes.FragmentCandidateTuple;
 import datatypes.FragmentPlusCandidates;
@@ -179,7 +181,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				if(nodeSource.content.fragment == nodeSink.content.fragment) continue;
 				
 				if(semSig.contains(nodeSink.content.candidate)){ // conditions fullfilled, build edge
-					System.out.println("	Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
+					//System.out.println("	Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
 					graph.addEdge(nodeSource, nodeSink);
 				}
 			}
@@ -203,6 +205,17 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		}
 		
 		annotatedSentence.assign(minimumScore);
+		
+		if(semanticSignatureDB instanceof H2Connector){
+			for(Word w: annotatedSentence.getWordList()){
+				Fragment f = w.getDominantFragment();
+				if(f != null){
+					String tmp = f.getValue();
+					tmp = ((H2Connector)semanticSignatureDB).resolveID(tmp);
+					f.setValue(tmp);
+				}
+			}
+		}
 		
 		System.out.println("	Evaluation complete.");
 	}

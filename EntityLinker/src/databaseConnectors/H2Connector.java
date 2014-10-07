@@ -22,6 +22,24 @@ public class H2Connector extends DatabaseConnector {
 		Class.forName("org.h2.Driver");
 		connection = DriverManager.getConnection("jdbc:h2:tcp://localhost:9092/" + dbPath, username, password);
 	}
+	
+	public String resolveID (String id){
+		String value = null;
+		
+		try {
+			String sql = "SELECT Entity FROM EntityID WHERE ID IS (?)";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setInt(1, Integer.parseInt(id));
+			preparedStatement.executeQuery();
+			ResultSet result = preparedStatement.getResultSet();
+			while (result.next()) {
+				value = result.getString("Entity");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return value;
+	}
 
 	@Override
 	public LinkedList<String> getFragmentTargets(String fragment) {
@@ -32,7 +50,7 @@ public class H2Connector extends DatabaseConnector {
 			preparedStatement.setString(1, fragment);
 			preparedStatement.executeQuery();
 			ResultSet result = preparedStatement.getResultSet();
-			String tmp ="";
+			String tmp = null;
 			while (result.next()) {
 				tmp = result.getString(1);
 			}

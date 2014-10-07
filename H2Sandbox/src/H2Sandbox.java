@@ -19,13 +19,13 @@ public class H2Sandbox {
 
 	public static void main(String[] args){
 //		String dbPath = "../../data/H2/test/test3";
-		String dbPath = "/media/data/shared/ftristram/pageLinks/H2 Anchors/h2_anchors_pagelinks";
-//		String filePath = "../../data/Wikipedia/Pagelinks/page_links_en.nt";		
-		String filePath = "page_links_en.nt";
-//		String filePath2 = "../../data/Wikipedia Anchor/anchors.txt";		
-		String filePath2 = "anchors.txt";
-		
+//		String filePath = "../../data/Wikipedia/Pagelinks/test/toyset.txt";		
+//		String filePath2 = "../../data/Wikipedia Anchor/test/toyset.txt";		
 //		String stopwordsPath = "../../data/stopwords.txt";
+		
+		String dbPath = "/media/data/shared/ftristram/pageLinks/H2 Anchors/h2_anchors_pagelinks";
+		String filePath = "page_links_en.nt";
+		String filePath2 = "anchors.txt";
 		String stopwordsPath = "stopwords.txt";
 		
         H2DBCreator dbCreator = new H2DBCreator(dbPath);
