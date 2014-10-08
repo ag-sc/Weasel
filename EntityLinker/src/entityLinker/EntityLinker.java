@@ -8,9 +8,11 @@ import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import databaseConnectors.DatabaseConnector;
+import databaseConnectors.H2Connector;
 import datatypes.AnnotatedSentenceDeprecated;
 import datatypes.EntityOccurance;
 import datatypes.FragmentPlusCandidates;
+import datatypes.H2List;
 import evaluation.EvaluationEngine;
 import fileparser.StopWordParser;
 

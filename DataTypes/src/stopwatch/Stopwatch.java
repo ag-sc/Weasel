@@ -22,6 +22,7 @@ public class Stopwatch {
 	long start, stop;
 	double divisor;
 	String time; 
+	public double doubleTime;
 	
 	public Stopwatch(){
 		this(UNIT.MILLISECONDS);
@@ -41,6 +42,7 @@ public class Stopwatch {
 		stop = System.nanoTime();
 		Double passedTime = (stop - start) / divisor;
 		time = passedTime.toString();
+		doubleTime = passedTime;
 		return time;
 	}
 	

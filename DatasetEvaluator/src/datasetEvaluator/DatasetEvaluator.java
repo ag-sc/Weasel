@@ -30,7 +30,9 @@ public class DatasetEvaluator {
 	public void evaluate() throws IOException{	
 		
 		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
+		int sentenceCounter = 0;
 		while((parserSentence = parser.parse()).length() > 0){
+			System.out.println("Sentence " + (sentenceCounter++) + ":");
 			AnnotatedSentence as = linker.link(parserSentence.getSentence());
 			LinkedList<Word> result = as.getWordList();
 			
@@ -47,12 +49,12 @@ public class DatasetEvaluator {
 							numberOfCorrectCandidates++;
 					}
 
-					if (checkupConnector.fragmentExists(entity)) {
-		// System.out.println(" - In DB: " + entity);
-						numberOfPossiblyKnownEntities++;
-					} else {
-						System.out.println("not in db: " + entity);
-					}
+//					if (checkupConnector.fragmentExists(entity)) {
+//		// System.out.println(" - In DB: " + entity);
+//						numberOfPossiblyKnownEntities++;
+//					} else {
+//						System.out.println("not in db: " + entity);
+//					}
 
 					numberOfEntities++;
 					if (entity.equals(candidate)) {
@@ -63,7 +65,7 @@ public class DatasetEvaluator {
 			}
 			
 			System.out.println("Assigned:");
-			System.out.println(result);
+			System.out.println(result + "\n");
 		}
 		System.out.println(numberOfEntities + " entities in evaluation set.");
 		System.out.println(numberOfPossiblyKnownEntities + " entities are in our database ("+ ((double)numberOfPossiblyKnownEntities / (double)numberOfEntities * 100.00)+"%)");

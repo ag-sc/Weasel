@@ -59,22 +59,10 @@ public class H2AnchorBuilder extends H2BuilderCore{
 
 						addListEntry(source, Integer.toString(sink), searchQuery, insertQuery, updateQuery, connection);
 						
-						sql = "SELECT entityList FROM PartialAnchorToEntity WHERE partialAnchorId IS (?)";
+						sql = "INSERT INTO PartialAnchorToAnchor(partialAnchorId, anchor) VALUES (?,?)";
 						preparedStatement = connection.prepareStatement(sql);
 						preparedStatement.setInt(1, source);
-						preparedStatement.executeQuery();
-						result = preparedStatement.getResultSet();
-						String value = "";
-						while (result.next()) {
-							value = result.getString(1); break;
-						}
-						
-						value = value + triplet[0] + ";";
-						
-						sql = "UPDATE PartialAnchorToEntity SET entityList = (?) WHERE partialAnchorId = (?)";
-						preparedStatement = connection.prepareStatement(sql);
-						preparedStatement.setString(1, value);
-						preparedStatement.setInt(2, source);
+						preparedStatement.setString(2, triplet[0]);
 						preparedStatement.execute();
 					}
 				}

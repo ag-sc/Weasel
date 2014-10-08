@@ -4,7 +4,6 @@ import graph.Graph;
 import graph.GraphEdge;
 import graph.Node;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,9 +16,7 @@ import annotatedSentence.Fragment;
 import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
 import databaseConnectors.H2Connector;
-import datatypes.EntityOccurance;
 import datatypes.FragmentCandidateTuple;
-import datatypes.FragmentPlusCandidates;
 
 public class BabelfyEvaluation extends EvaluationEngine{
 
@@ -28,6 +25,9 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	private double numberOfFragments = 0.0;
 	private double minimumScore = 0.0;
 	private int ambiguityLevel = 1;
+	
+	public double lookUpTime = 0.0;
+	public double searchSetTime = 0.0;
 	
 	public BabelfyEvaluation(DatabaseConnector semanticSignatureDB, double minimumScore, int ambiguityLevel){
 		this.semanticSignatureDB = semanticSignatureDB;
@@ -164,7 +164,9 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		System.out.println(graph.nodeMap.size() + " graph nodes added. " + stopwatch.stop() + " s");
 		stopwatch.start();
 		// build edges
+		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
+			sw.start();
 			TreeSet<String> semSig = new TreeSet<String>();
 			//long start = System.nanoTime();
 			LinkedList<String> tmp = semanticSignatureDB.getFragmentTargets(nodeSource.content.candidate);
@@ -175,7 +177,10 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			for (String s : tmp) {
 				semSig.add(s);
 			}
+			sw.stop();
+			lookUpTime += sw.doubleTime;
 			
+			sw.start();
 			for(Node<FragmentCandidateTuple> nodeSink: graph.nodeMap.values()){
 				// if fragment is the same, skip
 				if(nodeSource.content.fragment == nodeSink.content.fragment) continue;
@@ -185,6 +190,8 @@ public class BabelfyEvaluation extends EvaluationEngine{
 					graph.addEdge(nodeSource, nodeSink);
 				}
 			}
+			sw.stop();
+			searchSetTime += sw.doubleTime;
 		}
 		System.out.println("Graph edges added. Time: " + stopwatch.stop() + " s");
 		

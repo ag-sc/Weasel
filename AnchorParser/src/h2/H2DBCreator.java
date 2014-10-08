@@ -70,16 +70,24 @@ public class H2DBCreator {
               "(id INTEGER AUTO_INCREMENT, " +
               " partialAnchorId INTEGER not NULL, " + 
               " entityIdList VARCHAR(MAX) not NULL, " + 
-              " entityList VARCHAR(MAX) default '', " +
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
         
-     // EntityToEntity Table
+        // EntityToEntity Table
         stmt = connection.createStatement();  
         sql = "CREATE TABLE EntityToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " entitySourceId INTEGER not NULL, " + 
               " entitySinkIdList VARCHAR(MAX) not NULL, " + 
+              " PRIMARY KEY ( id ))"; 
+        stmt.executeUpdate(sql);
+        
+        // PartialAnchorToAnchor Table
+        stmt = connection.createStatement();  
+        sql = "CREATE TABLE PartialAnchorToAnchor " +
+              "(id INTEGER AUTO_INCREMENT, " +
+              " partialAnchorId INTEGER not NULL, " + 
+              " anchor VARCHAR(MAX) not NULL, " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
     
@@ -97,6 +105,11 @@ public class H2DBCreator {
 		System.out.println("Create index for EntityToEntity...");
 		stmt = connection.createStatement();
 		sql = "CREATE INDEX entitySourceIndex ON EntityToEntity(entitySourceId)";
+		stmt.executeUpdate(sql);
+		
+		System.out.println("Create index for PartialAnchorToAnchor...");
+		stmt = connection.createStatement();
+		sql = "CREATE INDEX PartialAnchorToAnchorIndex ON PartialAnchorToAnchor(partialAnchorId)";
 		stmt.executeUpdate(sql);
         
         connection.close();
