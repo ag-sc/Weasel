@@ -75,12 +75,7 @@ public class H2AnchorBuilder extends H2BuilderCore{
 				
 		}
 
-		// create indices
-		System.out.println("Create index for EntityId...");
-		stmt = connection.createStatement();
-		sql = "CREATE INDEX indexEntityID ON EntityId(id)";
-		stmt.executeUpdate(sql);
-		
+		// create indices		
 		System.out.println("Create index for AnchorId...");
 		stmt = connection.createStatement();
 		sql = "CREATE INDEX indexAnchorID ON AnchorId(id)";

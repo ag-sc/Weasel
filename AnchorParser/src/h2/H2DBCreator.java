@@ -36,6 +36,7 @@ public class H2DBCreator {
         sql = "CREATE TABLE EntityId " +
               "(entity VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
+              " SemanticSignature VARCHAR(MAX), " + 
               " PRIMARY KEY ( entity ))"; 
         stmt.executeUpdate(sql);
         
@@ -79,6 +80,7 @@ public class H2DBCreator {
               "(id INTEGER AUTO_INCREMENT, " +
               " entitySourceId INTEGER not NULL, " + 
               " entitySinkIdList VARCHAR(MAX) not NULL, " + 
+              " WeightList VARCHAR(MAX), " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
         
@@ -92,6 +94,11 @@ public class H2DBCreator {
         stmt.executeUpdate(sql);
     
         // Build the important indices to speed up database building
+        System.out.println("Create index for EntityID...");
+		stmt = connection.createStatement();
+		sql = "CREATE INDEX indexEntityID ON EntityId(id)";
+		stmt.executeUpdate(sql);
+        
         System.out.println("Create index for AnchorToEntity...");
 		stmt = connection.createStatement();
 		sql = "CREATE INDEX indexAnchor ON AnchorToEntity(anchorId)";

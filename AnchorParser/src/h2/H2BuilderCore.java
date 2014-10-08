@@ -1,8 +1,6 @@
 package h2;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.TreeSet;
@@ -10,19 +8,12 @@ import java.util.TreeSet;
 import datatypes.H2List;
 import fileparser.AnchorFileParser;
 
-public class H2BuilderCore {
+public class H2BuilderCore extends H2Core{
 	
-	String dbPath, username, password;
 	AnchorFileParser anchorParser;
-	PreparedStatement preparedStatement;
-	Statement stmt;
-	String sql;
-	ResultSet generatedKeys, result;
 	
 	public H2BuilderCore(String dbPath, String username, String password){
-		this.dbPath = dbPath;
-		this.username = username;
-		this.password = password;
+		super(dbPath, username, password);
 	}
 
 	protected int getId(String s, String searchQuery, String insertQuery, Connection connection) throws Exception {

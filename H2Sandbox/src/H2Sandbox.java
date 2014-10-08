@@ -8,6 +8,7 @@ import databaseConnectors.H2Connector;
 import h2.H2AnchorBuilder;
 import h2.H2DBCreator;
 import h2.H2PageLinksBuilder;
+import h2.H2WeightBuilder;
 
 
 
@@ -22,6 +23,8 @@ public class H2Sandbox {
 //		String filePath = "../../data/Wikipedia/Pagelinks/test/toyset.txt";		
 //		String filePath2 = "../../data/Wikipedia Anchor/test/toyset.txt";		
 //		String stopwordsPath = "../../data/stopwords.txt";
+		
+//		dbPath = "../../data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
 		
 		String dbPath = "/media/data/shared/ftristram/pageLinks/H2 Anchors/h2_anchors_pagelinks";
 		String filePath = "page_links_en.nt";
@@ -45,6 +48,9 @@ public class H2Sandbox {
 			
         	H2PageLinksBuilder builder = new H2PageLinksBuilder(dbPath, filePath, "sa", "");
 			builder.run();
+			
+//			H2WeightBuilder weightBuilder = new H2WeightBuilder(dbPath, "sa", "");
+//			weightBuilder.run();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
