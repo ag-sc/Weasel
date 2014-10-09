@@ -89,6 +89,7 @@ public class EntityLinker {
 				Fragment f = new Fragment(i, i);
 				f.candidates.addAll(anchors.getFragmentTargets(splitSentence[i]));
 				if(f.candidates.isEmpty()) continue;
+				f.originWord = splitSentence[i];
 				as.addFragment(f);
 			}
 		}
@@ -121,6 +122,7 @@ public class EntityLinker {
 					if (validCandidate) {
 						Fragment f = new Fragment(i - candidatIndex, i - candidatIndex + splitCandidat.length - 1);
 						f.candidates.addAll(anchors.getFragmentTargets(candidat));
+						f.originWord = splitSentence[i];
 						as.addFragment(f);
 					}				
 				}

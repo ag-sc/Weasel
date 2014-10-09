@@ -17,6 +17,7 @@ import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
 import databaseConnectors.H2Connector;
 import datatypes.FragmentCandidateTuple;
+import datatypes.SimpleFileWriter;
 
 public class BabelfyEvaluation extends EvaluationEngine{
 
@@ -33,6 +34,25 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		this.semanticSignatureDB = semanticSignatureDB;
 		this.minimumScore = minimumScore;
 		this.ambiguityLevel = ambiguityLevel;
+	}
+	
+	private void writeGraphToDotFile(String path, Graph<FragmentCandidateTuple> graph, H2Connector connector){
+		SimpleFileWriter fw = new SimpleFileWriter(path);
+		fw.writeln("strict digraph {");
+		fw.writeln("overlap = false;");
+		fw.writeln("splines = true");
+		
+		for(Node<FragmentCandidateTuple> n: graph.nodeMap.values()){
+			for(GraphEdge<FragmentCandidateTuple> e: n.outgoingEdges){
+				fw.writeln("\t" + n + "[label=\"" + connector.resolveID(n.toString()) + "\"];");
+				fw.writeln("\t" + e.sink + "[label=\"" + connector.resolveID(e.sink.toString()) + "\"];");
+				String tmp = n + " -> " + e.sink + ";";
+				fw.writeln("\t" + tmp);
+			}
+		}
+		
+		fw.writeln("}");
+		fw.close();
 	}
 	
 	private Graph<FragmentCandidateTuple> trimToDenseSubgraph(Graph<FragmentCandidateTuple> graph){
@@ -150,6 +170,9 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	@Override
 	public void evaluate(AnnotatedSentence annotatedSentence) {
 		System.out.println("Starting evaluation... ");
+		SimpleFileWriter fw = new SimpleFileWriter("../../data/out.txt");
+		fw.writeln("Nodes:");
+		
 		Stopwatch stopwatch = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		LinkedList<Fragment> fragmentList = annotatedSentence.buildFragmentList();
 		numberOfFragments = fragmentList.size();
@@ -158,12 +181,14 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		for(Fragment fragment: fragmentList){
 			for(String candidate: fragment.candidates){
 				graph.addNode(new FragmentCandidateTuple(candidate, fragment));
+				fw.writeln(fragment.originWord + " - candidate: " + ((H2Connector)semanticSignatureDB).resolveID(candidate));
 			}
 		}
 		
 		System.out.println(graph.nodeMap.size() + " graph nodes added. " + stopwatch.stop() + " s");
 		stopwatch.start();
 		// build edges
+		fw.writeln("\nEdges:");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
 			sw.start();
@@ -188,18 +213,23 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				if(semSig.contains(nodeSink.content.candidate)){ // conditions fullfilled, build edge
 					//System.out.println("	Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
 					graph.addEdge(nodeSource, nodeSink);
+					fw.writeln(((H2Connector)semanticSignatureDB).resolveID(nodeSource.content.candidate) + " --> " + ((H2Connector)semanticSignatureDB).resolveID(nodeSink.content.candidate));
 				}
 			}
 			sw.stop();
 			searchSetTime += sw.doubleTime;
 		}
 		System.out.println("Graph edges added. Time: " + stopwatch.stop() + " s");
+		fw.close();
+		writeGraphToDotFile("../../data/graph.dot", graph, (H2Connector)semanticSignatureDB);
+		
 		
 		// Trim Graph
 		stopwatch.start();
 		trimToDenseSubgraph(graph);
 		scoreAllFragments();
 		System.out.println("Graph trimmed. Time: " + stopwatch.stop() + " s");
+		writeGraphToDotFile("../../data/graph_trimmed.dot", graph, (H2Connector)semanticSignatureDB);
 		
 		HashMap<Fragment, Double> scoreMap = new HashMap<Fragment, Double>();
 		for(Node<FragmentCandidateTuple> node: graph.nodeMap.values()){

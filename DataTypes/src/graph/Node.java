@@ -21,5 +21,9 @@ public class Node <T extends Comparable<T>> implements Comparable<Node<T>>{
 	public int compareTo(Node<T> node) {
 		return content.compareTo(node.content);
 	}
+	
+	public String toString(){
+		return content.toString();
+	}
 
 }

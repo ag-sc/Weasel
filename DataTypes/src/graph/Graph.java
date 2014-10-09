@@ -3,6 +3,8 @@ package graph;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import datatypes.SimpleFileWriter;
+
 
 public class Graph <T extends Comparable<T>>{
 	public HashMap<T, Node<T>> nodeMap;
@@ -109,6 +111,7 @@ public class Graph <T extends Comparable<T>>{
 		}
 		return tmp / ((double)size());
 	}
+
 }
 
 

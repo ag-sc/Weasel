@@ -10,6 +10,7 @@ public class Fragment implements Comparable<Fragment>{
 	public int start, stop;
 	String id;
 	String entity = "";
+	public String originWord ="<none>";
 	
 	public Fragment(int start, int stop, String id, double probability) {
 		this.start = start;

@@ -18,4 +18,8 @@ public class FragmentCandidateTuple implements Comparable<FragmentCandidateTuple
 	public int compareTo(FragmentCandidateTuple tuple) {
 		return candidate.compareTo(tuple.candidate);
 	}
+	
+	public String toString(){
+		return candidate;
+	}
 }
