@@ -206,7 +206,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			Double tmp = scoreMap.get(node.content.fragment);
 			if(tmp == null || tmp < node.content.score){
 				node.content.fragment.probability = node.content.score;
-				node.content.fragment.setValue(node.content.candidate);
+				node.content.fragment.setID(node.content.candidate);
 				scoreMap.put(node.content.fragment, node.content.score);
 			}
 		}
@@ -217,9 +217,9 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			for(Word w: annotatedSentence.getWordList()){
 				Fragment f = w.getDominantFragment();
 				if(f != null){
-					String tmp = f.getValue();
+					String tmp = f.getID();
 					tmp = ((H2Connector)semanticSignatureDB).resolveID(tmp);
-					f.setValue(tmp);
+					f.setEntity(tmp);
 				}
 			}
 		}

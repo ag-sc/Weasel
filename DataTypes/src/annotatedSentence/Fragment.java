@@ -8,12 +8,13 @@ public class Fragment implements Comparable<Fragment>{
 	public double probability = 0.0;
 	public TreeSet<String> candidates;
 	public int start, stop;
-	String value;
+	String id;
+	String entity = "";
 	
-	public Fragment(int start, int stop, String value, double probability) {
+	public Fragment(int start, int stop, String id, double probability) {
 		this.start = start;
 		this.stop = stop;
-		this.value = value;
+		this.id = id;
 		this.probability = probability;
 		candidates = new TreeSet<String>();
 	}
@@ -29,12 +30,20 @@ public class Fragment implements Comparable<Fragment>{
 		else return 0;
 	}
 	
-	public void setValue(String value){
-		this.value = value;
+	public void setID(String id){
+		this.id = new String(id);
 	}
 	
-	public String getValue(){
-		return value;
+	public String getID(){
+		return id;
+	}
+	
+	public void setEntity(String entity){
+		this.entity = new String(entity);
+	}
+	
+	public String getEntity(){
+		return entity;
 	}
 	
 	public void addCandidats(LinkedList<String> newCandidates){

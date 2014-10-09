@@ -16,6 +16,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import stopwatch.Stopwatch;
 import neo4j.Neo4jCore;
 import databaseConnectors.H2Connector;
+import databaseConnectors.H2PAConnector;
 import databaseConnectors.JDBMConnector;
 import databaseConnectors.JustInTimeSemSigConnector;
 import databaseConnectors.Neo4jConnector;
@@ -49,14 +50,14 @@ public class DatasetEvaluatorSandbox {
 //			Neo4jConnector partialAnchors = new Neo4jConnector(graphDB, Neo4jCore.partialAnchorLabel, null);
 //			Neo4jConnector checkupConnector = new Neo4jConnector(graphDB, Neo4jCore.entityLabel, null);
 			String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
-			String partialAnchorSQL = "SELECT EntityIdList FROM PartialAnchorToEntity where id is (select id from partialAnchorID where partialAnchor is (?))";
-			H2Connector partialAnchors = new H2Connector(dbPathH2, "sa", "", partialAnchorSQL);
+			String partialAnchorSQL = "SELECT Anchor FROM PartialAnchorToAnchor where partialAnchorID is (select id from partialAnchorID where partialAnchor is (?))";
+			H2Connector partialAnchors = new H2PAConnector(dbPathH2, "sa", "", partialAnchorSQL);
 			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
 			H2Connector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
 			
 			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 			H2Connector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
-			EvaluationEngine evaluator = new BabelfyEvaluation(semSigConnector, 0.3, 10);
+			EvaluationEngine evaluator = new BabelfyEvaluation(semSigConnector, 0.1, 10);
 			
 			// Linker & Evaluation
 			//System.out.println("About to start evaluation.");

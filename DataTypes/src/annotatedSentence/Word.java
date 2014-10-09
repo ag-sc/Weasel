@@ -23,8 +23,8 @@ public class Word {
 	}	
 	
 	public String toString() {
-		if (dominantFragment != null && dominantFragment.value != null)
-			return value + "\t" + dominantFragment.value;
+		if (dominantFragment != null && dominantFragment.entity != null)
+			return value + "\t" + dominantFragment.entity;
 		else
 			return value;
 	}

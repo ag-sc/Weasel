@@ -25,12 +25,12 @@ public class AnnotatedSentenceTest {
 		as.assign();
 		
 		LinkedList<Word> wordList = as.getWordList();
-		assertEquals("1 is assigned to 12", "12", wordList.get(0).getDominantFragment().getValue());
-		assertEquals("2 is assigned to 12", "12", wordList.get(1).getDominantFragment().getValue());
-		assertEquals("3 is assigned to 345", "345", wordList.get(2).getDominantFragment().getValue());
-		assertEquals("4 is assigned to 345", "345", wordList.get(3).getDominantFragment().getValue());
-		assertEquals("5 is assigned to 345", "345", wordList.get(4).getDominantFragment().getValue());
-		assertEquals("6 is assigned to 6", "6", wordList.get(5).getDominantFragment().getValue());
+		assertEquals("1 is assigned to 12", "12", wordList.get(0).getDominantFragment().getID());
+		assertEquals("2 is assigned to 12", "12", wordList.get(1).getDominantFragment().getID());
+		assertEquals("3 is assigned to 345", "345", wordList.get(2).getDominantFragment().getID());
+		assertEquals("4 is assigned to 345", "345", wordList.get(3).getDominantFragment().getID());
+		assertEquals("5 is assigned to 345", "345", wordList.get(4).getDominantFragment().getID());
+		assertEquals("6 is assigned to 6", "6", wordList.get(5).getDominantFragment().getID());
 	}
 
 }

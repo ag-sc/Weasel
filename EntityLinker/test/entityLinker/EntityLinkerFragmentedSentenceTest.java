@@ -52,13 +52,13 @@ public class EntityLinkerFragmentedSentenceTest extends EntityLinkerBaseTest{
 		Fragment tmp;
 		tmp = map.get(0).get(1);
 		tmp.probability = 0.5;
-		tmp.setValue(tmp.candidates.first());
+		tmp.setID(tmp.candidates.first());
 		tmp = map.get(1).get(2);
 		tmp.probability = 0.6;
-		tmp.setValue(tmp.candidates.first());
+		tmp.setID(tmp.candidates.first());
 		tmp = map.get(2).get(4);
 		tmp.probability = 0.7;
-		tmp.setValue(tmp.candidates.first());
+		tmp.setID(tmp.candidates.first());
 		
 		as.assign();
 		LinkedList<Word> list = as.getWordList();

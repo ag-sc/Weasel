@@ -12,7 +12,7 @@ public class RandomEvaluator extends EvaluationEngine{
 			int counter = 0;
 			for(String s: f.candidates){
 				if(counter == index){
-					f.setValue(s);
+					f.setID(s);
 					f.probability = Math.random();
 					break;
 				}
