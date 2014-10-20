@@ -4,6 +4,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/H2/bin/h2-1.4.181.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Neo4j Community/bin/neo4j-desktop-2.1.3.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/wikixmlj/wikixmlj-r43.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/wikixmlj/bzip2.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/org.eclipse.mylyn.wikitext.core_2.3.0.N20140929-1849.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/com.google.guava_15.0.0.v201403281430.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/org.eclipse.mylyn.wikitext.mediawiki.core_2.3.0.N20140929-1849.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DatabaseBuilder"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EntityLinker"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>

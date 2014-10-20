@@ -10,13 +10,13 @@ import java.util.regex.Pattern;
 
 public class WikiParser extends FileParser implements Closeable{
 	
-	private BufferedReader br;
-	private String stringPattern1 = "<.*?resource/([^>]+)>";
-	private String stringPattern2 = "<.*?resource/([^>]+)>";
-	private Pattern resourcePattern1;
-	private Pattern resourcePattern2;
-	private Matcher matcher1;
-	private Matcher matcher2;
+	protected BufferedReader br;
+	protected String stringPattern1 = "<.*?resource/([^>]+)>";
+	protected String stringPattern2 = "<.*?resource/([^>]+)>";
+	protected Pattern resourcePattern1;
+	protected Pattern resourcePattern2;
+	protected Matcher matcher1;
+	protected Matcher matcher2;
 	
 	public WikiParser(String filePath) throws IOException{
 		br  = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
