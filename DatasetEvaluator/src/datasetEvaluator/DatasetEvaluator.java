@@ -2,12 +2,14 @@ package datasetEvaluator;
 
 import java.io.IOException;
 import java.util.LinkedList;
+
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
 import datasetParser.DatasetParser;
 import datatypes.AnnotatedSentenceDeprecated;
+import datatypes.SimpleFileWriter;
 import entityLinker.EntityLinker;
 
 
@@ -28,6 +30,7 @@ public class DatasetEvaluator {
 	}
 	// TODO: fix the counting so that double entries are not counted twice
 	public void evaluate() throws IOException{	
+		SimpleFileWriter fw = new SimpleFileWriter("../../data/assignments.txt");
 		
 		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
 		int sentenceCounter = 0;
@@ -59,6 +62,8 @@ public class DatasetEvaluator {
 					numberOfEntities++;
 					if (entity.equals(candidate)) {
 						correctEntities++;
+					}else{
+						System.out.println("# " + sentenceCounter);
 					}
 				}
 				
@@ -66,6 +71,9 @@ public class DatasetEvaluator {
 			
 			System.out.println("Assigned:");
 			System.out.println(result + "\n");
+			fw.writeln(result.toString());
+			fw.flush();
+			
 		}
 		System.out.println(numberOfEntities + " entities in evaluation set.");
 		System.out.println(numberOfPossiblyKnownEntities + " entities are in our database ("+ ((double)numberOfPossiblyKnownEntities / (double)numberOfEntities * 100.00)+"%)");

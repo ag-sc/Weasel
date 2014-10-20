@@ -199,13 +199,15 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			//double passedTime = (end - start) / 1000000000.0;
 			//System.out.println("Passed time: " + passedTime + " s");
 			
+			sw.stop();
+			lookUpTime += sw.doubleTime;
+			sw.start();
 			for (String s : tmp) {
 				semSig.add(s);
 			}
-			sw.stop();
-			lookUpTime += sw.doubleTime;
 			
-			sw.start();
+			
+			
 			for(Node<FragmentCandidateTuple> nodeSink: graph.nodeMap.values()){
 				// if fragment is the same, skip
 				if(nodeSource.content.fragment == nodeSink.content.fragment) continue;

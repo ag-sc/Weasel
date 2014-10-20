@@ -49,9 +49,10 @@ public class KORE50Parser implements DatasetParser{
 
 				String[] splitLine = line.split("\\t");
 				for (String s : splitLine[0].split(" ")) {
+					
 					int index = annotatedSentence.addToken(s);
-
 					if (splitLine.length == 4 && !splitLine[3].equals("--NME--")) {
+						//int index = annotatedSentence.addToken(s);
 						annotatedSentence.setEntity(index, splitLine[3]);
 					}
 				}

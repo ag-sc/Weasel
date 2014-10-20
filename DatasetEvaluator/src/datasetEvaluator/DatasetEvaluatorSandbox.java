@@ -66,8 +66,8 @@ public class DatasetEvaluatorSandbox {
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			dataEvaluator.evaluate();
 			System.out.println("Evaluation time: " + sw.stop() + " minutes");
-			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime);
-			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime);
+			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime + " ms");
+			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime + " ms");
 				
 		} catch (IOException e) {
 			e.printStackTrace();

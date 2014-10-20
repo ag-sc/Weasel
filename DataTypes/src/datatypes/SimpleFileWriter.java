@@ -24,6 +24,10 @@ public class SimpleFileWriter {
 		writer.close();
 	}
 	
+	public void flush(){
+		writer.flush();
+	}
+	
 	public void writeln(String line){
 		writer.println(line);
 	}

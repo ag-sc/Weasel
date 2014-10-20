@@ -82,21 +82,12 @@ public class EntityLinker {
 		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
 		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
+				
+		Integer array[] = {1,2,4,5,6,7,8,11};
+		TreeSet<Integer> coveredWords = new TreeSet<Integer>();
+		//for(Integer i: array) coveredWords.add(i);
 		
 		sw.start();
-		for (int i = 0; i < splitSentence.length; i++) {
-			if (stopWords == null || !stopWords.contains(splitSentence[i])) {
-				Fragment f = new Fragment(i, i);
-				f.candidates.addAll(anchors.getFragmentTargets(splitSentence[i]));
-				if(f.candidates.isEmpty()) continue;
-				f.originWord = splitSentence[i];
-				as.addFragment(f);
-			}
-		}
-		
-		System.out.println("Added all anchor candidates - Time: "+sw.stop() + " s");
-		sw.start();
-
 		for (int i = 0; i < splitSentence.length; i++) {
 			if (stopWords == null || !stopWords.contains(splitSentence[i])) {
 				String fragment = splitSentence[i];
@@ -114,7 +105,7 @@ public class EntityLinker {
 					boolean validCandidate = true;
 					for (int j = 0; j < splitCandidat.length; j++) {
 						int tmpIndex = i - candidatIndex + j;
-						if (tmpIndex < 0 || tmpIndex >= splitSentence.length || !splitSentence[tmpIndex].equals(splitCandidat[j])) {
+						if (tmpIndex < 0 || tmpIndex >= splitSentence.length || !splitSentence[tmpIndex].equals(splitCandidat[j])  || coveredWords.contains(tmpIndex)) { // TODO: remove second condition, exists for debug purposes
 							validCandidate = false;
 							break;
 						}
@@ -124,12 +115,29 @@ public class EntityLinker {
 						f.candidates.addAll(anchors.getFragmentTargets(candidat));
 						f.originWord = splitSentence[i];
 						as.addFragment(f);
+						for(int j = f.start; j <= f.stop; j++){
+							coveredWords.add(j);
+						}
 					}				
 				}
 			}
 		}
+		System.out.println("Added all partialAnchor candidates - Time: "+sw.stop() + " ms");
 		
-		System.out.println("Added all partialAnchor candidates - Time: "+sw.stop() + " s");
+		sw.start();
+		for (int i = 0; i < splitSentence.length; i++) {
+			if (stopWords == null || !stopWords.contains(splitSentence[i]) && !coveredWords.contains(i)) {
+				Fragment f = new Fragment(i, i);
+				f.candidates.addAll(anchors.getFragmentTargets(splitSentence[i]));
+				if(f.candidates.isEmpty()) continue;
+				f.originWord = splitSentence[i];
+				as.addFragment(f);
+			}
+		}
+		
+		System.out.println("Added all anchor candidates - Time: "+sw.stop() + " ms");
+		
+		
 		return as;
 	}
 	
