@@ -32,7 +32,7 @@ public class DatasetEvaluatorSandbox {
 		try {
 			// TestSet
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/DatasetParser/test/kore50.tsv"), "UTF8"));
-			KORE50Parser parser = new KORE50Parser(br);
+			KORE50Parser parser = new KORE50Parser(br, true);
 			
 			// PageLinks
 //			GraphDatabaseService graphDB2 = new GraphDatabaseFactory().newEmbeddedDatabase( "../../data/DBs/PageLinksWithWeights" );

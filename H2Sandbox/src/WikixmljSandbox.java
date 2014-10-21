@@ -1,3 +1,5 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -10,7 +12,7 @@ import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
 import org.eclipse.mylyn.wikitext.core.parser.markup.MarkupLanguage;
 import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
 
-import datatypes.SimpleFileWriter;
+import stopwatch.Stopwatch;
 import edu.jhu.nlp.wikipedia.PageCallbackHandler;
 import edu.jhu.nlp.wikipedia.WikiPage;
 import edu.jhu.nlp.wikipedia.WikiXMLParser;
@@ -19,14 +21,21 @@ import edu.jhu.nlp.wikipedia.WikiXMLParserFactory;
 
 public class WikixmljSandbox {
 
-	static SimpleFileWriter fw;
+	static BufferedWriter fw;
 	static int counter = 0;
+	static Stopwatch sw;
 	
-	public static void main(String[] args) {
-		fw = new SimpleFileWriter("../../data/Wikipedia Abstracts/abstracts_cleaned.txt");
+	public static void main(String[] args) throws IOException {
+		fw = new BufferedWriter(new FileWriter("abstracts_cleaned.txt"));
+		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
+//		fw = new BufferedWriter(new FileWriter("../../data/Wikipedia Abstracts/abstracts_cleaned.txt"));
+//		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles.xml");
+		
+		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
+		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.MINUTES);
 		// TODO Auto-generated method stub
-		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles.xml");
+		
 
 		try {
 			wxsp.setPageCallback(new PageCallbackHandler() {
@@ -34,10 +43,12 @@ public class WikixmljSandbox {
 					if(page.isRedirect() || page.isSpecialPage() || page.isDisambiguationPage()) return;
 					
 					counter++;
-					if(counter % 100000 == 0) System.out.println(counter + page.getTitle().trim());
+					if(counter % 100000 == 0){
+						System.out.println(counter + "\t- time: " + sw.stop() + " s");
+						sw.start();
+					}
 					
-					fw.writeln("-");
-					fw.writeln(page.getTitle().trim());
+					if(counter > -1) return;
 					
 					String textAbstract = page.getWikiText();
 					String tmpArray[] = textAbstract.split("==");
@@ -60,25 +71,39 @@ public class WikixmljSandbox {
 		            try {
 						new ParserDelegator().parse(new StringReader(html), callback, false);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						System.out.println("Exception in inner parse operations: ");
 						e.printStackTrace();
 					}	
 		            
-		            String tmp = cleaned.toString().replaceAll("(<ref.*?(</ref>|/>)|\\|.*? =)", "");
-					fw.writeln(tmp);
-					if(page.getTitle().trim().equals("Bear")) System.exit(0);
+		            String tmp = cleaned.toString().replaceAll("<ref.*?>.*?>", "");
+		            tmp = tmp.toString().replaceAll("\\|.*?\\s?=", "");
+		            tmp = tmp.toString().replaceAll("<.*?>", "");
+		            tmp = tmp.toString().replaceAll("\\p{Punct}", "");
+		            tmp = tmp.toString().replaceAll("\\s+", " ");
+		            
+		            try {
+						fw.write("#-# - " + counter);
+						fw.newLine();
+						fw.write(page.getTitle().trim());
+						fw.newLine();
+						fw.write(tmp);
+						fw.newLine();
+					} catch (IOException e1) {
+						System.out.println("Exception in BufferedWriter operations: ");
+						e1.printStackTrace();
+					}
 				}
 			});
 			
 			wxsp.parse();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			System.out.println("Exception in Parse operations: ");
 			e.printStackTrace();
 		}
 
 		fw.close();
 		
-		System.out.println("Total count: " + counter);
+		System.out.println("Total count: " + counter + " - total time: " + sw2.stop());
 	}
 
 }

@@ -11,26 +11,31 @@ public class KORE50Parser implements DatasetParser{
 
 	private BufferedReader br = null;
 	private String line;
+	private boolean readFullDocument = false;
 	
 	public KORE50Parser(BufferedReader br) throws IOException {
-		this.br = br;
+		this(br, false);
 		//br = new BufferedReader(new InputStreamReader(new FileInputStream(br), "UTF8"));
+	}
+	
+	public KORE50Parser(BufferedReader br, boolean readFullDocument) throws IOException {
+		this.br = br;
+		this.readFullDocument = readFullDocument;
+		line = br.readLine(); // read first line to start with first sentence when parse() is called
 	}
 
 	@Override
 	public AnnotatedSentenceDeprecated parse() throws IOException {
 		AnnotatedSentenceDeprecated annotatedSentence = new AnnotatedSentenceDeprecated();
-		
-		while((line = br.readLine()) != null){
-			if(line.split(" ")[0].equals("-DOCSTART-")){
-				break;
-			}
-		}
 
 		while ((line = br.readLine()) != null) {
-			if (line.equals(".")) {
-				return annotatedSentence;
-			}else if(line.equals(",")){
+			if(line.split(" ")[0].equals("-DOCSTART-")){
+				if(readFullDocument) return annotatedSentence;
+				else continue;
+			}else if (line.equals(".")) {
+				if(readFullDocument) continue;
+				else return annotatedSentence;
+			}else if(line.equals(",") || line.equals("\n")){
 				continue;
 			}else {
 				String tmp;
@@ -51,7 +56,7 @@ public class KORE50Parser implements DatasetParser{
 				for (String s : splitLine[0].split(" ")) {
 					
 					int index = annotatedSentence.addToken(s);
-					if (splitLine.length == 4 && !splitLine[3].equals("--NME--")) {
+					if (splitLine.length >= 4 && !splitLine[3].equals("--NME--")) {
 						//int index = annotatedSentence.addToken(s);
 						annotatedSentence.setEntity(index, splitLine[3]);
 					}
@@ -60,7 +65,6 @@ public class KORE50Parser implements DatasetParser{
 			}
 		}
 
-		
 		return annotatedSentence;
 	}
 
