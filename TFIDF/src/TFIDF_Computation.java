@@ -1,6 +1,10 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+
+import datatypes.TFIDFResult;
 
 
 public class TFIDF_Computation {
@@ -16,7 +20,7 @@ public class TFIDF_Computation {
 	{
 		Writer = writer;
 		
-		writer.write("# docID:	token tf df idf tf*idf = tf * log(no_docs / df) ");
+		writer.write("# docID:\ttoken\ttf\tdf\tidf\ttf*idf = tf * log(no_docs / df) \n");
 	}
 	
 	public void addDocument(String id, String document) throws IOException
@@ -41,11 +45,19 @@ public class TFIDF_Computation {
 			update(token,1);
 		}
 		
+		
+		LinkedList<TFIDFResult> result = new LinkedList<TFIDFResult>();
+		for(String tmpToken: tf.keySet()){
+			result.add(new TFIDFResult(tmpToken, df_computation.no_documents, tf.get(tmpToken), df_computation.getDF(tmpToken)));
+		}
+		Collections.sort(result);
+		Collections.reverse(result);
+		
 		Writer.write(id+":");
 		
-		for (String entry: tf.keySet())
+		for (TFIDFResult entry: result)
 		{
-			Writer.write("\t"+entry+" "+tf.get(entry)+" "+df_computation.getDF(entry)+" "+df_computation.getIDF(entry)+" "+(tf.get(entry) * df_computation.getIDF(entry)));
+			Writer.write(entry.toString() + "\n");
 		}
 		
 		Writer.write("\n");

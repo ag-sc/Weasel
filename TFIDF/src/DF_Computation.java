@@ -1,13 +1,17 @@
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 
-public class DF_Computation {
+public class DF_Computation implements Serializable{
+
+	private static final long serialVersionUID = -982745857460278060L;
 
 	HashMap<String,Integer> df;
 	
-	int no_documents = 0;
+	public int no_documents = 0;
 	
 	
 	public DF_Computation()
@@ -15,29 +19,11 @@ public class DF_Computation {
 		df = new HashMap<String,Integer>();
 	}
 	
-	public void addDocument(String content)
+	public void addDocument(TreeSet<String> content)
 	{
-		String[] tokens = content.split(" ");
-				
-		Set<String> tokenSet = new HashSet<String>();
+		//String[] tokens = content.split(" ");
 		
-		
-		for (int i=0; i < tokens.length; i++)
-		{
-			String token;
-			
-			token = tokens[i];
-			token = token.toLowerCase();
-			token = token.replaceAll("\\.", "");
-			token = token.replaceAll(",", "");
-			token = token.replaceAll(":", "");
-			token = token.replaceAll("!", "");
-			token = token.replaceAll("\\?", "");
-			
-			tokenSet.add(token);
-		}
-		
-		for (String token: tokenSet)
+		for (String token: content)
 		{
 			update(token,1);
 		}

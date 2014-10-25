@@ -12,5 +12,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/DatabaseBuilder"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EntityLinker"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TFIDF"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DatasetEvaluator"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
