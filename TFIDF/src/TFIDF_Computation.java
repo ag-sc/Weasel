@@ -48,7 +48,10 @@ public class TFIDF_Computation {
 		
 		LinkedList<TFIDFResult> result = new LinkedList<TFIDFResult>();
 		for(String tmpToken: tf.keySet()){
-			result.add(new TFIDFResult(tmpToken, df_computation.no_documents, tf.get(tmpToken), df_computation.getDF(tmpToken)));
+			Integer tempTF = tf.get(tmpToken);
+			Integer tempDF = df_computation.getDF(tmpToken);
+			if(tempTF == null || tempDF == null || tempTF == 0 || tempDF == 0) continue;
+			result.add(new TFIDFResult(tmpToken, df_computation.no_documents, tempTF, tempDF));
 		}
 		Collections.sort(result);
 		Collections.reverse(result);

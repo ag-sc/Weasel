@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import custom.DocumentFrequency;
+
 
 public class AbstractSandbox {
 
@@ -19,17 +21,14 @@ public class AbstractSandbox {
 		String line;
 		int counter = 0;
 		
-		DF_Computation dfComp = new DF_Computation();
+		DocumentFrequency df = new DocumentFrequency();
 		
 		while((line = br.readLine()) != null){
 			counter++;
 			String title = br.readLine().replace(" ", "_");
 			line = br.readLine().toLowerCase();
 
-			TreeSet<String> set = new TreeSet<String>();
-			for(String s: line.split(" ")) set.add(s);
-			
-			dfComp.addDocument(set);
+			df.addDocument(line);
 
 			if(counter % 100000 == 0){
 				System.out.println(counter);
@@ -38,10 +37,10 @@ public class AbstractSandbox {
 		br.close();
 	
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency"));
-		out.writeObject(dfComp);
+		out.writeObject(df);
 		out.close();
 		
-		System.out.println("All done.");
+		System.out.println("All done. #Abstracts: " + counter);
 	}
 
 }

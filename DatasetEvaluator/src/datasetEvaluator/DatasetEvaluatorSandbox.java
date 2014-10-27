@@ -23,6 +23,7 @@ import databaseConnectors.Neo4jConnector;
 import datasetParser.KORE50Parser;
 import entityLinker.EntityLinker;
 import evaluation.BabelfyEvaluation;
+import evaluation.BabelfyEvaluation_hack;
 import evaluation.EvaluationEngine;
 import evaluation.RandomEvaluator;
 
@@ -57,7 +58,7 @@ public class DatasetEvaluatorSandbox {
 			
 			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 			H2Connector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
-			EvaluationEngine evaluator = new BabelfyEvaluation(semSigConnector, 0.1, 10);
+			EvaluationEngine evaluator = new BabelfyEvaluation_hack(semSigConnector, 0.1, 10);
 			
 			// Linker & Evaluation
 			//System.out.println("About to start evaluation.");

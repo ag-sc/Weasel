@@ -6,8 +6,8 @@ public class TFIDFResult implements Comparable<TFIDFResult> {
 	public Integer nrDocuments;
 	public Integer tf;
 	public Integer df;
-	public Double idf;
-	public Double tfidf;
+	public Float idf;
+	public Float tfidf;
 	
 	
 	public TFIDFResult(String token, int nrDocuments, Integer tf, Integer df) {
@@ -19,7 +19,7 @@ public class TFIDFResult implements Comparable<TFIDFResult> {
 		this.df = df;
 		this.nrDocuments = nrDocuments;
 		
-		idf = Math.log( ((double) nrDocuments) / this.df.doubleValue());
+		idf = (float)Math.log( ((double) nrDocuments) / this.df.doubleValue());
 		tfidf = tf * idf;
 	}
 	
