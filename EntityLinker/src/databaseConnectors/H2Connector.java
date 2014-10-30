@@ -23,22 +23,33 @@ public class H2Connector extends DatabaseConnector {
 		connection = DriverManager.getConnection("jdbc:h2:tcp://localhost:9092/" + dbPath, username, password);
 	}
 	
-	public String resolveID (String id){
+	private String _simpleQuery(String input, String columnName, String sql){
 		String value = null;
-		
 		try {
-			String sql = "SELECT Entity FROM EntityID WHERE ID IS (?)";
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, Integer.parseInt(id));
+			preparedStatement.setString(1, input);
 			preparedStatement.executeQuery();
 			ResultSet result = preparedStatement.getResultSet();
 			while (result.next()) {
-				value = result.getString("Entity");
+				value = result.getString(columnName);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return value;
+	}
+	
+	public String resolveID (String id){
+		String sql = "SELECT Entity FROM EntityID WHERE ID IS (?)";
+		return _simpleQuery(id, "Entity", sql);
+	}
+	
+	public Integer resolveName(String name){
+		String sql = "SELECT id FROM EntityID WHERE ENTITY IS (?)";
+		String tmp = _simpleQuery(name, "id", sql);
+		if(tmp != null) return Integer.parseInt(tmp);
+		return null;
 	}
 
 	@Override

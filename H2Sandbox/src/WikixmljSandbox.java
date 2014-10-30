@@ -1,8 +1,11 @@
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
@@ -26,11 +29,11 @@ public class WikixmljSandbox {
 	static Stopwatch sw;
 	
 	public static void main(String[] args) throws IOException {
-		fw = new BufferedWriter(new FileWriter("abstracts_cleaned.txt"));
-		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
+//		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("abstracts_cleaned.txt"), "UTF-8"));
+//		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
-//		fw = new BufferedWriter(new FileWriter("../../data/Wikipedia Abstracts/abstracts_cleaned.txt"));
-//		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles.xml");
+		fw = new BufferedWriter(new FileWriter("../../data/Wikipedia Abstracts/abstracts_cleaned_tmp.txt"));
+		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles.xml");
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.MINUTES);
@@ -48,7 +51,7 @@ public class WikixmljSandbox {
 						sw.start();
 					}
 					
-					if(counter > -1) return;
+					if(counter > 200) return;
 					
 					String textAbstract = page.getWikiText();
 					String tmpArray[] = textAbstract.split("==");
@@ -81,10 +84,19 @@ public class WikixmljSandbox {
 		            tmp = tmp.toString().replaceAll("\\p{Punct}", "");
 		            tmp = tmp.toString().replaceAll("\\s+", " ");
 		            
+		            String title ="";
 		            try {
-						fw.write("#-# - " + counter);
+						tmp = new String(tmp.getBytes("ISO-8859-15"), "UTF-8");
+						title = new String(page.getTitle().trim().getBytes("ISO-8859-15"), "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		            
+		            try {
+						fw.write("# " + counter);
 						fw.newLine();
-						fw.write(page.getTitle().trim());
+						fw.write(title);
 						fw.newLine();
 						fw.write(tmp);
 						fw.newLine();
