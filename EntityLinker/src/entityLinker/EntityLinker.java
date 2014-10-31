@@ -78,6 +78,44 @@ public class EntityLinker {
 //		return allCandidats;
 //	}
 	
+	public AnnotatedSentence getFragmentedSentence2(String sentence) {
+		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
+		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
+		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
+		
+		for(int i = 0; i < splitSentence.length; i++){
+			if (stopWords != null && stopWords.contains(splitSentence[i])) continue;
+			
+			LinkedList<String> candidates = new LinkedList<String>();;
+			LinkedList<String> tmpList = new LinkedList<String>();
+			String word = "";
+			String tmpWord = "";
+			int j = i;
+			while(j < splitSentence.length){
+				tmpWord = (tmpWord + " " + splitSentence[j]).trim();
+				tmpList = anchors.getFragmentTargets(tmpWord);
+				
+				if(tmpList.size() > 0){
+					candidates = tmpList;
+					word = tmpWord;
+				}else break;
+				
+				j++;
+			}
+			
+			j -= 1;
+			Fragment f = new Fragment(i, j);
+			f.candidates.addAll(candidates);
+			if(f.candidates.isEmpty()) continue;
+			f.originWord = word;
+			as.addFragment(f);
+			i = j;
+		}
+		
+		System.out.println("Added all anchor candidates - Time: " + sw.stop() + " ms");
+		return as;
+	}
+	
 	public AnnotatedSentence getFragmentedSentence(String sentence) {
 		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
 		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
@@ -142,7 +180,7 @@ public class EntityLinker {
 	}
 	
 	public AnnotatedSentence link(String sentence) {
-		AnnotatedSentence as = getFragmentedSentence(sentence);
+		AnnotatedSentence as = getFragmentedSentence2(sentence);
 		evaluator.evaluate(as);
 		return as;
 	}
