@@ -32,7 +32,7 @@ public class WikixmljSandbox {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("abstracts_cleaned.txt"), "UTF-8"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
-		fw = new BufferedWriter(new FileWriter("../../data/Wikipedia Abstracts/abstracts_cleaned_tmp.txt"));
+		fw = new BufferedWriter(new FileWriter("../../data/Wikipedia Abstracts/abstracts_cleaned_correct.txt"));
 		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles.xml");
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
@@ -51,7 +51,7 @@ public class WikixmljSandbox {
 						sw.start();
 					}
 					
-					if(counter > 200) return;
+					//if(counter > 200) return;
 					
 					String textAbstract = page.getWikiText();
 					String tmpArray[] = textAbstract.split("==");

@@ -1,4 +1,4 @@
-package custom;
+package tfidf;
 
 import java.util.HashMap;
 

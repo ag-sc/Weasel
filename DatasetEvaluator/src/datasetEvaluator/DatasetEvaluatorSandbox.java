@@ -26,6 +26,7 @@ import evaluation.BabelfyEvaluation;
 import evaluation.BabelfyEvaluation_hack;
 import evaluation.EvaluationEngine;
 import evaluation.RandomEvaluator;
+import evaluation.VectorEvaluation;
 
 public class DatasetEvaluatorSandbox {
 
@@ -59,6 +60,9 @@ public class DatasetEvaluatorSandbox {
 			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 			H2Connector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
 			EvaluationEngine evaluator = new BabelfyEvaluation_hack(semSigConnector, 0.1, 10);
+//			EvaluationEngine evaluator = new VectorEvaluation(semSigConnector, 
+//					"../../data/Wikipedia Abstracts/bigmap/bigMap_1",
+//					"../../data/Wikipedia Abstracts/documentFrequency");
 			
 			// Linker & Evaluation
 			//System.out.println("About to start evaluation.");
@@ -67,8 +71,8 @@ public class DatasetEvaluatorSandbox {
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			dataEvaluator.evaluate();
 			System.out.println("Evaluation time: " + sw.stop() + " minutes");
-			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime + " ms");
-			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime + " ms");
+//			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime + " ms");
+//			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime + " ms");
 				
 		} catch (IOException e) {
 			e.printStackTrace();

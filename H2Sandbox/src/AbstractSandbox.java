@@ -1,15 +1,9 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import custom.DocumentFrequency;
+import tfidf.DocumentFrequency;
 
 
 public class AbstractSandbox {
@@ -19,8 +13,8 @@ public class AbstractSandbox {
 	}
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader("abstracts_cleaned.txt"));
-//		BufferedReader br = new BufferedReader(new FileReader("../../data/Wikipedia Abstracts/test/abstracts_cleaned.txt"));
+//		BufferedReader br = new BufferedReader(new FileReader("abstracts_cleaned.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("../../data/Wikipedia Abstracts/abstracts_cleaned.txt"));
 		String line;
 		int counter = 0;
 		
@@ -39,8 +33,8 @@ public class AbstractSandbox {
 		}
 		br.close();
 	
-		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("documentFrequency"));
-//		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency_test"));
+//		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("documentFrequency"));
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency"));
 		out.writeObject(df);
 		out.close();
 		

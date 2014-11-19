@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 
 import stopwatch.Stopwatch;
-import custom.DocumentFrequency;
-import custom.TermFrequency;
+import tfidf.DocumentFrequency;
+import tfidf.TermFrequency;
 import databaseConnectors.H2Connector;
 import datatypes.TFIDFResult;
 import datatypes.Tuple;
@@ -22,6 +22,16 @@ import datatypes.Tuple;
 
 public class SignaturemapSandbox {
 
+	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
+	final static String abstractPath = "../../data/Wikipedia Abstracts/abstracts_cleaned.txt";
+	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
+	final static String outputPath = "../../data/Wikipedia Abstracts/bigmap/bigmap_";
+	
+//	final static String dfPath = "documentFrequency";
+//	final static String abstractPath = "abstracts_cleaned.txt";
+//	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
+//	final static String outputPath = "../../data/Wikipedia Abstracts/bigmap/bigmap_";
+	
 	public SignaturemapSandbox() {
 		// TODO Auto-generated constructor stub
 	}
@@ -30,13 +40,14 @@ public class SignaturemapSandbox {
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.HOURS);
 		
 		// get df object
-		FileInputStream fileInputStream = new FileInputStream("../../data/Wikipedia Abstracts/documentFrequency");
+		FileInputStream fileInputStream = new FileInputStream(dfPath);
 		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
 		DocumentFrequency df = (DocumentFrequency) objectReader.readObject(); 
 		objectReader.close();
 		
 		// get abstract reader
-		BufferedReader br = new BufferedReader(new FileReader("../../data/Wikipedia Abstracts/abstracts_cleaned.txt"));
+		BufferedReader br = new BufferedReader(new FileReader(abstractPath));
+//		BufferedReader br = new BufferedReader(new FileReader("abstracts_cleaned.txt"));
 		String line;
 		int counter = 0;
 		
@@ -44,7 +55,6 @@ public class SignaturemapSandbox {
 		HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>> map = new HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>>(1000000);
 		
 		// Set up H2 Connector
-		String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
 		String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 		H2Connector entityDB = new H2Connector(dbPathH2, "sa", "", sql);
 		
@@ -96,10 +106,12 @@ public class SignaturemapSandbox {
 				sw.start();
 			}
 			
-			if(counter % 500000 == 0){
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("bigMap_"+partCounter));
+			if(counter % 3000 == 0){
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outputPath + partCounter));
 				out.writeObject(map);
 				out.close();
+				System.out.println("Wrote 'bigmap_"+partCounter + "' to file - " + sw.stop() + " s");
+				sw.start();
 				partCounter++;
 				map = new HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>>(1000000);
 			}
