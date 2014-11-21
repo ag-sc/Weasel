@@ -60,7 +60,7 @@ public class EntityLinkerFragmentedSentenceTest extends EntityLinkerBaseTest{
 		tmp.probability = 0.7;
 		tmp.setID(tmp.candidates.first());
 		
-		as.assign();
+		as.assign(0);
 		LinkedList<Word> list = as.getWordList();
 		assertEquals("a -> AB", "a\tAB", list.get(0).toString());
 		assertEquals("b -> AB", "b\tAB", list.get(1).toString());
