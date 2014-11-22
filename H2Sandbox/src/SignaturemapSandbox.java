@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
+import tfidf.TFIDF;
 import tfidf.TermFrequency;
 import databaseConnectors.H2Connector;
 import datatypes.TFIDFResult;
@@ -79,20 +80,9 @@ public class SignaturemapSandbox {
 			
 			//System.out.println("Start on TFIDF");
 			// calculate TF/IDF
-			String wordArray[] = line.split(" ");
-			TreeSet<String> wordSet = new TreeSet<String>();
-			for(String w: wordArray) wordSet.add(w);
-			TermFrequency tf = new TermFrequency();
-			for(String word: wordArray){
-				tf.addTerm(word);
-			}
+			LinkedList<TFIDFResult> resultList = new LinkedList<TFIDFResult>();			
+			resultList = TFIDF.compute(line, df);
 			
-			LinkedList<TFIDFResult> resultList = new LinkedList<TFIDFResult>();
-			for(String word: wordSet){
-				resultList.add(new TFIDFResult(word, df.numberOfDocuments, tf.getFrequency(word), df.getFrequency(word)));
-			}
-			Collections.sort(resultList);
-			Collections.reverse(resultList);
 			HashMap<Integer, Float> top100TFIDF = new HashMap<Integer, Float>();
 			
 			for(int i = 0; i < 100 && i < resultList.size(); i++){

@@ -9,8 +9,10 @@ public class AnnotatedSentence {
 	private LinkedList<Word> wordList;
 	private HashMap<Integer, HashMap<Integer, Fragment>> fragmentMap;
 	private LinkedList<Fragment> fragmentList;
+	public String[] wordArray;
 	
 	public AnnotatedSentence(String sentence[]) {
+		wordArray = sentence;
 		wordList = new LinkedList<Word>();
 		for (String word : sentence) {
 			getWordList().add(new Word(word));
@@ -52,7 +54,7 @@ public class AnnotatedSentence {
 		Collections.reverse(fragmentList);
 
 		for (Fragment f : fragmentList) {
-			if(f.probability < minimumScore) break;
+			if(f.probability <= minimumScore) break;
 			boolean dominated = false;
 			for (int i = f.start; i <= f.stop; i++) {
 				if (getWordList().get(i).getDominantFragment() != null

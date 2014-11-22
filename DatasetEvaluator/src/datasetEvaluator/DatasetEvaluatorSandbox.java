@@ -11,6 +11,7 @@ import datasetParser.DatasetParser;
 import entityLinker.EntityLinker;
 import evaluation.BabelfyEvaluation;
 import evaluation.EvaluationEngine;
+import evaluation.VectorEvaluation;
 
 public class DatasetEvaluatorSandbox {
 
@@ -29,10 +30,10 @@ public class DatasetEvaluatorSandbox {
 			
 			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 			H2Connector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
-			EvaluationEngine evaluator = EvaluationEngine.getInstance(semSigConnector);
-//			EvaluationEngine evaluator = new VectorEvaluation(semSigConnector, 
-//					"../../data/Wikipedia Abstracts/bigmap/bigMap_1",
-//					"../../data/Wikipedia Abstracts/documentFrequency");
+//			EvaluationEngine evaluator = EvaluationEngine.getInstance(semSigConnector);
+			EvaluationEngine evaluator = new VectorEvaluation(semSigConnector, 
+					"../../data/Wikipedia Abstracts/bigmap/bigMap_1",
+					"../../data/Wikipedia Abstracts/documentFrequency");
 			
 			// Linker & Evaluation
 			//System.out.println("About to start evaluation.");

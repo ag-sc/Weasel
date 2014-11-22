@@ -30,7 +30,7 @@ public class EntityLinker {
 		this.partialAnchors = partialAnchors;
 		if(stopWordsTextFile != null) {
 			try {
-				stopWords = StopWordParser.parseStopwords("../../data/stopwords.txt");
+				stopWords = StopWordParser.parseStopwords(stopWordsTextFile);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
