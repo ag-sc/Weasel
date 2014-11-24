@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Pattern;
 
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
@@ -29,16 +30,22 @@ public class WikixmljSandbox {
 	static Stopwatch sw;
 	
 	public static void main(String[] args) throws IOException {
-//		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("abstracts_cleaned.txt"), "UTF-8"));
+//		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
-		fw = new BufferedWriter(new FileWriter("../../data/Wikipedia Abstracts/abstracts_cleaned_correct.txt"));
-		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles.xml");
+		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "UTF8"));
+		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles_UTF8.xml");
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.MINUTES);
 		// TODO Auto-generated method stub
 		
+		// Patterns
+		final Pattern pattern1 = Pattern.compile("<ref.*?>.*?>");
+		final Pattern pattern2 = Pattern.compile("\\|.*?\\s?=");
+		final Pattern pattern3 = Pattern.compile("<.*?>");
+		final Pattern pattern4 = Pattern.compile("[\\p{Punct}&&[^-_]]");
+		final Pattern pattern5 = Pattern.compile("\\s+");
 
 		try {
 			wxsp.setPageCallback(new PageCallbackHandler() {
@@ -50,20 +57,22 @@ public class WikixmljSandbox {
 						System.out.println(counter + "\t- time: " + sw.stop() + " s");
 						sw.start();
 					}
-					
 					//if(counter > 200) return;
-					
 					String textAbstract = page.getWikiText();
+					//System.out.println(textAbstract);
 					String tmpArray[] = textAbstract.split("==");
 					textAbstract = tmpArray[0];
 					StringWriter writer = new StringWriter();
 		            HtmlDocumentBuilder builder = new HtmlDocumentBuilder(writer);
 		            builder.setEmitAsDocument(false);
+		            //builder.setEncoding("ISO-8859-15");
+		            //System.out.println(builder.getEncoding());
 		            MarkupLanguage language = ServiceLocator.getInstance().getMarkupLanguage("MediaWiki");
 		            MarkupParser parser = new MarkupParser(language, builder);
 		            parser.parse(textAbstract);
 		            
 		            final String html = writer.toString();
+		            //System.out.println(html);
 		            final StringBuilder cleaned = new StringBuilder();
 
 		            HTMLEditorKit.ParserCallback callback = new HTMLEditorKit.ParserCallback() {
@@ -78,20 +87,27 @@ public class WikixmljSandbox {
 						e.printStackTrace();
 					}	
 		            
-		            String tmp = cleaned.toString().replaceAll("<ref.*?>.*?>", "");
-		            tmp = tmp.toString().replaceAll("\\|.*?\\s?=", "");
-		            tmp = tmp.toString().replaceAll("<.*?>", "");
-		            tmp = tmp.toString().replaceAll("\\p{Punct}", "");
-		            tmp = tmp.toString().replaceAll("\\s+", " ");
+		            String tmp =  pattern1.matcher(cleaned.toString()).replaceAll("");
+		            tmp =  pattern2.matcher(tmp).replaceAll("");
+		            tmp =  pattern3.matcher(tmp).replaceAll("");
+		            tmp =  pattern4.matcher(tmp).replaceAll("");
+		            tmp =  pattern5.matcher(tmp).replaceAll(" ");
 		            
-		            String title ="";
-		            try {
-						tmp = new String(tmp.getBytes("ISO-8859-15"), "UTF-8");
-						title = new String(page.getTitle().trim().getBytes("ISO-8859-15"), "UTF-8");
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+//		            String tmp = cleaned.toString().replaceAll("<ref.*?>.*?>", "");
+//		            tmp = tmp.toString().replaceAll("\\|.*?\\s?=", "");
+//		            tmp = tmp.toString().replaceAll("<.*?>", "");
+//		            tmp = tmp.toString().replaceAll("\\p{Punct}", "");
+//		            tmp = tmp.toString().replaceAll("\\s+", " ");
+		            
+		            String title = page.getTitle().trim();
+//		            System.out.println(tmp);
+//		            try {
+//						//tmp = new String(tmp.getBytes("ISO-8859-15"), "UTF-8");
+//						title = new String(page.getTitle().trim().getBytes("ISO-8859-15"), "UTF-8");
+//					} catch (UnsupportedEncodingException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 		            
 		            try {
 						fw.write("# " + counter);
