@@ -33,7 +33,7 @@ public class WikixmljSandbox {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
-		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "UTF8"));
+		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt"), "UTF8"));
 		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles_UTF8.xml");
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
@@ -46,6 +46,7 @@ public class WikixmljSandbox {
 		final Pattern pattern3 = Pattern.compile("<.*?>");
 		final Pattern pattern4 = Pattern.compile("[\\p{Punct}&&[^-_]]");
 		final Pattern pattern5 = Pattern.compile("\\s+");
+		final Pattern pattern6 = Pattern.compile("\\p{Pd}");
 
 		try {
 			wxsp.setPageCallback(new PageCallbackHandler() {
@@ -57,7 +58,7 @@ public class WikixmljSandbox {
 						System.out.println(counter + "\t- time: " + sw.stop() + " s");
 						sw.start();
 					}
-					//if(counter > 200) return;
+					//if(counter > 400) return;
 					String textAbstract = page.getWikiText();
 					//System.out.println(textAbstract);
 					String tmpArray[] = textAbstract.split("==");
@@ -92,6 +93,7 @@ public class WikixmljSandbox {
 		            tmp =  pattern3.matcher(tmp).replaceAll("");
 		            tmp =  pattern4.matcher(tmp).replaceAll("");
 		            tmp =  pattern5.matcher(tmp).replaceAll(" ");
+		            tmp =  pattern6.matcher(tmp).replaceAll("-");
 		            
 //		            String tmp = cleaned.toString().replaceAll("<ref.*?>.*?>", "");
 //		            tmp = tmp.toString().replaceAll("\\|.*?\\s?=", "");
@@ -100,6 +102,8 @@ public class WikixmljSandbox {
 //		            tmp = tmp.toString().replaceAll("\\s+", " ");
 		            
 		            String title = page.getTitle().trim();
+		            title =  pattern6.matcher(title).replaceAll("-");
+		            //if(counter > 370 && counter < 380) System.out.println(title);
 //		            System.out.println(tmp);
 //		            try {
 //						//tmp = new String(tmp.getBytes("ISO-8859-15"), "UTF-8");

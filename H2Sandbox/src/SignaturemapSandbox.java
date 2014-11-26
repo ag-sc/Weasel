@@ -3,9 +3,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +26,7 @@ import datatypes.Tuple;
 public class SignaturemapSandbox {
 
 	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
-	final static String abstractPath = "../../data/Wikipedia Abstracts/abstracts_cleaned.txt";
+	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
 	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
 	final static String outputPath = "../../data/Wikipedia Abstracts/bigmap/bigmap_";
 	
@@ -43,11 +45,12 @@ public class SignaturemapSandbox {
 		// get df object
 		FileInputStream fileInputStream = new FileInputStream(dfPath);
 		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-		DocumentFrequency df = (DocumentFrequency) objectReader.readObject(); 
+		//DocumentFrequency df = (DocumentFrequency) objectReader.readObject(); 
 		objectReader.close();
 		
 		// get abstract reader
-		BufferedReader br = new BufferedReader(new FileReader(abstractPath));
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(abstractPath), "UTF8"));
 //		BufferedReader br = new BufferedReader(new FileReader("abstracts_cleaned.txt"));
 		String line;
 		int counter = 0;
@@ -65,13 +68,21 @@ public class SignaturemapSandbox {
 		while((line = br.readLine()) != null){
 			counter++;
 			// Get EntityID and Semantic Signature
-			String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");
+			//String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");
+			String title = br.readLine().replace(" ", "_");
 			line = br.readLine().toLowerCase();
+			
+			//if(counter > 370 && counter < 380) System.out.println(title);
 			
 			Integer id = entityDB.resolveName(title);
 			if(id == null){
-				System.err.println(title + " --> Not in DB");
-				continue;
+				String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
+				normalized = normalized.replaceAll("[^\\p{ASCII}]", "");
+				id = entityDB.resolveName(normalized);
+				if(id == null){
+					System.err.println(title + "/" + normalized + " --> Not in DB");
+					continue;
+				}
 			}
 			LinkedList<String> semSigTemp = entityDB.getFragmentTargets(id.toString());
 			if(semSigTemp.size() < 2) continue;
@@ -81,12 +92,12 @@ public class SignaturemapSandbox {
 			//System.out.println("Start on TFIDF");
 			// calculate TF/IDF
 			LinkedList<TFIDFResult> resultList = new LinkedList<TFIDFResult>();			
-			resultList = TFIDF.compute(line, df);
+			//resultList = TFIDF.compute(line, df);
 			
 			HashMap<Integer, Float> top100TFIDF = new HashMap<Integer, Float>();
 			
 			for(int i = 0; i < 100 && i < resultList.size(); i++){
-				top100TFIDF.put(df.getWordID(resultList.get(i).token), resultList.get(i).tfidf);
+				//top100TFIDF.put(df.getWordID(resultList.get(i).token), resultList.get(i).tfidf);
 			}
 			
 			map.put(id, new Tuple<ArrayList<Integer>, HashMap<Integer, Float>>(semSig, top100TFIDF));
