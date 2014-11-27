@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -9,15 +8,11 @@ import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.TreeSet;
-
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
-import tfidf.TermFrequency;
 import databaseConnectors.H2Connector;
 import datatypes.TFIDFResult;
 import datatypes.Tuple;
@@ -25,15 +20,17 @@ import datatypes.Tuple;
 
 public class SignaturemapSandbox {
 
-	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
-	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
-	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
-	final static String outputPath = "../../data/Wikipedia Abstracts/bigmap/bigmap_";
-	
-//	final static String dfPath = "documentFrequency";
-//	final static String abstractPath = "abstracts_cleaned.txt";
+//	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
+//	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
 //	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
 //	final static String outputPath = "../../data/Wikipedia Abstracts/bigmap/bigmap_";
+	
+	final static String dfPath = "documentFrequency";
+	final static String abstractPath = "abstracts_cleaned_correct.txt";
+	final static String dbPathH2 = "/media/data/shared/ftristram/pageLinks/H2 Anchors/h2_anchors_pagelinks";
+	final static String outputPath = "/media/data/shared/ftristram/bigmap/map/bigmap_";
+	
+	final static int initialMapSize = 200000;
 	
 	public SignaturemapSandbox() {
 		// TODO Auto-generated constructor stub
@@ -45,28 +42,43 @@ public class SignaturemapSandbox {
 		// get df object
 		FileInputStream fileInputStream = new FileInputStream(dfPath);
 		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-		//DocumentFrequency df = (DocumentFrequency) objectReader.readObject(); 
+		DocumentFrequency df = (DocumentFrequency) objectReader.readObject(); 
 		objectReader.close();
 		
 		// get abstract reader
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(abstractPath), "UTF8"));
-//		BufferedReader br = new BufferedReader(new FileReader("abstracts_cleaned.txt"));
 		String line;
 		int counter = 0;
 		
 		// create fingerprint map
-		HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>> map = new HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>>(1000000);
+		HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>> map = new HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>>(initialMapSize);
 		
 		// Set up H2 Connector
 		String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
-		H2Connector entityDB = new H2Connector(dbPathH2, "sa", "", sql);
+		H2Connector entityDB = new H2Connector(dbPathH2, "sa", "", sql, false);
 		
 		System.out.println("Starting Loop");
 		int partCounter = 1;
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		while((line = br.readLine()) != null){
 			counter++;
+			
+			if(counter % 10000 == 0){
+				System.out.println(counter + " - " + sw.stop() + " s");
+				sw.start();
+			}
+			
+			if(counter % 100000 == 0){
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outputPath + partCounter));
+				out.writeObject(map);
+				out.close();
+				System.out.println("Wrote 'bigmap_"+partCounter + "' to file - " + sw.stop() + " s");
+				sw.start();
+				partCounter++;
+				map = new HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>>(initialMapSize);
+			}
+			
 			// Get EntityID and Semantic Signature
 			//String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");
 			String title = br.readLine().replace(" ", "_");
@@ -92,30 +104,17 @@ public class SignaturemapSandbox {
 			//System.out.println("Start on TFIDF");
 			// calculate TF/IDF
 			LinkedList<TFIDFResult> resultList = new LinkedList<TFIDFResult>();			
-			//resultList = TFIDF.compute(line, df);
+			resultList = TFIDF.compute(line, df);
 			
 			HashMap<Integer, Float> top100TFIDF = new HashMap<Integer, Float>();
 			
 			for(int i = 0; i < 100 && i < resultList.size(); i++){
-				//top100TFIDF.put(df.getWordID(resultList.get(i).token), resultList.get(i).tfidf);
+				top100TFIDF.put(df.getWordID(resultList.get(i).token), resultList.get(i).tfidf);
 			}
 			
 			map.put(id, new Tuple<ArrayList<Integer>, HashMap<Integer, Float>>(semSig, top100TFIDF));
 
-			if(counter % 1000 == 0){
-				System.out.println(counter + " - " + sw.stop() + " s");
-				sw.start();
-			}
 			
-			if(counter % 3000 == 0){
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outputPath + partCounter));
-				out.writeObject(map);
-				out.close();
-				System.out.println("Wrote 'bigmap_"+partCounter + "' to file - " + sw.stop() + " s");
-				sw.start();
-				partCounter++;
-				map = new HashMap<Integer, Tuple<ArrayList<Integer>, HashMap<Integer, Float>>>(1000000);
-			}
 		}
 		br.close();
 		entityDB.close();

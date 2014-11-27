@@ -16,11 +16,17 @@ public class H2Connector extends DatabaseConnector {
 	Connection connection;
 	
 	public H2Connector(String dbPath, String username, String password, String sql) throws ClassNotFoundException, SQLException {
+		this(dbPath, username, password, sql, true);
+	}
+	
+	public H2Connector(String dbPath, String username, String password, String sql, boolean connectToLocalServer) throws ClassNotFoundException, SQLException {
 		this.dbPath = dbPath;
 		this.sql = sql;
 		
 		Class.forName("org.h2.Driver");
-		connection = DriverManager.getConnection("jdbc:h2:tcp://localhost:9092/" + dbPath, username, password);
+		if(connectToLocalServer) connection = DriverManager.getConnection("jdbc:h2:tcp://localhost:9092/" + dbPath, username, password);
+		else connection = DriverManager.getConnection("jdbc:h2:" + dbPath, username, password);
+		
 	}
 	
 	private String _simpleQuery(String input, String columnName, String sql){

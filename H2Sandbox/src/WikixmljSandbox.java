@@ -33,7 +33,7 @@ public class WikixmljSandbox {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
-		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt"), "UTF8"));
+		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/abstracts_cleaned_correct.txt"), "UTF8"));
 		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles_UTF8.xml");
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
