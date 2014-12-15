@@ -86,7 +86,7 @@ public class EntityLinker {
 		for(int i = 0; i < splitSentence.length; i++){
 			if (stopWords != null && stopWords.contains(splitSentence[i])) continue;
 			
-			LinkedList<String> candidates = new LinkedList<String>();;
+			LinkedList<String> candidates = new LinkedList<String>();
 			LinkedList<String> tmpList = new LinkedList<String>();
 			String word = "";
 			String tmpWord = "";

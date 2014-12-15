@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class TinyEdge implements Comparable<TinyEdge>, Serializable{
 	private static final long serialVersionUID = -7147322759738145354L;
 	public String target;
-	public double weight;
+	public float weight;
 	
 	public TinyEdge(String target){
 		this.target = new String(target);

@@ -37,7 +37,7 @@ public class WikiParser extends FileParser implements Closeable{
 		
 		if((line = br.readLine()) != null){
 			String[] splitLine = line.split(" ");
-			if(splitLine.length != 4) return new String[1];
+			//if(splitLine.length != 4) return new String[1];
 			
 			matcher1 = resourcePattern1.matcher(splitLine[0]);
 			matcher2 = resourcePattern2.matcher(splitLine[2]);
