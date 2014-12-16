@@ -17,8 +17,10 @@ import fileparser.WikiParser;
 
 public class InMemoryComputation {
 
-	//final static String pageLinksFilePath = "page_links_en.nt";
-	final static String pageLinksFilePath = "../../data/Wikipedia/Pagelinks/test/merkel_wiki.txt";
+	final static String pageLinksFilePath = "page_links_en.nt";
+	//final static String pageLinksFilePath = "../../data/Wikipedia/Pagelinks/test/merkel_wiki.txt";
+	final static String semSigFile = "semsig.txt";
+	
 	static HashMap<String, TreeSet<TinyEdge>> graphMap;
 	
 	final static int numberOfSteps = 100000;
@@ -115,6 +117,7 @@ public class InMemoryComputation {
 		parser.parseTuple(); //remove first line
 		while ((tuple = parser.parseTuple()) != null) {
 			lineCounter++;
+			if(tuple.length != 2) continue;
 			String source = tuple[0];
 			String sink   = tuple[1];
 			
@@ -160,14 +163,14 @@ public class InMemoryComputation {
 		
 		System.out.println("Calculate SemSig");
 		lineCounter = 0;
-		BufferedWriter fw = new BufferedWriter(new FileWriter("../../data/semsig.txt"));
+		BufferedWriter fw = new BufferedWriter(new FileWriter(semSigFile));
 		for(Entry<String, TreeSet<TinyEdge>> entry: graphMap.entrySet()){
 			ArrayList<Tuple<String, Integer>> rw = randomWalk(entry.getKey());
 			fw.write(entry.getKey() + "\n");
 			for(Tuple<String, Integer> t: rw) fw.write(t.x + "\t" + t.y + "\n");
 			fw.write("\n");
 			
-			if (lineCounter % 1000 == 0) {
+			if (lineCounter % 100000 == 0) {
 				sw.stop();
 				System.out.println("Processed random walks:\t" + lineCounter + "\tTime since last message: " + sw);
 				sw.start();
