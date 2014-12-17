@@ -29,6 +29,7 @@ public class SignaturemapSandbox {
 	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
 	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
 	final static String semsigPath = "../../data/semsig.txt";
+	final static String vectorMapOutputPath = "../../data/vectorMap";
 	
 //	final static String dfPath = "documentFrequency";
 //	final static String abstractPath = "abstracts_cleaned_correct.txt";
@@ -155,11 +156,11 @@ public class SignaturemapSandbox {
 		System.out.println("Done with semsig."  + " - time taken: " + sw2.stop() + " hours");
 		
 		System.out.println("Write map to binary file");
-		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/vectorMap"));
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(vectorMapOutputPath));
 		out.writeObject(vectorMap);
 		out.close();
 		System.out.println(("Write to binary file: Done! Write map to text file."));
-		BufferedWriter fw = new BufferedWriter(new FileWriter("../../data/vectorMap.txt"));
+		BufferedWriter fw = new BufferedWriter(new FileWriter(vectorMapOutputPath + ".txt"));
 		for(Entry<Integer, VectorEntry> entry: vectorMap.entrySet()){
 			VectorEntry vEntry = entry.getValue();
 			
