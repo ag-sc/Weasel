@@ -111,8 +111,6 @@ public class VectorEvaluation extends EvaluationEngine {
 			String bestCandidate = "";
 			double bestScore = 0;
 			
-			for(String candidate: fragment.candidates);
-			
 			for(String candidate: fragment.candidates){
 				// Find candidate
 				int candidateID =  Integer.parseInt(candidate);
