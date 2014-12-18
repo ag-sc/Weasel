@@ -1,12 +1,17 @@
 package evaluation;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
+
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
+
 import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
@@ -35,16 +40,22 @@ public class VectorEvaluation extends EvaluationEngine {
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 		FileInputStream fileInputStream = new FileInputStream(vectorMapFilePath);
 		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-		vectorMap = (HashMap<Integer, VectorEntry>) objectReader.readObject(); 
+		//vectorMap = (HashMap<Integer, VectorEntry>) objectReader.readObject(); 
+		vectorMap = new HashMap<Integer, VectorEntry>();
 		objectReader.close();
 		System.out.println("Reading in vectormap from file - took " + sw.stop() + " minutes.");
 		
 		sw.start();
+//		fileInputStream = new FileInputStream("../../data/Wikipedia Abstracts/documentFrequency_fst");
+//		FSTObjectInput in = new FSTObjectInput(fileInputStream);
+//		df = (DocumentFrequency)in.readObject();
+//		in.close();
 		fileInputStream = new FileInputStream(dfFilePath);
 		objectReader = new ObjectInputStream(fileInputStream);
 		df = (DocumentFrequency) objectReader.readObject(); 
 		objectReader.close();
 		System.out.println("Reading in documentfrequency from file - took " + sw.stop() + " minutes.");
+		
 	}
 	
 	private double magnitude(int[] array){

@@ -16,8 +16,8 @@ public class AbstractSandbox {
 	}
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("abstracts_cleaned_correct.txt"), "UTF8"));
-//		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/Wikipedia Abstracts/abstracts_cleaned_correct.txt"), "UTF8"));
+//		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("abstracts_cleaned_correct.txt")));
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/Wikipedia Abstracts/abstracts_cleaned_correct.txt"), "UTF8"));
 		String line;
 		int counter = 0;
 		
@@ -26,6 +26,7 @@ public class AbstractSandbox {
 		while((line = br.readLine()) != null){
 			counter++;
 			String title = br.readLine().replace(" ", "_");
+			if(title.contains("?"))System.out.println(title);
 			line = br.readLine().toLowerCase();
 			
 			df.addDocument(line);

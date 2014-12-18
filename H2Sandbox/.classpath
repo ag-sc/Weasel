@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/org.eclipse.mylyn.wikitext.core_2.3.0.N20140929-1849.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/com.google.guava_15.0.0.v201403281430.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/org.eclipse.mylyn.wikitext.mediawiki.core_2.3.0.N20140929-1849.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/fst/lib/fst-2.18-onejar.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DatabaseBuilder"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EntityLinker"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>

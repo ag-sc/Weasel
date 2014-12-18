@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
+
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
@@ -25,18 +28,19 @@ import datatypes.VectorEntry;
 
 public class SignaturemapSandbox {
 
-	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
-	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
-	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
-	final static String semsigPath = "../../data/semsig.txt";
-	final static String vectorMapOutputPath = "../../data/vectorMap";
+//	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
+//	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
+//	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
+//	final static String semsigPath = "../../data/semsig.txt";
+//	final static String vectorMapOutputPath = "../../data/vectorMap";
 	
-//	final static String dfPath = "documentFrequency";
-//	final static String abstractPath = "abstracts_cleaned_correct.txt";
-//	final static String dbPathH2 = "/media/data/shared/ftristram/pageLinks/H2 Anchors/h2_anchors_pagelinks";
-//	final static String semsigPath = "semsig.txt";
+	final static String dfPath = "data/documentFrequency_fst";
+	final static String abstractPath = "data/abstracts_cleaned_correct.txt";
+	final static String dbPathH = "~/vectormap/data/h2_anchors_pagelinks";
+	final static String semsigPath = "../semsig/semsig.txt";
+	final static String vectorMapOutputPath = "vectorMap";
 	
-	final static int initialMapSize = 200000;
+	final static int initialMapSize = 15000000;
 	
 	public SignaturemapSandbox() {
 		// TODO Auto-generated constructor stub
@@ -47,9 +51,14 @@ public class SignaturemapSandbox {
 		
 		// get df object
 		FileInputStream fileInputStream = new FileInputStream(dfPath);
-		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-		DocumentFrequency df = (DocumentFrequency) objectReader.readObject(); 
-		objectReader.close();
+		
+//		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+//		DocumentFrequency df = (DocumentFrequency) objectReader.readObject(); 
+//		objectReader.close();
+		
+		FSTObjectInput in = new FSTObjectInput(fileInputStream);	// read object using FST library
+		DocumentFrequency df = (DocumentFrequency)in.readObject();
+		in.close();
 		
 		// get abstract reader
 		
@@ -62,7 +71,7 @@ public class SignaturemapSandbox {
 		
 		// Set up H2 Connector
 		String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
-		H2Connector entityDB = new H2Connector(dbPathH2, "sa", "", sql, false);
+		H2Connector entityDB = new H2Connector(dbPathH, "sa", "", sql, false);
 		
 		System.out.println("Starting Loop");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
@@ -125,7 +134,7 @@ public class SignaturemapSandbox {
 		System.err.println("Start on Semantic Signature");
 		counter = 0;
 		sw.start();
-		br = new BufferedReader(new InputStreamReader(new FileInputStream(semsigPath), "UTF8"));
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(semsigPath)));
 		while((line = br.readLine()) != null){
 			counter++;
 			if(counter % 100000 == 0){
@@ -152,13 +161,14 @@ public class SignaturemapSandbox {
 		
 		br.close();
 		entityDB.close();
-		sw.start();
 		System.out.println("Done with semsig."  + " - time taken: " + sw2.stop() + " hours");
 		
 		System.out.println("Write map to binary file");
+		sw.start();
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(vectorMapOutputPath));
 		out.writeObject(vectorMap);
 		out.close();
+		
 		System.out.println(("Write to binary file: Done! Write map to text file."));
 		BufferedWriter fw = new BufferedWriter(new FileWriter(vectorMapOutputPath + ".txt"));
 		for(Entry<Integer, VectorEntry> entry: vectorMap.entrySet()){
@@ -176,6 +186,11 @@ public class SignaturemapSandbox {
 			fw.write("\n");
 		}
 		fw.close();
+		
+		System.out.println("Write map to fst binary file");
+		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream(vectorMapOutputPath + "_fst"));
+		out_fst.writeObject( vectorMap );
+		out_fst.close(); // required !
 		System.out.println("All done! Time taken for file writing: " + sw.stop() + " s");
 	}
 

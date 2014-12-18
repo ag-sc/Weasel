@@ -12,7 +12,7 @@ public class EncodingFixer {
 		String sourceFile = "../../data/Wikipedia Abstracts/enwiki-latest-pages-articles.xml";
 		BufferedWriter fw = new BufferedWriter(new FileWriter("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles_UTF8.xml"));
 
-		BufferedReader br  = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), "UTF8"));
+		BufferedReader br  = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), "Cp1252")); // windows ansi encoding
 		String line;
 		int lineCounter = 0;
 		while((line = br.readLine()) != null){
