@@ -1,14 +1,20 @@
 package evaluation;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.ahocorasick.trie.Emit;
+import org.ahocorasick.trie.Trie;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 
@@ -40,19 +46,20 @@ public class VectorEvaluation extends EvaluationEngine {
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 		FileInputStream fileInputStream = new FileInputStream(vectorMapFilePath);
 		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-		//vectorMap = (HashMap<Integer, VectorEntry>) objectReader.readObject(); 
-		vectorMap = new HashMap<Integer, VectorEntry>();
+		vectorMap = (HashMap<Integer, VectorEntry>) objectReader.readObject(); 
+		//vectorMap = new HashMap<Integer, VectorEntry>();
 		objectReader.close();
 		System.out.println("Reading in vectormap from file - took " + sw.stop() + " minutes.");
 		
 		sw.start();
-//		fileInputStream = new FileInputStream("../../data/Wikipedia Abstracts/documentFrequency_fst");
-//		FSTObjectInput in = new FSTObjectInput(fileInputStream);
-//		df = (DocumentFrequency)in.readObject();
-//		in.close();
-		fileInputStream = new FileInputStream(dfFilePath);
-		objectReader = new ObjectInputStream(fileInputStream);
-		df = (DocumentFrequency) objectReader.readObject(); 
+		fileInputStream = new FileInputStream("../../data/Wikipedia Abstracts/documentFrequency_fst");
+		FSTObjectInput in = new FSTObjectInput(fileInputStream);
+		df = (DocumentFrequency)in.readObject();
+		in.close();
+//		fileInputStream = new FileInputStream(dfFilePath);
+//		objectReader = new ObjectInputStream(fileInputStream);
+//		df = (DocumentFrequency) objectReader.readObject(); 
+		//df = new DocumentFrequency();
 		objectReader.close();
 		System.out.println("Reading in documentfrequency from file - took " + sw.stop() + " minutes.");
 		
@@ -117,12 +124,44 @@ public class VectorEvaluation extends EvaluationEngine {
 		}
 		candidateMagnitude = Math.sqrt(candidateMagnitude);
 		
+		//tmp start
+		
+//		try {
+//			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/candidateCount.map"));
+//			out.writeObject(candidateCountMap);
+//			out.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+		//tmp end		
+		
 		// evaluate
+		double candidateVectorAverage = 0;
+		double tfidfVectorAverage = 0;
+		double count = 0;
+		
+		// normalizing
+		HashMap<String, Double[]> scoreMap = new HashMap<String, Double[]>(); 
+		double maxCandidateScore = 0.0;
+		double maxTFIDFScore = 0.0;
+		String sentence = " ";
+		for(String substring: annotatedSentence.wordArray) sentence += substring + " ";
+		sentence = sentence.toLowerCase();
+		
+		TreeSet<String> treeset = new TreeSet<String>();
+		TreeSet<String> nottreeset = new TreeSet<String>();
+		
+		int candidateCount = 0;
+		
 		for(Fragment fragment: fragmentList){
 			String bestCandidate = "";
 			double bestScore = 0;
 			
 			for(String candidate: fragment.candidates){
+				candidateCount++;
+				if(candidateCount % 100 == 0) System.out.println("working on candidate " + candidateCount);
 				// Find candidate
 				int candidateID =  Integer.parseInt(candidate);
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
@@ -130,18 +169,46 @@ public class VectorEvaluation extends EvaluationEngine {
 					//System.out.println(h2.resolveID(candidate) + " not found in bigMap!");
 					continue;
 				}else{
-					System.out.println(h2.resolveID(candidate) + " found in bigMap!");
+					//System.out.println(h2.resolveID(candidate) + " found in bigMap!");
 				}
 				
 				// Candidate vector overlap
+				Trie trie = new Trie().removeOverlaps().onlyWholeWords().caseInsensitive();
 				double candidateVectorScore = 0;
 				for(int i = 0; i < candidateEntry.semSigVector.length; i++){
 					if(candidateEntry.semSigVector[i] < 0) break;
-					else if(candidateCountMap.containsKey(Integer.toString(candidateEntry.semSigVector[i]))){
-						candidateVectorScore = candidateEntry.semSigCount[i] * candidateCountMap.get(Integer.toString(candidateEntry.semSigVector[i]));
-					}
+//					else if(candidateCountMap.containsKey(Integer.toString(candidateEntry.semSigVector[i]))){
+//						candidateVectorScore = candidateEntry.semSigCount[i] * candidateCountMap.get(Integer.toString(candidateEntry.semSigVector[i]));
+//						if(fragment.originWord.equals("BSE")) System.out.println(h2.resolveID(Integer.toString(candidateID)) +
+//								" - " +  h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])) +
+//								" - " + candidateEntry.semSigCount[i] + " - " + candidateCountMap.get(Integer.toString(candidateEntry.semSigVector[i])));
+//					}
+					
+					
+					
+					String word = h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])).toLowerCase().replace("_", " ");
+					trie.addKeyword(word);
+					
+//					word = " " + word + " ";
+//					if(treeset.contains(word)){
+//						candidateVectorScore += 1;
+//					} else if (!nottreeset.contains(word)) {
+//						if (sentence.contains(word)) {
+//							System.out.println(h2.resolveID(candidate) + " - found " + word);
+//							treeset.add(word);
+//							candidateVectorScore += 1;
+//						} else {
+//							nottreeset.add(word);
+//						}
+//					}
 				}
-				candidateVectorScore /= candidateMagnitude * magnitude(candidateEntry.semSigCount);
+				
+				Collection<Emit> emits = trie.parseText(sentence);
+				candidateVectorScore += emits.size();
+				
+				double mag = magnitude(candidateEntry.semSigCount);
+				if(mag > 0) candidateVectorScore /= candidateMagnitude * mag;
+				else candidateVectorScore = 0;
 				
 				// TFIDF vector overlap
 				double tfidfVectorScore = 0;
@@ -153,24 +220,69 @@ public class VectorEvaluation extends EvaluationEngine {
 				}
 				tfidfVectorScore /= tfidfMagnitude * magnitude(candidateEntry.tfScore);
 				
+				// normalizing
+				Double tmpArray[] = {candidateVectorScore, tfidfVectorScore};
+				scoreMap.put(candidate, tmpArray);
+				if(candidateVectorScore > maxCandidateScore) maxCandidateScore = candidateVectorScore;
+				if(tfidfVectorScore > maxTFIDFScore) maxTFIDFScore = tfidfVectorScore;
+				
 				
 				//candidateScore = candidateScore / entry.x.size();
-				double candidateScore = lambda * candidateVectorScore + (1 - lambda) * tfidfVectorScore;
-				System.out.println("Score for " + h2.resolveID(candidate) + ": " + candidateScore + " - vector: " + candidateVectorScore + " - tfidf: " +tfidfVectorScore );
-				if(candidateScore > bestScore){
-					bestScore = candidateScore;
-					bestCandidate = candidate;
-				}
+				double candidateScore = 100 * lambda * candidateVectorScore + (1 - lambda) * tfidfVectorScore;
+				count += 1;
+//				candidateVectorAverage += candidateVectorScore;
+//				tfidfVectorAverage += tfidfVectorScore;
+				//System.out.println("Score for " + h2.resolveID(candidate) + ": " + candidateScore + " - vector: " + candidateVectorScore + " - tfidf: " +tfidfVectorScore );
+//				if(candidateScore > bestScore){
+//					bestScore = candidateScore;
+//					bestCandidate = candidate;
+//				}
 			}
 			
-			if(bestScore > 0){
-				fragment.setEntity(h2.resolveID(bestCandidate));
-				fragment.probability = bestScore;
+//			if(bestScore > 0){
+//				fragment.setEntity(h2.resolveID(bestCandidate));
+//				fragment.probability = bestScore;
+//			}
+		}
+		
+		// Pick best after normalization
+		try {
+			BufferedWriter fw = new BufferedWriter(new FileWriter("../../data/vector_evaluation_evaluation.txt"));
+
+			for (Fragment fragment : fragmentList) {
+				fw.write(fragment.originWord + "\n");
+				double bestScore = 0;
+				String bestCandidate = "";
+				for (String candidate : fragment.candidates) {
+					Double[] tmp = scoreMap.get(candidate);
+					if (tmp == null)
+						continue;
+					candidateVectorAverage += (tmp[0] / maxCandidateScore);
+					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
+
+					double candidateScore = lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore);
+					fw.write((tmp[0] / maxCandidateScore) + "\t" + (tmp[1] / maxTFIDFScore) + "\t" + h2.resolveID(candidate) + "\n");
+					if (candidateScore > bestScore) {
+						bestScore = candidateScore;
+						bestCandidate = candidate;
+					}
+				}
+				if (bestScore > 0) {
+					fragment.setEntity(h2.resolveID(bestCandidate));
+					fragment.probability = bestScore;
+				}
+				fw.write("\n");
 			}
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		annotatedSentence.assign(0);
 		
+		System.out.println("candidate vector average: " + (candidateVectorAverage / count));
+		System.out.println("tfidf vector average:     " + (tfidfVectorAverage / count));
 		
 //		System.out.println("Entities:");
 //		for(Integer i: vectorMap.get(371).x){

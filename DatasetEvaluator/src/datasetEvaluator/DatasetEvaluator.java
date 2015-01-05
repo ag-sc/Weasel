@@ -62,8 +62,9 @@ public class DatasetEvaluator {
 					numberOfEntities++;
 					if (entity.equals(candidate)) {
 						correctEntities++;
+						System.out.println(correctEntities + ": " + f.originWord + " -> " + candidate);
 					}else{
-						System.out.println("# " + sentenceCounter);
+						//System.out.println("# " + sentenceCounter);
 					}
 				}
 				

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 
+import org.nustaq.serialization.FSTObjectOutput;
+
 import tfidf.DocumentFrequency;
 
 
@@ -26,7 +28,7 @@ public class AbstractSandbox {
 		while((line = br.readLine()) != null){
 			counter++;
 			String title = br.readLine().replace(" ", "_");
-			if(title.contains("?"))System.out.println(title);
+			//if(title.contains("?"))System.out.println(title);
 			line = br.readLine().toLowerCase();
 			
 			df.addDocument(line);
@@ -37,10 +39,13 @@ public class AbstractSandbox {
 		}
 		br.close();
 	
-		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("documentFrequency"));
+//		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("documentFrequency"));
 //		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency"));
-		out.writeObject(df);
-		out.close();
+//		out.writeObject(df);
+//		out.close();
+		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency_fst"));
+		out_fst.writeObject( df );
+		out_fst.close(); // required !
 		
 		System.out.println("All done. #Abstracts: " + counter);
 	}
