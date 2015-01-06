@@ -30,7 +30,7 @@ public class DatasetEvaluator {
 	}
 	// TODO: fix the counting so that double entries are not counted twice
 	public void evaluate() throws IOException{	
-		SimpleFileWriter fw = new SimpleFileWriter("../../data/assignments.txt");
+		//SimpleFileWriter fw = new SimpleFileWriter("../../data/assignments.txt");
 		
 		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
 		int sentenceCounter = 0;
@@ -72,8 +72,8 @@ public class DatasetEvaluator {
 			
 			System.out.println("Assigned:");
 			System.out.println(result + "\n");
-			fw.writeln(result.toString());
-			fw.flush();
+//			fw.writeln(result.toString());
+//			fw.flush();
 			
 		}
 		System.out.println(numberOfEntities + " entities in evaluation set.");

@@ -7,6 +7,7 @@ import java.util.Map;
 public class Config {
 	
 		private Map<String, String> parameters;
+		public HashMap<Integer, Integer> hackMap; //hack
 		
         // Private constructor. Prevents instantiation from other classes.
         private Config() {

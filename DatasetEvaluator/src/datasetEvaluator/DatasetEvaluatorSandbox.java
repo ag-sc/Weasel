@@ -32,8 +32,8 @@ public class DatasetEvaluatorSandbox {
 			H2Connector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
 //			EvaluationEngine evaluator = EvaluationEngine.getInstance(semSigConnector);
 			EvaluationEngine evaluator = new VectorEvaluation(semSigConnector, 
-					"../../data/smallVector.map",
-					"../../data/Wikipedia Abstracts/documentFrequency");
+					config.getParameter("vectorMapPath"),
+					config.getParameter("dfPath"));
 			
 			// Linker & Evaluation
 			//System.out.println("About to start evaluation.");

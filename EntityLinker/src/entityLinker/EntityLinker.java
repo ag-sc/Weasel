@@ -1,9 +1,11 @@
 package entityLinker;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
+import configuration.Config;
 import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
@@ -79,6 +81,14 @@ public class EntityLinker {
 //	}
 	
 	public AnnotatedSentence getFragmentedSentence2(String sentence) {
+		// hack start
+		HashMap<Integer, Integer> hackMap = new HashMap<Integer, Integer>();
+		Config config = Config.getInstance();
+		String hackSQL = "SELECT id FROM EntityID where Entity is (?)";
+		try {
+			H2Connector hackConnect = new H2Connector(config.getParameter("H2Path"), "sa", "", hackSQL);
+		
+		// hack end
 		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
 		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
@@ -90,11 +100,30 @@ public class EntityLinker {
 			LinkedList<String> tmpList = new LinkedList<String>();
 			String word = "";
 			String tmpWord = "";
+			String hackWord = "";
 			int j = i;
 			while(j < splitSentence.length){
 				tmpWord = (tmpWord + " " + splitSentence[j]).trim();
 				tmpList = anchors.getFragmentTargets(tmpWord);
-				
+				// hackstart
+				String wordHack = splitSentence[j];
+				if (wordHack.length() > 0) {
+					String w = Character.toUpperCase(wordHack.charAt(0)) + wordHack.substring(1);
+					if (w.length() > 0) {
+						if(hackWord.length() == 0) hackWord = w;
+						else hackWord = (hackWord + "_" + w).trim();
+						LinkedList<String> hackList = hackConnect.getFragmentTargets(hackWord);
+						if (hackList.size() > 0) {
+							int hackID = Integer.parseInt(hackList.pop());
+							if (hackMap.containsKey(hackID)) {
+								hackMap.put(hackID, hackMap.get(hackID) + 1);
+							} else {
+								hackMap.put(hackID, 1);
+							}
+						}
+					}
+				}
+				// hackend
 				if(tmpList.size() > 0){
 					candidates = tmpList;
 					word = tmpWord;
@@ -110,10 +139,23 @@ public class EntityLinker {
 			f.originWord = word;
 			as.addFragment(f);
 			i = j;
+			config.hackMap = hackMap; // hack
 		}
 		
-		System.out.println("Added all anchor candidates - Time: " + sw.stop() + " ms");
-		return as;
+		
+			System.out.println("Added all anchor candidates - Time: " + sw.stop() + " ms");
+			return as;
+			// hackstart
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		// hackend
+		
 	}
 	
 	public AnnotatedSentence getFragmentedSentence(String sentence) {
