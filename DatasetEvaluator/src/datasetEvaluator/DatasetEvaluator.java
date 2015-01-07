@@ -29,7 +29,7 @@ public class DatasetEvaluator {
 		this.checkupConnector = entityDBconnector;
 	}
 	// TODO: fix the counting so that double entries are not counted twice
-	public void evaluate() throws IOException{	
+	public String evaluate() throws IOException{	
 		//SimpleFileWriter fw = new SimpleFileWriter("../../data/assignments.txt");
 		
 		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
@@ -83,6 +83,8 @@ public class DatasetEvaluator {
 	
 		checkupConnector.close();
 		linker.closeConnectors();
+		
+		return Double.toString((double)correctEntities / (double)numberOfEntities * 100.00);
 	}
 	
 }

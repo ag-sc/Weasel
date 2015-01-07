@@ -3,6 +3,7 @@ package annotatedSentence;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class AnnotatedSentence {
 
@@ -10,7 +11,17 @@ public class AnnotatedSentence {
 	private HashMap<Integer, HashMap<Integer, Fragment>> fragmentMap;
 	private LinkedList<Fragment> fragmentList;
 	public String[] wordArray;
+	private Map<Integer, Integer> foundEntities;
 	
+	public Map<Integer, Integer> getFoundEntities() {
+		if(foundEntities != null) return foundEntities;
+		return new HashMap<Integer, Integer>();
+	}
+
+	public void setFoundEntities(Map<Integer, Integer> foundEntities) {
+		this.foundEntities = foundEntities;
+	}
+
 	public AnnotatedSentence(String sentence[]) {
 		wordArray = sentence;
 		wordList = new LinkedList<Word>();

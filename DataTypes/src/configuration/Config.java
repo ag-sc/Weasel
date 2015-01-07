@@ -2,12 +2,12 @@ package configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 
 public class Config {
 	
 		private Map<String, String> parameters;
-		public HashMap<Integer, Integer> hackMap; //hack
 		
         // Private constructor. Prevents instantiation from other classes.
         private Config() {
@@ -33,5 +33,9 @@ public class Config {
         		System.err.println("No entry found for parameter '" + parameter + "'");
         		throw new IllegalArgumentException();
         	}
+        }
+        
+        public void setParameter(String key, String value){
+        	parameters.put(key, value);
         }
 }

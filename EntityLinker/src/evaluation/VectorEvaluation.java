@@ -2,22 +2,15 @@ package evaluation;
 
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.ahocorasick.trie.Emit;
-import org.ahocorasick.trie.Trie;
 import org.nustaq.serialization.FSTObjectInput;
-import org.nustaq.serialization.FSTObjectOutput;
-
 import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
@@ -37,6 +30,7 @@ public class VectorEvaluation extends EvaluationEngine {
 	HashMap<Integer, VectorEntry> vectorMap;
 	DocumentFrequency df;
 	double lambda = 0.5;
+	boolean boolScoring = true;
 
 	public VectorEvaluation(DatabaseConnector semanticSignatureDB, String vectorMapFilePath, String dfFilePath) throws IOException, ClassNotFoundException {
 		this.semanticSignatureDB = semanticSignatureDB;
@@ -62,7 +56,9 @@ public class VectorEvaluation extends EvaluationEngine {
 		// df = new DocumentFrequency();
 		objectReader.close();
 		System.out.println("Reading in documentfrequency from file - took " + sw.stop() + " minutes.");
-
+		Config config = Config.getInstance();
+		lambda = Double.parseDouble(config.getParameter("vector_evaluation_lamda"));
+		boolScoring = Boolean.parseBoolean(config.getParameter("candidate_vector_boolean_scoring"));
 	}
 
 	private double magnitude(int[] array) {
@@ -125,20 +121,6 @@ public class VectorEvaluation extends EvaluationEngine {
 		}
 		candidateMagnitude = Math.sqrt(candidateMagnitude);
 
-		// tmp start
-
-		// try {
-		// ObjectOutputStream out = new ObjectOutputStream(new
-		// FileOutputStream("../../data/candidateCount.map"));
-		// out.writeObject(candidateCountMap);
-		// out.close();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// tmp end
-
 		// evaluate
 		double candidateVectorAverage = 0;
 		double tfidfVectorAverage = 0;
@@ -153,19 +135,10 @@ public class VectorEvaluation extends EvaluationEngine {
 			sentence += substring + " ";
 		sentence = sentence.toLowerCase();
 
-		TreeSet<String> treeset = new TreeSet<String>();
-		TreeSet<String> nottreeset = new TreeSet<String>();
-
-		int candidateCount = 0;
-
 		for (Fragment fragment : fragmentList) {
-			String bestCandidate = "";
-			double bestScore = 0;
-
 			for (String candidate : fragment.candidates) {
-				candidateCount++;
-				if (candidateCount % 100 == 0)
-					System.out.println("working on candidate " + candidateCount);
+				// if (candidateCount % 100 == 0)
+				// System.out.println("working on candidate " + candidateCount);
 				// Find candidate
 				int candidateID = Integer.parseInt(candidate);
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
@@ -179,51 +152,17 @@ public class VectorEvaluation extends EvaluationEngine {
 				}
 
 				// Candidate vector overlap
-				HashMap<Integer, Integer> hackMap = Config.getInstance().hackMap;
-				// Trie trie = new
-				// Trie().removeOverlaps().onlyWholeWords().caseInsensitive();
+				Map<Integer, Integer> foundEntitiesMap = annotatedSentence.getFoundEntities();
 				double candidateVectorScore = 0;
 				for (int i = 0; i < candidateEntry.semSigVector.length; i++) {
 					if (candidateEntry.semSigVector[i] < 0)
 						break;
-					else if (hackMap.containsKey(candidateEntry.semSigVector[i])) {
-						candidateVectorScore += 1;// hackMap.get(candidateEntry.semSigVector[i]);
+					else if (foundEntitiesMap.containsKey(candidateEntry.semSigVector[i])) {
+						if (boolScoring)
+							candidateVectorScore += 1;
+						else
+							candidateVectorScore += foundEntitiesMap.get(candidateEntry.semSigVector[i]);
 					}
-
-					// else
-					// if(candidateCountMap.containsKey(Integer.toString(candidateEntry.semSigVector[i]))){
-					// candidateVectorScore = candidateEntry.semSigCount[i] *
-					// candidateCountMap.get(Integer.toString(candidateEntry.semSigVector[i]));
-					// if(fragment.originWord.equals("BSE"))
-					// System.out.println(h2.resolveID(Integer.toString(candidateID))
-					// +
-					// " - " +
-					// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i]))
-					// +
-					// " - " + candidateEntry.semSigCount[i] + " - " +
-					// candidateCountMap.get(Integer.toString(candidateEntry.semSigVector[i])));
-					// }
-
-					// String word =
-					// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])).toLowerCase().replace("_",
-					// " ");
-					// String word =
-					// Integer.toString(candidateEntry.semSigVector[i]);
-					// trie.addKeyword(word);
-
-					// word = " " + word + " ";
-					// if(treeset.contains(word)){
-					// candidateVectorScore += 1;
-					// } else if (!nottreeset.contains(word)) {
-					// if (sentence.contains(word)) {
-					// System.out.println(h2.resolveID(candidate) + " - found "
-					// + word);
-					// treeset.add(word);
-					// candidateVectorScore += 1;
-					// } else {
-					// nottreeset.add(word);
-					// }
-					// }
 				}
 
 				// Collection<Emit> emits = trie.parseText(sentence);
@@ -244,7 +183,10 @@ public class VectorEvaluation extends EvaluationEngine {
 						tfidfVectorScore += candidateEntry.tfScore[i] * tfidfMap.get(candidateEntry.tfVector[i]);
 					}
 				}
-				tfidfVectorScore /= tfidfMagnitude * magnitude(candidateEntry.tfScore);
+				
+				double tmp = tfidfMagnitude * magnitude(candidateEntry.tfScore);
+				if(tmp > 0) tfidfVectorScore /= tmp;
+				else tfidfVectorScore = 0;
 
 				// normalizing
 				Double tmpArray[] = { candidateVectorScore, tfidfVectorScore };
@@ -254,29 +196,12 @@ public class VectorEvaluation extends EvaluationEngine {
 				if (tfidfVectorScore > maxTFIDFScore)
 					maxTFIDFScore = tfidfVectorScore;
 
-				// candidateScore = candidateScore / entry.x.size();
-				double candidateScore = 100 * lambda * candidateVectorScore + (1 - lambda) * tfidfVectorScore;
 				count += 1;
-				// candidateVectorAverage += candidateVectorScore;
-				// tfidfVectorAverage += tfidfVectorScore;
-				// System.out.println("Score for " + h2.resolveID(candidate) +
-				// ": " + candidateScore + " - vector: " + candidateVectorScore
-				// + " - tfidf: " +tfidfVectorScore );
-				// if(candidateScore > bestScore){
-				// bestScore = candidateScore;
-				// bestCandidate = candidate;
-				// }
 			}
-
-			// if(bestScore > 0){
-			// fragment.setEntity(h2.resolveID(bestCandidate));
-			// fragment.probability = bestScore;
-			// }
 		}
 
 		// Pick best after normalization
 		try {
-			Config config = Config.getInstance();
 			BufferedWriter fw = new BufferedWriter(new FileWriter("vector_evaluation_evaluation.txt"));
 
 			for (Fragment fragment : fragmentList) {
@@ -289,6 +214,7 @@ public class VectorEvaluation extends EvaluationEngine {
 						continue;
 					candidateVectorAverage += (tmp[0] / maxCandidateScore);
 					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
+					if(Double.isNaN(tfidfVectorAverage)) System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
 					double candidateScore = lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore);
 					fw.write((tmp[0] / maxCandidateScore) + "\t" + (tmp[1] / maxTFIDFScore) + "\t" + h2.resolveID(candidate) + "\n");
@@ -313,16 +239,6 @@ public class VectorEvaluation extends EvaluationEngine {
 
 		System.out.println("candidate vector average: " + (candidateVectorAverage / count));
 		System.out.println("tfidf vector average:     " + (tfidfVectorAverage / count));
-
-		// System.out.println("Entities:");
-		// for(Integer i: vectorMap.get(371).x){
-		// System.out.println(h2.resolveID(i.toString()));
-		// }
-		// System.out.println("\nWord frequencies:");
-		// for(Entry<Integer, Float> e: vectorMap.get(371).y.entrySet()){
-		// System.out.println(df.getWordFromID(e.getKey()) + " - tf/idf: " +
-		// e.getValue());
-		// }
 
 	}
 

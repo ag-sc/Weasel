@@ -2,22 +2,28 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map.Entry;
-
-import org.ini4j.Ini;
-import org.ini4j.Profile.Section;
+import java.util.Properties;
 
 import configuration.Config;
 
 public class IniLoader {
 
-	private Ini ini = new Ini();
 	private Config config;
 	
 	public IniLoader() {
+		config = Config.getInstance();
+	}
+
+	
+	public void parse(){
 		InputStream input = null;
 		try {
 			input = new FileInputStream("../config.ini");
-			this.ini.load(input);
+			Properties p = new Properties();
+			p.load(input);
+			for(Entry<Object, Object> e: p.entrySet()){
+				config.addParameter((String) e.getKey(), (String) e.getValue());
+			}
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			System.exit(-1);
@@ -28,16 +34,6 @@ public class IniLoader {
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}
-			}
-		}
-		config = Config.getInstance();
-	}
-
-	
-	public void parse(){
-		for(Entry<String, Section> section: ini.entrySet()){
-			for(Entry<String, String> parameter: section.getValue().entrySet()){
-				config.addParameter(parameter.getKey(), parameter.getValue());
 			}
 		}
 	}

@@ -7,6 +7,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EntityLinker"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/TFIDF"/>
-	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/ini4j-0.5.2/ini4j-0.5.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

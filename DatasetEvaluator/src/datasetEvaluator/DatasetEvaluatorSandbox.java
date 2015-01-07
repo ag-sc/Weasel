@@ -15,7 +15,7 @@ import evaluation.VectorEvaluation;
 
 public class DatasetEvaluatorSandbox {
 
-	public static void evaluate() {
+	public static String evaluate() {
 		try {
 			Config config = Config.getInstance();
 			
@@ -41,10 +41,11 @@ public class DatasetEvaluatorSandbox {
 			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, stopwordsPath);
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, anchors); // checkupConnector);
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
-			dataEvaluator.evaluate();
+			String result = dataEvaluator.evaluate();
 			System.out.println("Evaluation time: " + sw.stop() + " minutes");
 //			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime + " ms");
 //			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime + " ms");
+			return result;
 				
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -55,6 +56,7 @@ public class DatasetEvaluatorSandbox {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return "No result - try catch fail?";
 	}
 
 }
