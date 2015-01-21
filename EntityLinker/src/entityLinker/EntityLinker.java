@@ -108,6 +108,7 @@ public class EntityLinker {
 			String tmpWord = "";
 			String testWord = "";
 			int j = i;
+			int maxJ= i;
 			while (j < splitSentence.length) {
 				// find entities for candidate vector score computation in vector evaluation step
 				String word = splitSentence[j];
@@ -136,20 +137,21 @@ public class EntityLinker {
 				if (tmpList.size() > 0) {
 					candidates = tmpList;
 					originWord = tmpWord;
-				} else
-					break;
+					maxJ = j;
+				}
+				else if(j > 5) break;
 
 				j++;
 			}
 
-			j -= 1;
-			Fragment f = new Fragment(i, j);
+			//maxJ -= 1;
+			Fragment f = new Fragment(i, maxJ);
 			f.candidates.addAll(candidates);
 			if (f.candidates.isEmpty())
 				continue;
 			f.originWord = originWord;
 			as.addFragment(f);
-			i = j;
+			i = maxJ;
 		}
 		
 		as.setFoundEntities(foundEntities);

@@ -158,8 +158,15 @@ public class VectorEvaluation extends EvaluationEngine {
 					if (candidateEntry.semSigVector[i] < 0)
 						break;
 					else if (foundEntitiesMap.containsKey(candidateEntry.semSigVector[i])) {
-						if (boolScoring)
+						if (boolScoring){
 							candidateVectorScore += 1;
+							if(fragment.originWord.equals("British") && candidate.equals("12863")){
+								System.out.println("United_States overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+							}else if(fragment.originWord.equals("British") && candidate.equals("122931")){
+								System.out.println("Great_Britain overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+							}
+						}
+							
 						else
 							candidateVectorScore += foundEntitiesMap.get(candidateEntry.semSigVector[i]);
 					}
