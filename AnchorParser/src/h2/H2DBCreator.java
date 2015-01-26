@@ -48,28 +48,11 @@ public class H2DBCreator {
               " PRIMARY KEY ( anchor ))"; 
         stmt.executeUpdate(sql);
         
-        // PartialAnchorId Table
-        stmt = connection.createStatement();  
-        sql = "CREATE TABLE PartialAnchorId " +
-              "(partialAnchor VARCHAR(MAX) not NULL, " +
-              " id INTEGER AUTO_INCREMENT, " + 
-              " PRIMARY KEY ( partialAnchor ))"; 
-        stmt.executeUpdate(sql);
-        
         // AnchorToEntity Table
         stmt = connection.createStatement();  
         sql = "CREATE TABLE AnchorToEntity " +
               "(id INTEGER AUTO_INCREMENT, " +
               " anchorId INTEGER not NULL, " + 
-              " entityIdList VARCHAR(MAX) not NULL, " + 
-              " PRIMARY KEY ( id ))"; 
-        stmt.executeUpdate(sql);
-        
-        // PartialAnchorToEntity Table
-        stmt = connection.createStatement();  
-        sql = "CREATE TABLE PartialAnchorToEntity " +
-              "(id INTEGER AUTO_INCREMENT, " +
-              " partialAnchorId INTEGER not NULL, " + 
               " entityIdList VARCHAR(MAX) not NULL, " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
@@ -81,15 +64,6 @@ public class H2DBCreator {
               " entitySourceId INTEGER not NULL, " + 
               " entitySinkIdList VARCHAR(MAX) not NULL, " + 
               " WeightList VARCHAR(MAX), " + 
-              " PRIMARY KEY ( id ))"; 
-        stmt.executeUpdate(sql);
-        
-        // PartialAnchorToAnchor Table
-        stmt = connection.createStatement();  
-        sql = "CREATE TABLE PartialAnchorToAnchor " +
-              "(id INTEGER AUTO_INCREMENT, " +
-              " partialAnchorId INTEGER not NULL, " + 
-              " anchor VARCHAR(MAX) not NULL, " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
     
@@ -104,19 +78,9 @@ public class H2DBCreator {
 		sql = "CREATE INDEX indexAnchor ON AnchorToEntity(anchorId)";
 		stmt.executeUpdate(sql);
 		
-		System.out.println("Create index for PartialAnchorToAnchor...");
-		stmt = connection.createStatement();
-		sql = "CREATE INDEX indexPartialAnchor ON PartialAnchorToEntity(partialAnchorId)";
-		stmt.executeUpdate(sql);
-		
 		System.out.println("Create index for EntityToEntity...");
 		stmt = connection.createStatement();
 		sql = "CREATE INDEX entitySourceIndex ON EntityToEntity(entitySourceId)";
-		stmt.executeUpdate(sql);
-		
-		System.out.println("Create index for PartialAnchorToAnchor...");
-		stmt = connection.createStatement();
-		sql = "CREATE INDEX PartialAnchorToAnchorIndex ON PartialAnchorToAnchor(partialAnchorId)";
 		stmt.executeUpdate(sql);
         
         connection.close();

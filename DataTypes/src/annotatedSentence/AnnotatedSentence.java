@@ -37,7 +37,7 @@ public class AnnotatedSentence {
 		HashMap<Integer, Fragment> tmp = fragmentMap.get(f.start);
 		Fragment retrievedFragment = tmp.get(f.stop);
 		if(retrievedFragment != null){
-			retrievedFragment.addCandidats(f.candidates);
+			retrievedFragment.addCandidates(f.getCandidates());
 		}else{
 			tmp.put(f.stop, f);
 		}

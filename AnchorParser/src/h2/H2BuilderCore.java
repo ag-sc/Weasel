@@ -59,15 +59,22 @@ public class H2BuilderCore extends H2Core{
 			preparedStatement.setString(2, newEntry);
 			preparedStatement.execute();
 		}else{
-			TreeSet<String> set = H2List.stringToSet(list);
-			if(!set.contains(newEntry)){
-				set.add(newEntry);
-				String newList = H2List.setToString(set);
-				preparedStatement = connection.prepareStatement(updateQuery);
-				preparedStatement.setString(1, newList);
-				preparedStatement.setInt(2, id);
-				preparedStatement.execute();
-			}
+			list += H2List.delimiter + newEntry;
+			preparedStatement = connection.prepareStatement(updateQuery);
+			preparedStatement.setString(1, list);
+			preparedStatement.setInt(2, id);
+			preparedStatement.execute();
+			
+			
+//			TreeSet<String> set = H2List.stringToSet(list);
+//			if(!set.contains(newEntry)){
+//				set.add(newEntry);
+//				String newList = H2List.setToString(set);
+//				preparedStatement = connection.prepareStatement(updateQuery);
+//				preparedStatement.setString(1, newList);
+//				preparedStatement.setInt(2, id);
+//				preparedStatement.execute();
+//			}
 		}
 	}
 

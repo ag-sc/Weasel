@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
+import annotatedSentence.Candidate;
 import annotatedSentence.Fragment;
 import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
@@ -179,9 +180,9 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		// add fragments/candidates to graph
 		graph = new Graph<FragmentCandidateTuple>();
 		for(Fragment fragment: fragmentList){
-			for(String candidate: fragment.candidates){
-				graph.addNode(new FragmentCandidateTuple(candidate, fragment));
-				fw.writeln(fragment.originWord + " - candidate: " + ((H2Connector)semanticSignatureDB).resolveID(candidate));
+			for(Candidate candidate: fragment.getCandidates()){
+				graph.addNode(new FragmentCandidateTuple(candidate.word, fragment));
+				fw.writeln(fragment.originWord + " - candidate: " + ((H2Connector)semanticSignatureDB).resolveID(candidate.word));
 			}
 		}
 		

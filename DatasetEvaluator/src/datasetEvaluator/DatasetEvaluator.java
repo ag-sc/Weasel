@@ -48,7 +48,7 @@ public class DatasetEvaluator {
 				if (entity.length() != 0) {
 					Fragment f = result.get(i).getDominantFragment();
 					if (f != null) {
-						if (f.candidates.contains(entity))
+						if (f.containsEntity(entity))
 							numberOfCorrectCandidates++;
 					}
 
@@ -64,7 +64,7 @@ public class DatasetEvaluator {
 						correctEntities++;
 						System.out.println(correctEntities + ": " + f.originWord + " -> " + candidate);
 					}else{
-						//System.out.println("# " + sentenceCounter);
+						System.out.println("##:" + f.originWord + " !-> " + entity + " - picked instead: " + candidate);
 					}
 				}
 				

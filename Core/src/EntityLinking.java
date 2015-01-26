@@ -30,7 +30,7 @@ public class EntityLinking {
 //			}
 //			
 //			config.setParameter("candidate_vector_boolean_scoring", "false");
-//			fw.write("Boolean scoring: true");
+//			fw.write("Boolean scoring: false");
 //			for (double l = 0.0; l <= 1; l += 0.05) {
 //				config.setParameter("vector_evaluation_lamda", Double.toString(l));
 //				String result = DatasetEvaluatorSandbox.evaluate();

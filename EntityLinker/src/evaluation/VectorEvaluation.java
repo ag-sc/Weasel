@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.nustaq.serialization.FSTObjectInput;
+
 import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
@@ -21,6 +22,7 @@ import datatypes.TFIDFResult;
 import datatypes.VectorEntry;
 import fileparser.StopWordParser;
 import annotatedSentence.AnnotatedSentence;
+import annotatedSentence.Candidate;
 import annotatedSentence.Fragment;
 
 public class VectorEvaluation extends EvaluationEngine {
@@ -107,11 +109,11 @@ public class VectorEvaluation extends EvaluationEngine {
 		LinkedList<Fragment> fragmentList = annotatedSentence.buildFragmentList();
 		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
 		for (Fragment fragment : fragmentList) {
-			for (String candidate : fragment.candidates) {
-				if (candidateCountMap.containsKey(candidate)) {
-					candidateCountMap.put(candidate, candidateCountMap.get(candidate) + 1);
+			for (Candidate candidate : fragment.getCandidates()) {
+				if (candidateCountMap.containsKey(candidate.word)) {
+					candidateCountMap.put(candidate.word, candidateCountMap.get(candidate.word) + 1);
 				} else {
-					candidateCountMap.put(candidate, 1);
+					candidateCountMap.put(candidate.word, 1);
 				}
 			}
 		}
@@ -130,17 +132,18 @@ public class VectorEvaluation extends EvaluationEngine {
 		HashMap<String, Double[]> scoreMap = new HashMap<String, Double[]>();
 		double maxCandidateScore = 0.0;
 		double maxTFIDFScore = 0.0;
+		double maxCandidateReferences = 0.0;
 		String sentence = " ";
 		for (String substring : annotatedSentence.wordArray)
 			sentence += substring + " ";
 		sentence = sentence.toLowerCase();
 
 		for (Fragment fragment : fragmentList) {
-			for (String candidate : fragment.candidates) {
+			for (Candidate candidate : fragment.getCandidates()) {
 				// if (candidateCount % 100 == 0)
 				// System.out.println("working on candidate " + candidateCount);
 				// Find candidate
-				int candidateID = Integer.parseInt(candidate);
+				int candidateID = Integer.parseInt(candidate.word);
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
 				if (candidateEntry == null) {
 					// System.out.println(h2.resolveID(candidate) +
@@ -160,11 +163,11 @@ public class VectorEvaluation extends EvaluationEngine {
 					else if (foundEntitiesMap.containsKey(candidateEntry.semSigVector[i])) {
 						if (boolScoring){
 							candidateVectorScore += 1;
-							if(fragment.originWord.equals("British") && candidate.equals("12863")){
-								System.out.println("United_States overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
-							}else if(fragment.originWord.equals("British") && candidate.equals("122931")){
-								System.out.println("Great_Britain overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
-							}
+//							if(fragment.originWord.equals("British") && candidate.word.equals("12863")){
+//								System.out.println("United_States overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+//							}else if(fragment.originWord.equals("British") && candidate.word.equals("122931")){
+//								System.out.println("Great_Britain overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+//							}
 						}
 							
 						else
@@ -197,7 +200,10 @@ public class VectorEvaluation extends EvaluationEngine {
 
 				// normalizing
 				Double tmpArray[] = { candidateVectorScore, tfidfVectorScore };
-				scoreMap.put(candidate, tmpArray);
+				scoreMap.put(candidate.word, tmpArray);
+				if(candidate.count > maxCandidateReferences){
+					maxCandidateReferences = candidate.count;
+				}
 				if (candidateVectorScore > maxCandidateScore)
 					maxCandidateScore = candidateVectorScore;
 				if (tfidfVectorScore > maxTFIDFScore)
@@ -215,19 +221,19 @@ public class VectorEvaluation extends EvaluationEngine {
 				fw.write(fragment.originWord + "\n");
 				double bestScore = 0;
 				String bestCandidate = "";
-				for (String candidate : fragment.candidates) {
-					Double[] tmp = scoreMap.get(candidate);
+				for (Candidate candidate : fragment.getCandidates()) {
+					Double[] tmp = scoreMap.get(candidate.word);
 					if (tmp == null)
 						continue;
 					candidateVectorAverage += (tmp[0] / maxCandidateScore);
 					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
 					if(Double.isNaN(tfidfVectorAverage)) System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
-					double candidateScore = lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore);
-					fw.write((tmp[0] / maxCandidateScore) + "\t" + (tmp[1] / maxTFIDFScore) + "\t" + h2.resolveID(candidate) + "\n");
+					double candidateScore = (candidate.count / maxCandidateReferences) * (lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore));
+					fw.write((candidate.count / maxCandidateReferences) + "\t" + (tmp[0] / maxCandidateScore) + "\t" + (tmp[1] / maxTFIDFScore) + "\t" + h2.resolveID(candidate.word) + "\n");
 					if (candidateScore > bestScore) {
 						bestScore = candidateScore;
-						bestCandidate = candidate;
+						bestCandidate = candidate.word;
 					}
 				}
 				if (bestScore > 0) {

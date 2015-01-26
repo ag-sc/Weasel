@@ -21,7 +21,6 @@ public class H2PAConnector extends H2Connector {
 			preparedStatement.setString(1, fragment);
 			preparedStatement.executeQuery();
 			ResultSet result = preparedStatement.getResultSet();
-			String tmp = null;
 			while (result.next()) {
 				list.add(result.getString(1));
 			}
