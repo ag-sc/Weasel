@@ -148,13 +148,19 @@ public class SignaturemapSandbox {
 				continue;
 			}else{
 				VectorEntry entry = vectorMap.get(id);
-				for(int i = 0; i < 100; i++){
+				for(int i = 1; i < 100; i++){
 					line = br.readLine();
 					if(line.equals("")) break;
 					String lineArray[] = line.split("\t");
 					entry.semSigVector[i] = entityDB.resolveName(lineArray[0]);
 					entry.semSigCount[i]  = Integer.parseInt(lineArray[1]);
 				}
+				
+				// include entity in its own signature
+				entry.semSigVector[0] = id;
+				if(entry.semSigCount[1] > 0) entry.semSigCount[0] = (int)Math.floor(entry.semSigCount[1] * 1.5);
+				else entry.semSigCount[0] = 1;
+				
 				while(!line.equals("")) line = br.readLine();
 			}
 		}
@@ -187,10 +193,10 @@ public class SignaturemapSandbox {
 		}
 		fw.close();
 		
-		System.out.println("Write map to fst binary file");
-		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream(vectorMapOutputPath + "_fst"));
-		out_fst.writeObject( vectorMap );
-		out_fst.close(); // required !
+//		System.out.println("Write map to fst binary file");
+//		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream(vectorMapOutputPath + "_fst"));
+//		out_fst.writeObject( vectorMap );
+//		out_fst.close(); // required !
 		System.out.println("All done! Time taken for file writing: " + sw.stop() + " s");
 	}
 
