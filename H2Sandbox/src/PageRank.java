@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
+import configuration.Config;
 import stopwatch.Stopwatch;
 import datatypes.H2List;
 import datatypes.PageRankNode;
@@ -39,6 +40,9 @@ public class PageRank {
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, FileNotFoundException, IOException {
 		System.out.println("Starting PageRank calculation.");
+		Config config = Config.getInstance();
+		int nrOfMaxPageRankIterations = 15;
+		double epsilon = 1E-8;
 
 		PageRankNode[] pageRankArray;
 
@@ -76,6 +80,25 @@ public class PageRank {
 					System.out.println(id + ":\t" + (((double) id / maxID) * 100) + "%" + "\ttime since last update: " + sw + " minutes\testimated remaining: "
 							+ ((maxID - id) / 100000) * sw.doubleTime + " minutes");
 					sw.start();
+				}
+			}
+
+			// find all nodes with no incoming links and set their pageRank to 0
+			boolean[] incomingLinks = new boolean[pageRankArray.length];
+			for (int i = 0; i < pageRankArray.length; i++) {
+				PageRankNode node = pageRankArray[i];
+				if (node == null)
+					pageRankArray[i] = new PageRankNode(0, new LinkedList<String>());
+				else {
+					for (int link : node.outgoing)
+						incomingLinks[link] = true;
+				}
+			}
+
+			for (int i = 0; i < incomingLinks.length; i++) {
+				if (incomingLinks[i] == false) {
+					pageRankArray[i].pagerankBuffer[0] = 0.0;
+					pageRankArray[i].pagerankBuffer[1] = 0.0;
 				}
 			}
 
@@ -161,14 +184,36 @@ public class PageRank {
 			currentReadBuffer = (currentReadBuffer + 1) % 2;
 			sanityCounter++;
 			System.out.println("Done with iteration " + sanityCounter + "\ttime:" + sw.stop() + " s");
-			System.out.println("\tMaximum pagerank change: " + maxPageRankChange + "\tMaximum pagerank: " + maxPageRank + "\tMinimum pagerank(excludes 0): " + minPageRank);
+			System.out.println("\tMaximum pagerank change: " + maxPageRankChange + "\tMaximum pagerank: " + maxPageRank + "\tMinimum pagerank(excludes 0): "
+					+ minPageRank);
 			sw.start();
-		} while (maxPageRankChange > 1E-10 && sanityCounter < 100);
+		} while (maxPageRankChange > epsilon && sanityCounter < nrOfMaxPageRankIterations);
 
 		System.out.println("Normalize...");
 		for (PageRankNode node : pageRankArray) {
-			node.pagerankBuffer[0] = node.pagerankBuffer[currentReadBuffer] / maxPageRank;
+			if (node != null)
+				node.pagerankBuffer[0] = node.pagerankBuffer[currentReadBuffer] / maxPageRank;
 		}
+		
+		System.out.println("Write pageRank array to binary file");
+		double[] output = new double[pageRankArray.length];
+		for(int i = 0; i < pageRankArray.length; i++){
+			output[i] = pageRankArray[i].pagerankBuffer[0];
+		}
+		
+		try {
+			ObjectOutputStream out;
+			out = new ObjectOutputStream(new FileOutputStream(pageRankFileName));
+			out.writeObject(output);
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		System.out.println("All done!");
 	}
 

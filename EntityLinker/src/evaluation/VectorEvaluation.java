@@ -18,6 +18,7 @@ import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
 import databaseConnectors.DatabaseConnector;
 import databaseConnectors.H2Connector;
+import datatypes.PageRankNode;
 import datatypes.TFIDFResult;
 import datatypes.VectorEntry;
 import fileparser.StopWordParser;
@@ -31,6 +32,7 @@ public class VectorEvaluation extends EvaluationEngine {
 	private DatabaseConnector semanticSignatureDB;
 	HashMap<Integer, VectorEntry> vectorMap;
 	DocumentFrequency df;
+	double[] pageRankArray;
 	double lambda = 0.5;
 	boolean boolScoring = true;
 
@@ -48,10 +50,19 @@ public class VectorEvaluation extends EvaluationEngine {
 		System.out.println("Reading in vectormap from file - took " + sw.stop() + " minutes.");
 
 		sw.start();
+		// read document frequency object
 		fileInputStream = new FileInputStream(dfFilePath);
 		FSTObjectInput in = new FSTObjectInput(fileInputStream);
 		df = (DocumentFrequency) in.readObject();
 		in.close();
+		
+		// read pageRank object
+		String pageRankArrayPath = Config.getInstance().getParameter("pageRankArrayPath");
+		fileInputStream = new FileInputStream(pageRankArrayPath);
+		objectReader = new ObjectInputStream(fileInputStream);
+		pageRankArray = (double[]) objectReader.readObject();
+		in.close();
+		
 		// fileInputStream = new FileInputStream(dfFilePath);
 		// objectReader = new ObjectInputStream(fileInputStream);
 		// df = (DocumentFrequency) objectReader.readObject();
@@ -229,8 +240,12 @@ public class VectorEvaluation extends EvaluationEngine {
 					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
 					if(Double.isNaN(tfidfVectorAverage)) System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
-					double candidateScore = (candidate.count / maxCandidateReferences) * (lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore));
-					fw.write((candidate.count / maxCandidateReferences) + "\t" + (tmp[0] / maxCandidateScore) + "\t" + (tmp[1] / maxTFIDFScore) + "\t" + h2.resolveID(candidate.word) + "\n");
+					double candidateScore = (candidate.count / maxCandidateReferences) * 
+							((lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore)) * 0.8
+									+ 0.2 * pageRankArray[Integer.parseInt(candidate.word)]);
+					
+					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore) + "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
+					fw.write("\t" + h2.resolveID(candidate.word) + "\t" + "pagerank: " + pageRankArray[Integer.parseInt(candidate.word)] + "\n");
 					if (candidateScore > bestScore) {
 						bestScore = candidateScore;
 						bestCandidate = candidate.word;
