@@ -5,8 +5,10 @@ import java.sql.SQLException;
 
 import configuration.Config;
 import stopwatch.Stopwatch;
+import databaseConnectors.DatabaseConnector;
 import databaseConnectors.H2Connector;
 import databaseConnectors.H2PAConnector;
+import databaseConnectors.InMemoryConnector;
 import datasetParser.DatasetParser;
 import entityLinker.EntityLinker;
 import evaluation.BabelfyEvaluation;
@@ -22,23 +24,22 @@ public class DatasetEvaluatorSandbox {
 			// TestSet
 			DatasetParser parser = DatasetParser.getInstance();
 			
-			String dbPathH2 = config.getParameter("H2Path");
-			String partialAnchorSQL = "SELECT Anchor FROM PartialAnchorToAnchor where partialAnchorID is (select id from partialAnchorID where partialAnchor is (?))";
-			H2Connector partialAnchors = new H2PAConnector(dbPathH2, "sa", "", partialAnchorSQL);
-			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
-			H2Connector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
+//			String dbPathH2 = config.getParameter("H2Path");
+//			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
+//			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
+			DatabaseConnector anchors = new InMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
 			
-			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
-			H2Connector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
+//			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
+//			DatabaseConnector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
 //			EvaluationEngine evaluator = EvaluationEngine.getInstance(semSigConnector);
-			EvaluationEngine evaluator = new VectorEvaluation(semSigConnector, 
+			EvaluationEngine evaluator = new VectorEvaluation(anchors, 
 					config.getParameter("vectorMapPath"),
 					config.getParameter("dfPath"));
 			
 			// Linker & Evaluation
 			//System.out.println("About to start evaluation.");
 			String stopwordsPath = config.getParameter("stopwordsPath");
-			EntityLinker linker = new EntityLinker(evaluator, anchors, partialAnchors, stopwordsPath);
+			EntityLinker linker = new EntityLinker(evaluator, anchors, stopwordsPath);
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, anchors); // checkupConnector);
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			String result = dataEvaluator.evaluate();
@@ -52,10 +53,11 @@ public class DatasetEvaluatorSandbox {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+//		catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return "No result - try catch fail?";
 	}
 

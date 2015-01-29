@@ -69,5 +69,17 @@ public class AnchorFileParser extends FileParser{
 		}
 		return null;
 	}
+
+
+
+	@Override
+	public void close() {
+		try {
+			br.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }

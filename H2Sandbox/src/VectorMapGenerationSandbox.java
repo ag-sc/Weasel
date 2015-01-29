@@ -18,15 +18,18 @@ import java.util.Map.Entry;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 
+import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
+import databaseConnectors.DatabaseConnector;
 import databaseConnectors.H2Connector;
+import databaseConnectors.InMemoryConnector;
 import datatypes.TFIDFResult;
 import datatypes.VectorEntry;
 
 
-public class SignaturemapSandbox {
+public class VectorMapGenerationSandbox {
 
 //	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
 //	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
@@ -38,11 +41,12 @@ public class SignaturemapSandbox {
 	final static String abstractPath = "data/abstracts_cleaned_correct.txt";
 	final static String dbPathH = "~/vectormap/data/h2_anchors_pagelinks";
 	final static String semsigPath = "../semsig/semsig.txt";
-	final static String vectorMapOutputPath = "vectorMap";
+	final static String vectorMapOutputPath = "vectorMap_inMemory";
+	final static String inMemoryDataContainerPath = "../anchor_db/inMemoryDataContainer.bin";
 	
 	final static int initialMapSize = 15000000;
 	
-	public SignaturemapSandbox() {
+	public VectorMapGenerationSandbox() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -71,7 +75,8 @@ public class SignaturemapSandbox {
 		
 		// Set up H2 Connector
 		String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
-		H2Connector entityDB = new H2Connector(dbPathH, "sa", "", sql, false);
+//		DatabaseConnector entityDB = new H2Connector(dbPathH, "sa", "", sql, false);
+		DatabaseConnector entityDB = new InMemoryConnector(inMemoryDataContainerPath);
 		
 		System.out.println("Starting Loop");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
@@ -95,7 +100,7 @@ public class SignaturemapSandbox {
 			
 			// Get EntityID and Semantic Signature
 			//String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");
-			String title = br.readLine().replace(" ", "_");
+			String title = br.readLine().toLowerCase().replace(" ", "_");
 			line = br.readLine().toLowerCase();
 			Integer id = entityDB.resolveName(title);
 			if(id == null){
@@ -103,7 +108,7 @@ public class SignaturemapSandbox {
 				normalized = normalized.replaceAll("[^\\p{ASCII}]", "");
 				id = entityDB.resolveName(normalized);
 				if(id == null){
-					System.err.println(title + "/" + normalized + " --> Not in DB");
+					//System.err.println(title + "/" + normalized + " --> Not in DB");
 					continue;
 				}
 			}
@@ -136,12 +141,13 @@ public class SignaturemapSandbox {
 		sw.start();
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(semsigPath)));
 		while((line = br.readLine()) != null){
+			line = line.toLowerCase();
 			counter++;
 			if(counter % 100000 == 0){
 				System.out.println(counter + " semsig entries:\t" + sw.stop() + " s");
 				sw.start();
 			}
-			int id = entityDB.resolveName(line);
+			Integer id = entityDB.resolveName(line);
 			if(!vectorMap.containsKey(id)){
 				System.err.println(line + " not in vectorMap");
 				while(line != null && !line.equals("")) line = br.readLine(); // skip entry
@@ -150,12 +156,18 @@ public class SignaturemapSandbox {
 				VectorEntry entry = vectorMap.get(id);
 				for(int i = 1; i < 100; i++){
 					line = br.readLine();
-					if(line.equals("")) break;
+					if (line.equals(""))
+						break;
 					String lineArray[] = line.split("\t");
-					entry.semSigVector[i] = entityDB.resolveName(lineArray[0]);
-					entry.semSigCount[i]  = Integer.parseInt(lineArray[1]);
+					Integer tmpID = entityDB.resolveName(lineArray[0]);
+					if (tmpID != null) {
+						entry.semSigVector[i] = tmpID;
+						entry.semSigCount[i] = Integer.parseInt(lineArray[1]);
+					} else {
+						i--; // skip this line
+					}
 				}
-				
+
 				// include entity in its own signature
 				entry.semSigVector[0] = id;
 				if(entry.semSigCount[1] > 0) entry.semSigCount[0] = (int)Math.floor(entry.semSigCount[1] * 1.5);

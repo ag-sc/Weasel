@@ -29,7 +29,7 @@ import annotatedSentence.Fragment;
 public class VectorEvaluation extends EvaluationEngine {
 
 	private TreeSet<String> stopWords;
-	private DatabaseConnector semanticSignatureDB;
+	private DatabaseConnector dbConnector;
 	HashMap<Integer, VectorEntry> vectorMap;
 	DocumentFrequency df;
 	double[] pageRankArray;
@@ -37,7 +37,7 @@ public class VectorEvaluation extends EvaluationEngine {
 	boolean boolScoring = true;
 
 	public VectorEvaluation(DatabaseConnector semanticSignatureDB, String vectorMapFilePath, String dfFilePath) throws IOException, ClassNotFoundException {
-		this.semanticSignatureDB = semanticSignatureDB;
+		this.dbConnector = semanticSignatureDB;
 		String stopwordsPath = Config.getInstance().getParameter("stopwordsPath");
 		stopWords = StopWordParser.parseStopwords(stopwordsPath);
 
@@ -49,20 +49,21 @@ public class VectorEvaluation extends EvaluationEngine {
 		objectReader.close();
 		System.out.println("Reading in vectormap from file - took " + sw.stop() + " minutes.");
 
+		// read pageRank object
+		String pageRankArrayPath = Config.getInstance().getParameter("pageRankArrayPath");
+		fileInputStream = new FileInputStream(pageRankArrayPath);
+		objectReader = new ObjectInputStream(fileInputStream);
+		pageRankArray = (double[]) objectReader.readObject();
+		objectReader.close();
+		fileInputStream.close();
+
 		sw.start();
 		// read document frequency object
 		fileInputStream = new FileInputStream(dfFilePath);
 		FSTObjectInput in = new FSTObjectInput(fileInputStream);
 		df = (DocumentFrequency) in.readObject();
 		in.close();
-		
-		// read pageRank object
-		String pageRankArrayPath = Config.getInstance().getParameter("pageRankArrayPath");
-		fileInputStream = new FileInputStream(pageRankArrayPath);
-		objectReader = new ObjectInputStream(fileInputStream);
-		pageRankArray = (double[]) objectReader.readObject();
-		in.close();
-		
+
 		// fileInputStream = new FileInputStream(dfFilePath);
 		// objectReader = new ObjectInputStream(fileInputStream);
 		// df = (DocumentFrequency) objectReader.readObject();
@@ -94,7 +95,6 @@ public class VectorEvaluation extends EvaluationEngine {
 
 	@Override
 	public void evaluate(AnnotatedSentence annotatedSentence) {
-		H2Connector h2 = (H2Connector) semanticSignatureDB;
 
 		// TFIDF computation for input sentence
 		LinkedList<TFIDFResult> resultList = TFIDF.compute(annotatedSentence.wordArray, df);
@@ -121,10 +121,10 @@ public class VectorEvaluation extends EvaluationEngine {
 		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
 		for (Fragment fragment : fragmentList) {
 			for (Candidate candidate : fragment.getCandidates()) {
-				if (candidateCountMap.containsKey(candidate.word)) {
-					candidateCountMap.put(candidate.word, candidateCountMap.get(candidate.word) + 1);
+				if (candidateCountMap.containsKey(candidate.getWord())) {
+					candidateCountMap.put(candidate.getWord(), candidateCountMap.get(candidate.getWord()) + 1);
 				} else {
-					candidateCountMap.put(candidate.word, 1);
+					candidateCountMap.put(candidate.getWord(), 1);
 				}
 			}
 		}
@@ -147,14 +147,14 @@ public class VectorEvaluation extends EvaluationEngine {
 		String sentence = " ";
 		for (String substring : annotatedSentence.wordArray)
 			sentence += substring + " ";
-		sentence = sentence.toLowerCase();
+		//sentence = sentence.toLowerCase();
 
 		for (Fragment fragment : fragmentList) {
 			for (Candidate candidate : fragment.getCandidates()) {
 				// if (candidateCount % 100 == 0)
 				// System.out.println("working on candidate " + candidateCount);
 				// Find candidate
-				int candidateID = Integer.parseInt(candidate.word);
+				int candidateID = Integer.parseInt(candidate.getWord());
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
 				if (candidateEntry == null) {
 					// System.out.println(h2.resolveID(candidate) +
@@ -172,15 +172,19 @@ public class VectorEvaluation extends EvaluationEngine {
 					if (candidateEntry.semSigVector[i] < 0)
 						break;
 					else if (foundEntitiesMap.containsKey(candidateEntry.semSigVector[i])) {
-						if (boolScoring){
+						if (boolScoring) {
 							candidateVectorScore += 1;
-//							if(fragment.originWord.equals("British") && candidate.word.equals("12863")){
-//								System.out.println("United_States overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
-//							}else if(fragment.originWord.equals("British") && candidate.word.equals("122931")){
-//								System.out.println("Great_Britain overlap: " + h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
-//							}
+							// if(fragment.originWord.equals("British") &&
+							// candidate.word.equals("12863")){
+							// System.out.println("United_States overlap: " +
+							// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+							// }else if(fragment.originWord.equals("British") &&
+							// candidate.word.equals("122931")){
+							// System.out.println("Great_Britain overlap: " +
+							// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+							// }
 						}
-							
+
 						else
 							candidateVectorScore += foundEntitiesMap.get(candidateEntry.semSigVector[i]);
 					}
@@ -204,15 +208,17 @@ public class VectorEvaluation extends EvaluationEngine {
 						tfidfVectorScore += candidateEntry.tfScore[i] * tfidfMap.get(candidateEntry.tfVector[i]);
 					}
 				}
-				
+
 				double tmp = tfidfMagnitude * magnitude(candidateEntry.tfScore);
-				if(tmp > 0) tfidfVectorScore /= tmp;
-				else tfidfVectorScore = 0;
+				if (tmp > 0)
+					tfidfVectorScore /= tmp;
+				else
+					tfidfVectorScore = 0;
 
 				// normalizing
 				Double tmpArray[] = { candidateVectorScore, tfidfVectorScore };
-				scoreMap.put(candidate.word, tmpArray);
-				if(candidate.count > maxCandidateReferences){
+				scoreMap.put(candidate.getWord(), tmpArray);
+				if (candidate.count > maxCandidateReferences) {
 					maxCandidateReferences = candidate.count;
 				}
 				if (candidateVectorScore > maxCandidateScore)
@@ -233,26 +239,30 @@ public class VectorEvaluation extends EvaluationEngine {
 				double bestScore = 0;
 				String bestCandidate = "";
 				for (Candidate candidate : fragment.getCandidates()) {
-					Double[] tmp = scoreMap.get(candidate.word);
+					Double[] tmp = scoreMap.get(candidate.getWord());
 					if (tmp == null)
 						continue;
 					candidateVectorAverage += (tmp[0] / maxCandidateScore);
 					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
-					if(Double.isNaN(tfidfVectorAverage)) System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
+					if (Double.isNaN(tfidfVectorAverage))
+						System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
-					double candidateScore = (candidate.count / maxCandidateReferences) * 
-							((lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore)) * 0.8
-									+ 0.2 * pageRankArray[Integer.parseInt(candidate.word)]);
-					
-					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore) + "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
-					fw.write("\t" + h2.resolveID(candidate.word) + "\t" + "pagerank: " + pageRankArray[Integer.parseInt(candidate.word)] + "\n");
+					double candidateScore = (candidate.count / maxCandidateReferences)
+							* (lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore));
+//					double candidateScore = (candidate.count / maxCandidateReferences)
+//							* ((lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore)) * 0.8 + 0.2 * pageRankArray[Integer
+//									.parseInt(candidate.getWord())]);
+
+					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
+							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
+					fw.write("\t" + dbConnector.resolveID(candidate.getWord()) + "\t" + "pagerank: " + pageRankArray[Integer.parseInt(candidate.getWord())] + "\n");
 					if (candidateScore > bestScore) {
 						bestScore = candidateScore;
-						bestCandidate = candidate.word;
+						bestCandidate = candidate.getWord();
 					}
 				}
 				if (bestScore > 0) {
-					fragment.setEntity(h2.resolveID(bestCandidate));
+					fragment.setEntity(dbConnector.resolveID(bestCandidate));
 					fragment.probability = bestScore;
 				}
 				fw.write("\n");

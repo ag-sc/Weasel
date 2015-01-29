@@ -60,7 +60,7 @@ public class DatasetEvaluator {
 //					}
 
 					numberOfEntities++;
-					if (entity.equals(candidate)) {
+					if (entity.equalsIgnoreCase(candidate)) {
 						correctEntities++;
 						System.out.println(correctEntities + ": " + f.originWord + " -> " + candidate);
 					}else{

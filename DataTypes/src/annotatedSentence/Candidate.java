@@ -2,12 +2,12 @@ package annotatedSentence;
 
 public class Candidate implements Comparable<Candidate>{
 
-	public String word;
+	private final String word;
 	public int count;
 	
 	
 	public Candidate(String word, int count) {
-		this.word = word;
+		this.word = word.toLowerCase();
 		this.count = count;
 	}
 
@@ -20,6 +20,10 @@ public class Candidate implements Comparable<Candidate>{
 	@Override
 	public int hashCode(){
 		return word.hashCode();
+	}
+	
+	public String getWord(){
+		return word;
 	}
 	
 	public String toString(){

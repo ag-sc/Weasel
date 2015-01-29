@@ -19,13 +19,11 @@ public class EntityLinker {
 
 	private EvaluationEngine evaluator;
 	private DatabaseConnector anchors;
-	private DatabaseConnector partialAnchors;
 	private TreeSet<String> stopWords;
 
-	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector, DatabaseConnector partialAnchors, String stopWordsTextFile) {
+	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector, String stopWordsTextFile) {
 		this.evaluator = evaluator;
 		this.anchors = connector;
-		this.partialAnchors = partialAnchors;
 		if (stopWordsTextFile != null) {
 			try {
 				stopWords = StopWordParser.parseStopwords(stopWordsTextFile);
@@ -35,15 +33,12 @@ public class EntityLinker {
 		}
 	}
 
-	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector, DatabaseConnector partialAnchors) {
-		this(evaluator, connector, partialAnchors, null);
+	public EntityLinker(EvaluationEngine evaluator, DatabaseConnector connector) {
+		this(evaluator, connector, null);
 	}
 
 	public AnnotatedSentence getFragmentedSentence(String sentence) throws ClassNotFoundException, SQLException {
 		HashMap<Integer, Integer> foundEntities = new HashMap<Integer, Integer>();
-		Config config = Config.getInstance();
-		String foundEntitiesSQL = "SELECT id FROM EntityID where Entity is (?)";
-		H2Connector foundEntitiesConnect = new H2Connector(config.getParameter("H2Path"), "sa", "", foundEntitiesSQL);
 
 		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
 		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
@@ -70,9 +65,10 @@ public class EntityLinker {
 							testWord = wikiWord;
 						else
 							testWord = (testWord + "_" + wikiWord).trim();
-						LinkedList<String> foundEntitiesList = foundEntitiesConnect.getFragmentTargets(testWord);
+						LinkedList<String> foundEntitiesList = anchors.getFragmentTargets(testWord);
 						if (foundEntitiesList.size() > 0) {
-							int foundEntityID = Integer.parseInt(foundEntitiesList.pop());
+							String idPlusCount = foundEntitiesList.pop();
+							int foundEntityID = Integer.parseInt(idPlusCount.split("_")[0]);
 							if (foundEntities.containsKey(foundEntityID)) {
 								foundEntities.put(foundEntityID, foundEntities.get(foundEntityID) + 1);
 							} else {
@@ -112,6 +108,7 @@ public class EntityLinker {
 	}
 
 	public AnnotatedSentence link(String sentence) {
+		sentence = sentence.toLowerCase();
 		AnnotatedSentence as;
 		try {
 			as = getFragmentedSentence(sentence);
@@ -130,7 +127,6 @@ public class EntityLinker {
 
 	public void closeConnectors() {
 		anchors.close();
-		partialAnchors.close();
 	}
 
 }
