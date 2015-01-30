@@ -31,18 +31,19 @@ import datatypes.VectorEntry;
 
 public class VectorMapGenerationSandbox {
 
-//	final static String dfPath = "../../data/Wikipedia Abstracts/documentFrequency";
-//	final static String abstractPath = "../../data/Wikipedia Abstracts/test_abstracts_cleaned_correct.txt";
-//	final static String dbPathH2 = "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
-//	final static String semsigPath = "../../data/semsig.txt";
-//	final static String vectorMapOutputPath = "../../data/vectorMap";
+	final static String dfPath = "../../data/toyData/documentFrequency_fst";
+	final static String abstractPath = "../../data/toyData/abstracts.txt";
+	final static String dbPathH = "E:/Master Project/data/toyData/anchorH2";
+	final static String semsigPath = "../../data/toyData/semsig.txt";
+	final static String vectorMapOutputPath = "../../data/toyData/vectorMap";
+	final static String inMemoryDataContainerPath = "../data/toyData/inMemoryDataContainer.bin";
 	
-	final static String dfPath = "data/documentFrequency_fst";
-	final static String abstractPath = "data/abstracts_cleaned_correct.txt";
-	final static String dbPathH = "~/vectormap/data/h2_anchors_pagelinks";
-	final static String semsigPath = "../semsig/semsig.txt";
-	final static String vectorMapOutputPath = "vectorMap_inMemory";
-	final static String inMemoryDataContainerPath = "../anchor_db/inMemoryDataContainer.bin";
+//	final static String dfPath = "data/documentFrequency_fst";
+//	final static String abstractPath = "data/abstracts_cleaned_correct.txt";
+//	final static String dbPathH = "~/vectormap/data/h2_anchors_pagelinks";
+//	final static String semsigPath = "../semsig/semsig.txt";
+//	final static String vectorMapOutputPath = "vectorMap_inMemory";
+//	final static String inMemoryDataContainerPath = "../anchor_db/inMemoryDataContainer.bin";
 	
 	final static int initialMapSize = 15000000;
 	
@@ -75,8 +76,8 @@ public class VectorMapGenerationSandbox {
 		
 		// Set up H2 Connector
 		String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
-//		DatabaseConnector entityDB = new H2Connector(dbPathH, "sa", "", sql, false);
-		DatabaseConnector entityDB = new InMemoryConnector(inMemoryDataContainerPath);
+		DatabaseConnector entityDB = new H2Connector(dbPathH, "sa", "", sql, false);
+//		DatabaseConnector entityDB = new InMemoryConnector(inMemoryDataContainerPath);
 		
 		System.out.println("Starting Loop");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
@@ -100,8 +101,8 @@ public class VectorMapGenerationSandbox {
 			
 			// Get EntityID and Semantic Signature
 			//String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");
-			String title = br.readLine().toLowerCase().replace(" ", "_");
-			line = br.readLine().toLowerCase();
+			String title = br.readLine().replace(" ", "_");
+			line = br.readLine();
 			Integer id = entityDB.resolveName(title);
 			if(id == null){
 				String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
@@ -141,7 +142,7 @@ public class VectorMapGenerationSandbox {
 		sw.start();
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(semsigPath)));
 		while((line = br.readLine()) != null){
-			line = line.toLowerCase();
+			//line = line.toLowerCase();
 			counter++;
 			if(counter % 100000 == 0){
 				System.out.println(counter + " semsig entries:\t" + sw.stop() + " s");
@@ -154,9 +155,9 @@ public class VectorMapGenerationSandbox {
 				continue;
 			}else{
 				VectorEntry entry = vectorMap.get(id);
-				for(int i = 1; i < 100; i++){
+				for(int i = 0; i < 100; i++){
 					line = br.readLine();
-					if (line.equals(""))
+					if (line == null || line.equals(""))
 						break;
 					String lineArray[] = line.split("\t");
 					Integer tmpID = entityDB.resolveName(lineArray[0]);
@@ -169,11 +170,11 @@ public class VectorMapGenerationSandbox {
 				}
 
 				// include entity in its own signature
-				entry.semSigVector[0] = id;
-				if(entry.semSigCount[1] > 0) entry.semSigCount[0] = (int)Math.floor(entry.semSigCount[1] * 1.5);
-				else entry.semSigCount[0] = 1;
+//				entry.semSigVector[0] = id;
+//				if(entry.semSigCount[1] > 0) entry.semSigCount[0] = (int)Math.floor(entry.semSigCount[1] * 1.5);
+//				else entry.semSigCount[0] = 1;
 				
-				while(!line.equals("")) line = br.readLine();
+				while(line != null && !line.equals("")) line = br.readLine();
 			}
 		}
 		

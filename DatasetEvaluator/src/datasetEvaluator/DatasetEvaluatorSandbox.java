@@ -24,8 +24,8 @@ public class DatasetEvaluatorSandbox {
 			// TestSet
 			DatasetParser parser = DatasetParser.getInstance();
 			
-//			String dbPathH2 = config.getParameter("H2Path");
-//			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
+			String dbPathH2 = config.getParameter("H2Path");
+			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
 //			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
 			DatabaseConnector anchors = new InMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
 			
@@ -43,7 +43,7 @@ public class DatasetEvaluatorSandbox {
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, anchors); // checkupConnector);
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			String result = dataEvaluator.evaluate();
-			System.out.println("Evaluation time: " + sw.stop() + " minutes");
+			System.out.println("Evaluation time (including data load): " + sw.stop() + " minutes");
 //			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime + " ms");
 //			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime + " ms");
 			return result;

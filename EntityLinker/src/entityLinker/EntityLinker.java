@@ -66,7 +66,7 @@ public class EntityLinker {
 						else
 							testWord = (testWord + "_" + wikiWord).trim();
 						LinkedList<String> foundEntitiesList = anchors.getFragmentTargets(testWord);
-						if (foundEntitiesList.size() > 0) {
+						while (foundEntitiesList.size() > 0) {
 							String idPlusCount = foundEntitiesList.pop();
 							int foundEntityID = Integer.parseInt(idPlusCount.split("_")[0]);
 							if (foundEntities.containsKey(foundEntityID)) {
@@ -108,7 +108,7 @@ public class EntityLinker {
 	}
 
 	public AnnotatedSentence link(String sentence) {
-		sentence = sentence.toLowerCase();
+		//sentence = sentence.toLowerCase();
 		AnnotatedSentence as;
 		try {
 			as = getFragmentedSentence(sentence);

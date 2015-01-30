@@ -30,9 +30,9 @@ public class VectorEvaluation extends EvaluationEngine {
 
 	private TreeSet<String> stopWords;
 	private DatabaseConnector dbConnector;
-	HashMap<Integer, VectorEntry> vectorMap;
-	DocumentFrequency df;
-	double[] pageRankArray;
+	static HashMap<Integer, VectorEntry> vectorMap = null;
+	static DocumentFrequency df = null;
+	static double[] pageRankArray = null;
 	double lambda = 0.5;
 	boolean boolScoring = true;
 
@@ -42,34 +42,49 @@ public class VectorEvaluation extends EvaluationEngine {
 		stopWords = StopWordParser.parseStopwords(stopwordsPath);
 
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
-		FileInputStream fileInputStream = new FileInputStream(vectorMapFilePath);
-		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-		vectorMap = (HashMap<Integer, VectorEntry>) objectReader.readObject();
-		// vectorMap = new HashMap<Integer, VectorEntry>();
-		objectReader.close();
-		System.out.println("Reading in vectormap from file - took " + sw.stop() + " minutes.");
-
+		// read vectorMap object
+		if(vectorMap == null){
+			sw.start();
+			FileInputStream fileInputStream = new FileInputStream(vectorMapFilePath);
+			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+			System.out.println("Vector map not loaded yet. Loading now...");
+			vectorMap = (HashMap<Integer, VectorEntry>) objectReader.readObject();
+			objectReader.close();
+			fileInputStream.close();
+			System.out.println("Done. Took " + sw.stop() + " minutes.");
+		}
+		
 		// read pageRank object
-		String pageRankArrayPath = Config.getInstance().getParameter("pageRankArrayPath");
-		fileInputStream = new FileInputStream(pageRankArrayPath);
-		objectReader = new ObjectInputStream(fileInputStream);
-		pageRankArray = (double[]) objectReader.readObject();
-		objectReader.close();
-		fileInputStream.close();
-
+		if(pageRankArray == null){
+			sw.start();
+			System.out.println("PageRank not loaded yet. Loading now...");
+			String pageRankArrayPath = Config.getInstance().getParameter("pageRankArrayPath");
+			FileInputStream fileInputStream = new FileInputStream(pageRankArrayPath);
+			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+			pageRankArray = (double[]) objectReader.readObject();
+			objectReader.close();
+			fileInputStream.close();
+			System.out.println("Done. Took " + sw.stop() + " minutes.");
+		}
+		
 		sw.start();
 		// read document frequency object
-		fileInputStream = new FileInputStream(dfFilePath);
-		FSTObjectInput in = new FSTObjectInput(fileInputStream);
-		df = (DocumentFrequency) in.readObject();
-		in.close();
+		if(df == null){
+			sw.start();
+			System.out.println("DocumentFrequencyObject not loaded yet. Loading now...");
+			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
+			FSTObjectInput in = new FSTObjectInput(fileInputStream);
+			df = (DocumentFrequency) in.readObject();
+			in.close();
+			fileInputStream.close();
+			System.out.println("Done. Took " + sw.stop() + " minutes.");
+		}
 
 		// fileInputStream = new FileInputStream(dfFilePath);
 		// objectReader = new ObjectInputStream(fileInputStream);
 		// df = (DocumentFrequency) objectReader.readObject();
 		// df = new DocumentFrequency();
-		objectReader.close();
-		System.out.println("Reading in documentfrequency from file - took " + sw.stop() + " minutes.");
+		
 		Config config = Config.getInstance();
 		lambda = Double.parseDouble(config.getParameter("vector_evaluation_lamda"));
 		boolScoring = Boolean.parseBoolean(config.getParameter("candidate_vector_boolean_scoring"));
@@ -144,9 +159,9 @@ public class VectorEvaluation extends EvaluationEngine {
 		double maxCandidateScore = 0.0;
 		double maxTFIDFScore = 0.0;
 		double maxCandidateReferences = 0.0;
-		String sentence = " ";
-		for (String substring : annotatedSentence.wordArray)
-			sentence += substring + " ";
+//		String sentence = " ";
+//		for (String substring : annotatedSentence.wordArray)
+//			sentence += substring + " ";
 		//sentence = sentence.toLowerCase();
 
 		for (Fragment fragment : fragmentList) {
@@ -186,7 +201,7 @@ public class VectorEvaluation extends EvaluationEngine {
 						}
 
 						else
-							candidateVectorScore += foundEntitiesMap.get(candidateEntry.semSigVector[i]);
+							candidateVectorScore += candidateEntry.semSigCount[i] * foundEntitiesMap.get(candidateEntry.semSigVector[i]);
 					}
 				}
 
@@ -247,8 +262,11 @@ public class VectorEvaluation extends EvaluationEngine {
 					if (Double.isNaN(tfidfVectorAverage))
 						System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
-					double candidateScore = (candidate.count / maxCandidateReferences)
-							* (lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore));
+					double candidateReferenceFrequency = (candidate.count / maxCandidateReferences);
+					double candidateVectorScore = (tmp[0] / maxCandidateScore);
+					double tfidfScore = (tmp[1] / maxTFIDFScore);
+					
+					double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
 //					double candidateScore = (candidate.count / maxCandidateReferences)
 //							* ((lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore)) * 0.8 + 0.2 * pageRankArray[Integer
 //									.parseInt(candidate.getWord())]);

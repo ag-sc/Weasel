@@ -7,7 +7,7 @@ public class Candidate implements Comparable<Candidate>{
 	
 	
 	public Candidate(String word, int count) {
-		this.word = word.toLowerCase();
+		this.word = word;//.toLowerCase();
 		this.count = count;
 	}
 

@@ -13,36 +13,28 @@ public class EntityLinking {
 	}
 
 	public static void main(String[] args) {
+		String filepath = "../config.ini";
+		if(args.length == 1) filepath = args[0];
+		System.out.println("Using config file: " + filepath);
 		IniLoader iniLoader = new IniLoader();
-		iniLoader.parse();
+		iniLoader.parse(filepath);
 
-//		try {
-//			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_results.txt"));
-//			Config config = Config.getInstance();
-//			
-//			config.setParameter("candidate_vector_boolean_scoring", "true");
-//			fw.write("Boolean scoring: true");
-//			for (double l = 0.0; l <= 1; l += 0.05) {
-//				config.setParameter("vector_evaluation_lamda", Double.toString(l));
+		try {
+			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_results.txt"));
+			Config config = Config.getInstance();
+			
+			for (int i = 0; i <= 20; i++) {
+				double lambda = Math.min(0.05 * i, 1.0);
+				config.setParameter("vector_evaluation_lamda", Double.toString(lambda));
 				String result = DatasetEvaluatorSandbox.evaluate();
-//				fw.write("lambda: " + l + "\t Correct entities: " + result + "%\n");
-//				fw.flush();
-//			}
-//			
-//			config.setParameter("candidate_vector_boolean_scoring", "false");
-//			fw.write("Boolean scoring: false");
-//			for (double l = 0.0; l <= 1; l += 0.05) {
-//				config.setParameter("vector_evaluation_lamda", Double.toString(l));
-//				String result = DatasetEvaluatorSandbox.evaluate();
-//				fw.write("lambda: " + l + "\t Correct entities: " + result + "%\n");
-//				fw.flush();
-//			}
-//			
-//			fw.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+				fw.write("lambda: " + lambda + "\t Correct entities: " + result + "%\n");
+				fw.flush();
+			}
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

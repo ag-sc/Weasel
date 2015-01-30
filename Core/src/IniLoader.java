@@ -15,10 +15,10 @@ public class IniLoader {
 	}
 
 	
-	public void parse(){
+	public void parse(String iniFilePath){
 		InputStream input = null;
 		try {
-			input = new FileInputStream("../config.ini");
+			input = new FileInputStream(iniFilePath);
 			Properties p = new Properties();
 			p.load(input);
 			for(Entry<Object, Object> e: p.entrySet()){

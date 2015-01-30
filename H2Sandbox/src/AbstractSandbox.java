@@ -19,7 +19,7 @@ public class AbstractSandbox {
 
 	public static void main(String[] args) throws IOException {
 //		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("abstracts_cleaned_correct.txt")));
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/Wikipedia Abstracts/abstracts_cleaned_correct.txt"), "UTF8"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/toyData/abstracts.txt"), "UTF8"));
 		String line;
 		int counter = 0;
 		
@@ -43,7 +43,7 @@ public class AbstractSandbox {
 //		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency"));
 //		out.writeObject(df);
 //		out.close();
-		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency_fst"));
+		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream("../../data/toyData/documentFrequency_fst"));
 		out_fst.writeObject( df );
 		out_fst.close(); // required !
 		
