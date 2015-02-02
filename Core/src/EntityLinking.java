@@ -22,12 +22,13 @@ public class EntityLinking {
 		try {
 			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_results.txt"));
 			Config config = Config.getInstance();
+			config.setParameter("vector_evaluation_lamda", "0.65");
 			
 			for (int i = 0; i <= 20; i++) {
 				double lambda = Math.min(0.05 * i, 1.0);
-				config.setParameter("vector_evaluation_lamda", Double.toString(lambda));
+				config.setParameter("vector_evaluation_pageRankWeight", Double.toString(lambda));
 				String result = DatasetEvaluatorSandbox.evaluate();
-				fw.write("lambda: " + lambda + "\t Correct entities: " + result + "%\n");
+				fw.write("pagerankweight: " + lambda + "\t Correct entities: " + result + "%\n");
 				fw.flush();
 			}
 			fw.close();

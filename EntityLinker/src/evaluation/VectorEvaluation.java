@@ -33,7 +33,8 @@ public class VectorEvaluation extends EvaluationEngine {
 	static HashMap<Integer, VectorEntry> vectorMap = null;
 	static DocumentFrequency df = null;
 	static double[] pageRankArray = null;
-	double lambda = 0.5;
+	double lambda;
+	double pageRankWeight;
 	boolean boolScoring = true;
 
 	public VectorEvaluation(DatabaseConnector semanticSignatureDB, String vectorMapFilePath, String dfFilePath) throws IOException, ClassNotFoundException {
@@ -87,6 +88,7 @@ public class VectorEvaluation extends EvaluationEngine {
 		
 		Config config = Config.getInstance();
 		lambda = Double.parseDouble(config.getParameter("vector_evaluation_lamda"));
+		pageRankWeight = Double.parseDouble(config.getParameter("vector_evaluation_pageRankWeight"));
 		boolScoring = Boolean.parseBoolean(config.getParameter("candidate_vector_boolean_scoring"));
 	}
 
@@ -266,10 +268,10 @@ public class VectorEvaluation extends EvaluationEngine {
 					double candidateVectorScore = (tmp[0] / maxCandidateScore);
 					double tfidfScore = (tmp[1] / maxTFIDFScore);
 					
-					double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
-//					double candidateScore = (candidate.count / maxCandidateReferences)
-//							* ((lambda * (tmp[0] / maxCandidateScore) + (1 - lambda) * (tmp[1] / maxTFIDFScore)) * 0.8 + 0.2 * pageRankArray[Integer
-//									.parseInt(candidate.getWord())]);
+//					double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
+					
+					double candidateScore = candidateReferenceFrequency * ( (lambda * candidateVectorScore + (1 - lambda) * tfidfScore) * (1 - pageRankWeight)
+							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getWord())] );
 
 					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
 							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");

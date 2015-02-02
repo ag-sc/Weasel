@@ -19,7 +19,7 @@ public class InMemoryConnector extends DatabaseConnector {
 	final int[][] anchorToCandidates;
 	final int[][] anchorToCandidatesCount;
 	
-	public InMemoryConnector(String inMemoryDataContainerFilePath) throws ClassNotFoundException, IOException {
+	InMemoryConnector(String inMemoryDataContainerFilePath) throws ClassNotFoundException, IOException {
 		FileInputStream fileInputStream = new FileInputStream(inMemoryDataContainerFilePath);
 		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
 		InMemoryDataContainer container = (InMemoryDataContainer) objectReader.readObject();

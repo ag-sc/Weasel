@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import configuration.Config;
 import stopwatch.Stopwatch;
+import databaseConnectors.ConnectorFactory;
 import databaseConnectors.DatabaseConnector;
 import databaseConnectors.H2Connector;
 import databaseConnectors.H2PAConnector;
@@ -27,7 +28,7 @@ public class DatasetEvaluatorSandbox {
 			String dbPathH2 = config.getParameter("H2Path");
 			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
 //			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
-			DatabaseConnector anchors = new InMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
+			DatabaseConnector anchors = ConnectorFactory.getInMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
 			
 //			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 //			DatabaseConnector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
