@@ -10,18 +10,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import stopwatch.Stopwatch;
-import datatypes.H2List;
 import datatypes.InMemoryDataContainer;
-import datatypes.PageRankNode;
-import fileparser.AnchorFileParser;
+import edu.jhu.nlp.wikipedia.PageCallbackHandler;
+import edu.jhu.nlp.wikipedia.WikiPage;
+import edu.jhu.nlp.wikipedia.WikiXMLParser;
+import edu.jhu.nlp.wikipedia.WikiXMLParserFactory;
 
 public class MemoryDataContainerBuilderFromH2 {
+	
+	static String h2Connection = "jdbc:h2:~/anchor_db/h2/h2_anchors";
+	static String outputPath = "inMemoryDataContainer_fromH2.bin";
+	static String wikiAbstractPath = "enwiki-latest-pages-articles_UTF8.xml";
 
+//	static String h2Connection = "jdbc:h2:E:/Master Project/data/toyData/anchorH2";
+//	static String outputPath = "E:/Master Project/data/toyData/inMemoryDataContainer_fromH2.bin";
+//	static String wikiAbstractPath = "../../data/Wikipedia Abstracts/enwiki-latest-pages-articles_UTF8.xml";
+	
+	static int abstractCounter = 0;
+	
 	public MemoryDataContainerBuilderFromH2() {
 		// TODO Auto-generated constructor stub
 	}
@@ -29,16 +40,15 @@ public class MemoryDataContainerBuilderFromH2 {
 	public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
 		System.out.println("Starting inMemoryDataContainer creation...");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
-		Map<String, Integer> entityToID = new HashMap<String, Integer>();
-		Map<String, Integer> anchorIDMap = new HashMap<String, Integer>();
-		HashMap<Integer, LinkedList<String>>  anchorToCandidateMap = new HashMap<Integer, LinkedList<String>>();
+		final Map<String, Integer> entityToID = new HashMap<String, Integer>();
+		final Map<String, Integer> anchorIDMap = new HashMap<String, Integer>();
 		int[][] anchorToCandidates;
 		int[][] anchorToCandidatesCount;
 		String[] idToEntity;
 		
 		Class.forName("org.h2.Driver");
 //		Connection connection = DriverManager.getConnection("jdbc:h2:~/anchor_db/h2/h2_anchors", "sa", "");
-		Connection connection = DriverManager.getConnection("jdbc:h2:E:/Master Project/data/toyData/anchorH2", "sa", "");
+		Connection connection = DriverManager.getConnection(h2Connection, "sa", "");
 		
 		// get max values
 		String sql = "SELECT max(id)  FROM ENTITYID ";
@@ -142,6 +152,44 @@ public class MemoryDataContainerBuilderFromH2 {
 			if(i % 100000 == 0) System.out.println(i + " / " + maxAnchorID);
 		}
 		
+		// Find redirects and disambiguation pages.
+		System.out.println("Find all redirects and disambiguations.");
+		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(wikiAbstractPath);
+		final Map<Integer, Integer> redirects = new HashMap<Integer, Integer>();
+		final Set<Integer> disambiguation = new HashSet<Integer>();
+		
+		try {
+			wxsp.setPageCallback(new PageCallbackHandler() {
+				public void process(WikiPage page) {
+					abstractCounter++;
+					if(abstractCounter % 100000 == 0) System.out.println("Processed abstracts: " + abstractCounter);
+					
+					if(page.isRedirect()){
+						//System.out.println("Is redirect: " + page.getTitle().trim() + " -> " + page.getRedirectPage());
+						Integer redirect = entityToID.get(page.getTitle().trim());
+						Integer target = entityToID.get(page.getRedirectPage().trim());
+						if(redirect != null && target != null){
+							redirects.put(redirect, target);
+						}
+					}
+					else if (page.isDisambiguationPage()){
+//						System.out.println("Is disambiguation: " + page.getTitle());
+						Integer disambiguationID = entityToID.get(page.getTitle().trim());
+						if(disambiguationID != null){
+							disambiguation.add(disambiguationID);
+						}
+					}
+				}
+			});
+			
+			wxsp.parse();
+		} catch (Exception e) {
+			System.out.println("Exception in Parse operations: ");
+			e.printStackTrace();
+		}
+		
+		System.out.println("Done. Number of redirects: " + redirects.size() + " - Number of disambiguations: " + disambiguation.size());
+		
 		// Save data to file
 		System.out.println("Write data to file...");
 		InMemoryDataContainer data = new InMemoryDataContainer();
@@ -150,10 +198,12 @@ public class MemoryDataContainerBuilderFromH2 {
 		data.anchorToCandidatesCount = anchorToCandidatesCount;
 		data.idToEntity = idToEntity;
 		data.entityToID = entityToID;
+		data.redirects = redirects;
+		data.disambiguation = disambiguation;
 		
 		try {
 			ObjectOutputStream out;
-			out = new ObjectOutputStream(new FileOutputStream("E:/Master Project/data/toyData/inMemoryDataContainer_fromH2.bin"));
+			out = new ObjectOutputStream(new FileOutputStream(outputPath));
 			out.writeObject(data);
 			out.close();
 		} catch (FileNotFoundException e) {

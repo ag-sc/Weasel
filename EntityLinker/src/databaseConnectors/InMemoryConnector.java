@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import datatypes.InMemoryDataContainer;
 
@@ -13,6 +14,8 @@ public class InMemoryConnector extends DatabaseConnector {
 	// Entities
 	final String[] idToEntity;
 	final Map<String, Integer> entityToID;
+	final Map<Integer, Integer> redirects;
+	final Set<Integer> disambiguation;
 	
 	// Anchors
 	final Map<String, Integer> anchorID;
@@ -30,6 +33,8 @@ public class InMemoryConnector extends DatabaseConnector {
 		anchorID = container.anchorID;
 		anchorToCandidates = container.anchorToCandidates;
 		anchorToCandidatesCount = container.anchorToCandidatesCount;
+		redirects = container.redirects;
+		disambiguation = container.disambiguation;
 	}
 
 	@Override
@@ -69,6 +74,16 @@ public class InMemoryConnector extends DatabaseConnector {
 	public void close() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public boolean isRedirect(Integer id) {
+		return redirects.containsKey(id);
+	}
+
+	@Override
+	public boolean isDisambiguation(Integer id) {
+		return disambiguation.contains(id);
 	}
 
 }

@@ -6,5 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/H2/bin/h2-1.4.181.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/wikixmlj/wikixmlj-r43.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/wikixmlj/bzip2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,19 +1,15 @@
 package entityLinker;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import configuration.Config;
-import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import databaseConnectors.DatabaseConnector;
-import databaseConnectors.H2Connector;
 import evaluation.EvaluationEngine;
 import fileparser.StopWordParser;
 
@@ -63,7 +59,15 @@ public class EntityLinker {
 				}
 			}
 			
-			f.addCandidateStrings(foundEntitiesList);
+			LinkedList<String> cleanedList = new LinkedList<String>();
+			for(String s: foundEntitiesList){
+				Integer id = Integer.parseInt(s.split("_")[0]);
+				if(!anchors.isRedirect(id) && !anchors.isDisambiguation(id)){
+					cleanedList.add(s);
+				}
+			}
+			
+			f.addCandidateStrings(cleanedList);
 			
 			// find entities for candidate vector score computation in vector evaluation step
 			while (foundEntitiesList.size() > 0) {
