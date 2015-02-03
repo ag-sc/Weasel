@@ -1,17 +1,28 @@
 package annotatedSentence;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class AnnotatedSentence {
 
-	private LinkedList<Word> wordList;
-	private HashMap<Integer, HashMap<Integer, Fragment>> fragmentMap;
-	private LinkedList<Fragment> fragmentList;
-	public String[] wordArray;
+	private List<Fragment> fragmentList;
 	private Map<Integer, Integer> foundEntities;
+	
+	public AnnotatedSentence() {
+		fragmentList = new ArrayList<Fragment>();
+	} // AnnotatedSentence
+	
+	public void appendFragment(Fragment f){
+		fragmentList.add(f);		
+	}
+	
+	public List<Fragment> getFragmentList(){
+		return fragmentList;
+	}
 	
 	public Map<Integer, Integer> getFoundEntities() {
 		if(foundEntities != null) return foundEntities;
@@ -22,75 +33,28 @@ public class AnnotatedSentence {
 		this.foundEntities = foundEntities;
 	}
 
-	public AnnotatedSentence(String sentence[]) {
-		wordArray = sentence;
-		wordList = new LinkedList<Word>();
-		for (String word : sentence) {
-			getWordList().add(new Word(word));
-		}
-		fragmentMap = new HashMap<Integer, HashMap<Integer, Fragment>>();
-		for (int i = 0; i < sentence.length; i++)
-			fragmentMap.put(i, new HashMap<Integer, Fragment>());
-	} // AnnotatedSentence
-
-	public void addFragment(Fragment f) {
-		HashMap<Integer, Fragment> tmp = fragmentMap.get(f.start);
-		Fragment retrievedFragment = tmp.get(f.stop);
-		if(retrievedFragment != null){
-			retrievedFragment.addCandidates(f.getCandidates());
-		}else{
-			tmp.put(f.stop, f);
-		}
-	} // addFragment
-	
-	public HashMap<Integer, HashMap<Integer, Fragment>> getFragmentMap(){
-		return fragmentMap;
-	} // getFragmentMap
-
-	public LinkedList<Fragment> buildFragmentList(){
-		fragmentList = new LinkedList<Fragment>();
-		for(HashMap<Integer, Fragment> submap: fragmentMap.values()){
-			for(Fragment f: submap.values()){
-				fragmentList.add(f);
-			}
-		}
-		return fragmentList;
-	}
-	
 	public void assign(double minimumScore) {
 		// create fragment list
-		fragmentList = buildFragmentList();
 		
 		Collections.sort(fragmentList);
 		Collections.reverse(fragmentList);
 
 		for (Fragment f : fragmentList) {
-			if(f.probability <= minimumScore) break;
-			boolean dominated = false;
-			for (int i = f.start; i <= f.stop; i++) {
-				if (getWordList().get(i).getDominantFragment() != null
-						&& getWordList().get(i).getDominantFragment().length() >= f.length()) {
-					dominated = true;
-					break;
-				}
-			}
-			if (dominated)
-				continue;
-			else {
-				for (int i = f.start; i <= f.stop; i++) {
-					getWordList().get(i).setDominantFragment(f);
-				}
-			}
+			if(f.probability < minimumScore) f.setEntity(null);
 		}
 	} // assign
 
-	public LinkedList<Word> getWordList() {
-		return wordList;
+	public int length(){
+		return fragmentList.size();
 	}
-
-//	public LinkedList<Fragment> getFragmentList() {
-//		return fragmentList;
-//	}
-
+	
+	public String getSentence(){
+		StringBuilder sb = new StringBuilder();
+		for(Fragment f: fragmentList){
+			sb.append(f.originWord);
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
 	
 }

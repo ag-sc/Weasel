@@ -3,13 +3,14 @@ package datasetParser;
 import java.io.IOException;
 import java.util.HashSet;
 
+import annotatedSentence.AnnotatedSentence;
 import configuration.Config;
 import databaseConnectors.DatabaseConnector;
 import datatypes.AnnotatedSentenceDeprecated;
 
 public abstract class DatasetParser {
 	
-	public abstract AnnotatedSentenceDeprecated parse() throws IOException;
+	public abstract AnnotatedSentence parse() throws IOException;
 	public abstract HashSet<Integer> getEntitiesInDocument(DatabaseConnector entityDBconnector);
 	
 	public static DatasetParser getInstance(){

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 
 import configuration.Config;
@@ -38,81 +39,42 @@ public class EntityLinker {
 		this(evaluator, connector, null);
 	}
 
-	public AnnotatedSentence getFragmentedSentence(String sentence, HashSet<Integer> allEntities) throws ClassNotFoundException, SQLException {
+	private AnnotatedSentence assignCandidates(AnnotatedSentence as, HashSet<Integer> allEntities) {
 		HashMap<Integer, Integer> foundEntities = new HashMap<Integer, Integer>();
 
-		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
-		AnnotatedSentence as = new AnnotatedSentence(splitSentence);
-		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
-
-		for (int i = 0; i < splitSentence.length; i++) {
-			if (stopWords != null && stopWords.contains(splitSentence[i]))
+		List<Fragment> fragmentList = as.getFragmentList();
+		
+		for (Fragment f: fragmentList) {
+			if (stopWords != null && stopWords.contains(f.originWord))
 				continue;
 
-			LinkedList<String> candidates = new LinkedList<String>();
-			LinkedList<String> tmpList = new LinkedList<String>();
-			String originWord = "";
-			String tmpWord = "";
-			String testWord = "";
-			int j = i;
-			int maxJ= i;
-			while (j < splitSentence.length) {
-				// find entities for candidate vector score computation in vector evaluation step
-				String word = splitSentence[j];
-				if (word.length() > 0) {
-					String wikiWord = Character.toUpperCase(word.charAt(0)) + word.substring(1); // build wikipedia-like string
-					if (wikiWord.length() > 0) {
-						if (testWord.length() == 0)
-							testWord = wikiWord;
-						else
-							testWord = (testWord + "_" + wikiWord).trim();
-						LinkedList<String> foundEntitiesList = anchors.getFragmentTargets(testWord);
-						while (foundEntitiesList.size() > 0) {
-							String idPlusCount = foundEntitiesList.pop();
-							int foundEntityID = Integer.parseInt(idPlusCount.split("_")[0]);
-							if (foundEntities.containsKey(foundEntityID)) {
-								foundEntities.put(foundEntityID, foundEntities.get(foundEntityID) + 1);
-							} else {
-								foundEntities.put(foundEntityID, 1);
-							}
-						}
-					}
-				}
-				
-				// find anchors
-				tmpWord = (tmpWord + " " + splitSentence[j]).trim();
-				tmpList = anchors.getFragmentTargets(tmpWord);
-				LinkedList<String> validWords = new LinkedList<String>();
-				if(allEntities != null){
-					for (String s : tmpList) {
-						String[] splitString = s.split("_");
-						if (allEntities.contains(Integer.parseInt(splitString[0])))
-							validWords.add(s);
-					}
-					if (validWords.size() > 0) {
-						candidates = validWords;
-						originWord = tmpWord;
-						maxJ = j;
-					}
-				} else {
-					if (tmpList.size() > 0) {
-						candidates = tmpList;
-						originWord = tmpWord;
-						maxJ = j;
-					} else if (j > 5)
-						break;
-				}
-				j++;
+			String originWord = f.originWord;
+			
+			LinkedList<String> foundEntitiesList = anchors.getFragmentTargets(originWord);
+			
+			if(foundEntitiesList.isEmpty()){	// if there are no candidates, check whether the entity appears directly (happens for obscure names for example)
+				Integer id = anchors.resolveName(originWord.replace(" ", "_"));
+				if(id != null) foundEntitiesList.add(id + "_1");
 			}
-
-			//maxJ -= 1;
-			Fragment f = new Fragment(i, maxJ);
-			f.addCandidateStrings(candidates);
-			if (f.getCandidatesSize() == 0)
-				continue;
-			f.originWord = originWord;
-			as.addFragment(f);
-			i = maxJ;
+			if(foundEntitiesList.isEmpty()){
+				if(originWord.length() > 1 && originWord.equals(originWord.toUpperCase())){
+					originWord = originWord.toUpperCase().replace(originWord.substring(1), originWord.substring(1).toLowerCase());
+					foundEntitiesList = anchors.getFragmentTargets(originWord);
+				}
+			}
+			
+			f.addCandidateStrings(foundEntitiesList);
+			
+			// find entities for candidate vector score computation in vector evaluation step
+			while (foundEntitiesList.size() > 0) {
+				String idPlusCount = foundEntitiesList.pop();
+				int foundEntityID = Integer.parseInt(idPlusCount.split("_")[0]);
+				if (foundEntities.containsKey(foundEntityID)) {
+					foundEntities.put(foundEntityID, foundEntities.get(foundEntityID) + 1);
+				} else {
+					foundEntities.put(foundEntityID, 1);
+				}
+			}
 		}
 		
 		as.setFoundEntities(foundEntities);
@@ -121,22 +83,11 @@ public class EntityLinker {
 
 	}
 
-	public AnnotatedSentence link(String sentence, HashSet<Integer> allEntities) {
-		//sentence = sentence.toLowerCase();
-		AnnotatedSentence as;
-		try {
-			as = getFragmentedSentence(sentence, allEntities);
-			evaluator.evaluate(as);
-			return as;
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String tmp[] = {};
-		return new AnnotatedSentence(tmp);
+	public AnnotatedSentence link(AnnotatedSentence as, HashSet<Integer> allEntities) {
+		// sentence = sentence.toLowerCase();
+		assignCandidates(as, allEntities);
+		evaluator.evaluate(as);
+		return as;
 	}
 
 	public void closeConnectors() {

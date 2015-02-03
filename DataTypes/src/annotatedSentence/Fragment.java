@@ -10,8 +10,22 @@ public class Fragment implements Comparable<Fragment>{
 	private TreeSet<Candidate> candidates;
 	public int start, stop;
 	String id;
-	String entity = "";
+	String entity = null;
 	public String originWord ="<none>";
+	String originEntity = "";
+	
+	public String getOriginEntity() {
+		return originEntity;
+	}
+
+	public void setOriginEntity(String originEntity) {
+		this.originEntity = originEntity;
+	}
+
+	public Fragment(String originWord){
+		this.originWord = originWord;
+		candidates = new TreeSet<Candidate>();
+	}
 	
 	public Fragment(int start, int stop, String id, double probability) {
 		this.start = start;

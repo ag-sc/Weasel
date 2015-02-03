@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import annotatedSentence.AnnotatedSentence;
+import annotatedSentence.Fragment;
 import configuration.Config;
 import databaseConnectors.DatabaseConnector;
 import datatypes.AnnotatedSentenceDeprecated;
@@ -102,18 +104,22 @@ public class KORE50Parser extends DatasetParser {
 	}
 
 	@Override
-	public AnnotatedSentenceDeprecated parse() throws IOException {
-		AnnotatedSentenceDeprecated annotatedSentence = new AnnotatedSentenceDeprecated();
+	public AnnotatedSentence parse() throws IOException {
+		AnnotatedSentence annotatedSentence = new AnnotatedSentence();
 
 		while ((line = br.readLine()) != null) {
 			if (line.split(" ")[0].equals("-DOCSTART-")) {
 				if (readFullDocument)
 					return annotatedSentence;
-				else
+				else {
 					continue;
+				}
+
 			} else if (line.equals(".")) {
-				if (readFullDocument)
+				if (readFullDocument) {
 					continue;
+				}
+
 				else
 					return annotatedSentence;
 			} else if (line.equals(",") || line.equals("\n")) {
@@ -134,16 +140,23 @@ public class KORE50Parser extends DatasetParser {
 				}
 
 				String[] splitLine = line.split("\\t");
-				for (String s : splitLine[0].split(" ")) {
-
-					int index = annotatedSentence.addToken(s);
-					if (splitLine.length >= 4 && !splitLine[3].equals("--NME--")) {
-//						int index = annotatedSentence.addToken(s);
-						annotatedSentence.setEntity(index, splitLine[3]);
+				if (splitLine.length >= 4) {
+					if(splitLine[1].equals("I")){
+						continue;
 					}
+					if (splitLine[3].equals("--NME--")) {
+						annotatedSentence.appendFragment(new Fragment(splitLine[2]));
+					}else{
+						Fragment f = new Fragment(splitLine[2]);
+						f.setOriginEntity(splitLine[3]);
+						annotatedSentence.appendFragment(f);
+					}
+				}else{
+					annotatedSentence.appendFragment(new Fragment(splitLine[0]));
 				}
 
 			}
+			
 		}
 
 		return annotatedSentence;
@@ -154,12 +167,14 @@ public class KORE50Parser extends DatasetParser {
 		HashSet<Integer> set = new HashSet<Integer>();
 
 		try {
-			AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
+			AnnotatedSentence parserSentence = new AnnotatedSentence();
 			while ((parserSentence = parse()).length() > 0) {
-				for(String s: parserSentence.entities){
-					Integer id = entityDBconnector.resolveName(s);
-					if(id != null){
-						set.add(id);
+				for (Fragment f : parserSentence.getFragmentList()) {
+					if (f.getEntity() != null) {
+						Integer id = entityDBconnector.resolveName(f.getEntity());
+						if (id != null) {
+							set.add(id);
+						}
 					}
 				}
 			}

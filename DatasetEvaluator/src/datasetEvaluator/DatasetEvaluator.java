@@ -3,6 +3,7 @@ package datasetEvaluator;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
@@ -33,22 +34,19 @@ public class DatasetEvaluator {
 	public String evaluate() throws IOException{	
 		//SimpleFileWriter fw = new SimpleFileWriter("../../data/assignments.txt");
 		
-		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
+		AnnotatedSentence parserSentence;
 		int sentenceCounter = 0;
 		//HashSet<Integer> allEntities = parser.getEntitiesInDocument(checkupConnector);
-		while((parserSentence = parser.parse()).length() > 0){
+		while((parserSentence = parser.parse()).length() != 0){
 			System.out.println("Sentence " + (sentenceCounter++) + ":");
-			AnnotatedSentence as = linker.link(parserSentence.getSentence(), null);
-			LinkedList<Word> result = as.getWordList();
+			AnnotatedSentence as = linker.link(parserSentence, null);
+			List<Fragment> result = as.getFragmentList();
 			
-			for(int i = 0; i < result.size(); i++){
-				String entity = parserSentence.getEntity(i);
-				Fragment tmp = result.get(i).getDominantFragment();
-				if (tmp == null) continue;
-				String candidate = tmp.getEntity();
+			for(Fragment f: result){
+				String entity = f.getOriginEntity();
+				String candidate = f.getEntity();
 
 				if (entity.length() != 0) {
-					Fragment f = result.get(i).getDominantFragment();
 					if (f != null) {
 						if (f.containsEntity(entity))
 							numberOfCorrectCandidates++;

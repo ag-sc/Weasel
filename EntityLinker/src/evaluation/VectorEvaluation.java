@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -114,7 +115,7 @@ public class VectorEvaluation extends EvaluationEngine {
 	public void evaluate(AnnotatedSentence annotatedSentence) {
 
 		// TFIDF computation for input sentence
-		LinkedList<TFIDFResult> resultList = TFIDF.compute(annotatedSentence.wordArray, df);
+		LinkedList<TFIDFResult> resultList = TFIDF.compute(annotatedSentence.getSentence(), df);
 		Map<Integer, Float> tfidfMap = new HashMap<Integer, Float>();
 		for (TFIDFResult r : resultList) {
 			if (stopWords.contains(r.token))
@@ -134,7 +135,7 @@ public class VectorEvaluation extends EvaluationEngine {
 		tfidfMagnitude = Math.sqrt(tfidfMagnitude);
 
 		// prepare candidate vector
-		LinkedList<Fragment> fragmentList = annotatedSentence.buildFragmentList();
+		List<Fragment> fragmentList = annotatedSentence.getFragmentList();
 		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
 		for (Fragment fragment : fragmentList) {
 			for (Candidate candidate : fragment.getCandidates()) {
