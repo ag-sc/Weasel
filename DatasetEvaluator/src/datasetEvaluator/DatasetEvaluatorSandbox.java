@@ -21,10 +21,7 @@ public class DatasetEvaluatorSandbox {
 	public static String evaluate() {
 		try {
 			Config config = Config.getInstance();
-			
-			// TestSet
-			DatasetParser parser = DatasetParser.getInstance();
-			
+
 			String dbPathH2 = config.getParameter("H2Path");
 			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
 //			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
@@ -41,7 +38,7 @@ public class DatasetEvaluatorSandbox {
 			//System.out.println("About to start evaluation.");
 			String stopwordsPath = config.getParameter("stopwordsPath");
 			EntityLinker linker = new EntityLinker(evaluator, anchors, stopwordsPath);
-			DatasetEvaluator dataEvaluator = new DatasetEvaluator(parser, linker, anchors); // checkupConnector);
+			DatasetEvaluator dataEvaluator = new DatasetEvaluator(linker, anchors); // checkupConnector);
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			String result = dataEvaluator.evaluate();
 			System.out.println("Evaluation time (including data load): " + sw.stop() + " minutes");

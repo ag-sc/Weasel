@@ -24,8 +24,8 @@ public class EntityLinking {
 			Config config = Config.getInstance();
 			config.setParameter("vector_evaluation_lamda", "0.65");
 			
-			for (int i = 0; i <= 20; i++) {
-				double lambda = Math.min(0.05 * i, 1.0);
+			for (int i = 0; i <= 5; i++) {
+				double lambda = Math.min(0.2 * i, 1.0);
 				config.setParameter("vector_evaluation_pageRankWeight", Double.toString(lambda));
 				String result = DatasetEvaluatorSandbox.evaluate();
 				fw.write("pagerankweight: " + lambda + "\t Correct entities: " + result + "%\n");

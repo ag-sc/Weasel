@@ -3,8 +3,8 @@ package datatypes;
 import java.util.LinkedList;
 
 public class AnnotatedSentenceDeprecated {
-	LinkedList<String> tokens;
-	LinkedList<String> entities;
+	public LinkedList<String> tokens;
+	public LinkedList<String> entities;
 
 	public AnnotatedSentenceDeprecated(String sentence){
 		this();

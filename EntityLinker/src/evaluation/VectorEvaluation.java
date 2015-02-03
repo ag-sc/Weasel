@@ -250,6 +250,10 @@ public class VectorEvaluation extends EvaluationEngine {
 		// Pick best after normalization
 		try {
 			BufferedWriter fw = new BufferedWriter(new FileWriter("vector_evaluation_evaluation.txt"));
+			double tmp1 = (1 - lambda);
+			double tmp2 = (1 - pageRankWeight);
+			
+			System.err.println(lambda + " - " + tmp1 + " --- " + pageRankWeight + " -" + tmp2);
 
 			for (Fragment fragment : fragmentList) {
 				fw.write(fragment.originWord + "\n");
@@ -270,9 +274,13 @@ public class VectorEvaluation extends EvaluationEngine {
 					
 //					double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
 					
-					double candidateScore = candidateReferenceFrequency * ( (lambda * candidateVectorScore + (1 - lambda) * tfidfScore) * (1 - pageRankWeight)
-							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getWord())] );
+					
+					
+					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
+							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getWord())] ;
 
+//					double candidateScore = pageRankArray[Integer.parseInt(candidate.getWord())];
+					
 					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
 							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
 					fw.write("\t" + dbConnector.resolveID(candidate.getWord()) + "\t" + "pagerank: " + pageRankArray[Integer.parseInt(candidate.getWord())] + "\n");
@@ -295,8 +303,8 @@ public class VectorEvaluation extends EvaluationEngine {
 
 		annotatedSentence.assign(0);
 
-		System.out.println("candidate vector average: " + (candidateVectorAverage / count));
-		System.out.println("tfidf vector average:     " + (tfidfVectorAverage / count));
+//		System.out.println("candidate vector average: " + (candidateVectorAverage / count));
+//		System.out.println("tfidf vector average:     " + (tfidfVectorAverage / count));
 
 	}
 

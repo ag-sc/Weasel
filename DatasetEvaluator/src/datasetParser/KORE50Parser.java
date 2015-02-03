@@ -6,10 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import configuration.Config;
+import databaseConnectors.DatabaseConnector;
 import datatypes.AnnotatedSentenceDeprecated;
 
 public class KORE50Parser extends DatasetParser {
@@ -25,6 +27,11 @@ public class KORE50Parser extends DatasetParser {
 	// }
 
 	public KORE50Parser() {
+		setBufferedReader();
+		this.readFullDocument = Boolean.parseBoolean(Config.getInstance().getParameter("readFullDocument"));
+	}
+	
+	private void setBufferedReader(){
 		Config config = Config.getInstance();
 		try {
 			this.br = new BufferedReader(new InputStreamReader(new FileInputStream(config.getParameter("datasetPath")), "UTF8"));
@@ -40,7 +47,6 @@ public class KORE50Parser extends DatasetParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.readFullDocument = Boolean.parseBoolean(config.getParameter("readFullDocument"));
 	}
 
 	public void close() {
@@ -141,6 +147,27 @@ public class KORE50Parser extends DatasetParser {
 		}
 
 		return annotatedSentence;
+	}
+
+	@Override
+	public HashSet<Integer> getEntitiesInDocument(DatabaseConnector entityDBconnector) {
+		HashSet<Integer> set = new HashSet<Integer>();
+
+		try {
+			AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
+			while ((parserSentence = parse()).length() > 0) {
+				for(String s: parserSentence.entities){
+					Integer id = entityDBconnector.resolveName(s);
+					if(id != null){
+						set.add(id);
+					}
+				}
+			}
+		} catch (IOException e) {
+
+		}
+		setBufferedReader();
+		return set;
 	}
 
 }

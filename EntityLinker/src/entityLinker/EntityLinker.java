@@ -3,6 +3,7 @@ package entityLinker;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -37,7 +38,7 @@ public class EntityLinker {
 		this(evaluator, connector, null);
 	}
 
-	public AnnotatedSentence getFragmentedSentence(String sentence) throws ClassNotFoundException, SQLException {
+	public AnnotatedSentence getFragmentedSentence(String sentence, HashSet<Integer> allEntities) throws ClassNotFoundException, SQLException {
 		HashMap<Integer, Integer> foundEntities = new HashMap<Integer, Integer>();
 
 		String splitSentence[] = sentence.replace(",", "").replace(".", "").split(" ");
@@ -81,13 +82,26 @@ public class EntityLinker {
 				// find anchors
 				tmpWord = (tmpWord + " " + splitSentence[j]).trim();
 				tmpList = anchors.getFragmentTargets(tmpWord);
-				if (tmpList.size() > 0) {
-					candidates = tmpList;
-					originWord = tmpWord;
-					maxJ = j;
+				LinkedList<String> validWords = new LinkedList<String>();
+				if(allEntities != null){
+					for (String s : tmpList) {
+						String[] splitString = s.split("_");
+						if (allEntities.contains(Integer.parseInt(splitString[0])))
+							validWords.add(s);
+					}
+					if (validWords.size() > 0) {
+						candidates = validWords;
+						originWord = tmpWord;
+						maxJ = j;
+					}
+				} else {
+					if (tmpList.size() > 0) {
+						candidates = tmpList;
+						originWord = tmpWord;
+						maxJ = j;
+					} else if (j > 5)
+						break;
 				}
-				else if(j > 5) break;
-
 				j++;
 			}
 
@@ -102,16 +116,16 @@ public class EntityLinker {
 		}
 		
 		as.setFoundEntities(foundEntities);
-		System.out.println("Added all anchor candidates - Time: " + sw.stop() + " ms");
+		//System.out.println("Added all anchor candidates - Time: " + sw.stop() + " ms");
 		return as;
 
 	}
 
-	public AnnotatedSentence link(String sentence) {
+	public AnnotatedSentence link(String sentence, HashSet<Integer> allEntities) {
 		//sentence = sentence.toLowerCase();
 		AnnotatedSentence as;
 		try {
-			as = getFragmentedSentence(sentence);
+			as = getFragmentedSentence(sentence, allEntities);
 			evaluator.evaluate(as);
 			return as;
 		} catch (ClassNotFoundException e) {

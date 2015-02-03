@@ -1,13 +1,16 @@
 package datasetParser;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import configuration.Config;
+import databaseConnectors.DatabaseConnector;
 import datatypes.AnnotatedSentenceDeprecated;
 
 public abstract class DatasetParser {
 	
 	public abstract AnnotatedSentenceDeprecated parse() throws IOException;
+	public abstract HashSet<Integer> getEntitiesInDocument(DatabaseConnector entityDBconnector);
 	
 	public static DatasetParser getInstance(){
 		Config config = Config.getInstance();
@@ -18,4 +21,6 @@ public abstract class DatasetParser {
 		}
 		throw new IllegalArgumentException();
 	}
+	
+	
 }

@@ -1,6 +1,7 @@
 package datasetEvaluator;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import annotatedSentence.AnnotatedSentence;
@@ -23,8 +24,8 @@ public class DatasetEvaluator {
 	private int numberOfCorrectCandidates = 0;
 	private int correctEntities = 0;
 	
-	public DatasetEvaluator(DatasetParser parser, EntityLinker linker, DatabaseConnector entityDBconnector) {
-		this.parser = parser;
+	public DatasetEvaluator(EntityLinker linker, DatabaseConnector entityDBconnector) {
+		this.parser = DatasetParser.getInstance();
 		this.linker = linker;
 		this.checkupConnector = entityDBconnector;
 	}
@@ -34,9 +35,10 @@ public class DatasetEvaluator {
 		
 		AnnotatedSentenceDeprecated parserSentence = new AnnotatedSentenceDeprecated();
 		int sentenceCounter = 0;
+		//HashSet<Integer> allEntities = parser.getEntitiesInDocument(checkupConnector);
 		while((parserSentence = parser.parse()).length() > 0){
 			System.out.println("Sentence " + (sentenceCounter++) + ":");
-			AnnotatedSentence as = linker.link(parserSentence.getSentence());
+			AnnotatedSentence as = linker.link(parserSentence.getSentence(), null);
 			LinkedList<Word> result = as.getWordList();
 			
 			for(int i = 0; i < result.size(); i++){
@@ -70,8 +72,9 @@ public class DatasetEvaluator {
 				
 			}
 			
-			System.out.println("Assigned:");
-			System.out.println(result + "\n");
+//			System.out.println("Assigned:");
+//			System.out.println(result + "\n");
+			
 //			fw.writeln(result.toString());
 //			fw.flush();
 			
