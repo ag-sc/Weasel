@@ -62,8 +62,9 @@ public class EntityLinker {
 			LinkedList<String> cleanedList = new LinkedList<String>();
 			for(String s: foundEntitiesList){
 				Integer id = Integer.parseInt(s.split("_")[0]);
-				if(!anchors.isRedirect(id) && !anchors.isDisambiguation(id)){
+				if(id != null && !anchors.isRedirect(id) && !anchors.isDisambiguation(id)){
 					cleanedList.add(s);
+//					System.out.println("Is redirect: " + anchors.resolveID(id.toString()));
 				}
 			}
 			

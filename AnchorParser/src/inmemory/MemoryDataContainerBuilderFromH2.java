@@ -25,7 +25,7 @@ public class MemoryDataContainerBuilderFromH2 {
 	
 	static String h2Connection = "jdbc:h2:~/anchor_db/h2/h2_anchors";
 	static String outputPath = "inMemoryDataContainer_fromH2.bin";
-	static String wikiAbstractPath = "enwiki-latest-pages-articles_UTF8.xml";
+	static String wikiAbstractPath = "enwiki-latest-pages-articles.xml";
 
 //	static String h2Connection = "jdbc:h2:E:/Master Project/data/toyData/anchorH2";
 //	static String outputPath = "E:/Master Project/data/toyData/inMemoryDataContainer_fromH2.bin";
