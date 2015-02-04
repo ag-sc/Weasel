@@ -1,11 +1,10 @@
+package wikipediaAbstracts;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
 import javax.swing.text.html.HTMLEditorKit;
@@ -23,18 +22,18 @@ import edu.jhu.nlp.wikipedia.WikiXMLParser;
 import edu.jhu.nlp.wikipedia.WikiXMLParserFactory;
 
 
-public class WikixmljSandbox {
+public class WikiDumpProcessor {
 
 	static BufferedWriter fw;
 	static int counter = 0;
 	static Stopwatch sw;
 	
-	public static void main(String[] args) throws IOException {
+	public static void run(String outputFilePath, String inputFilePath) throws IOException {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
-		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/abstracts_redirect-test.txt"), "UTF8"));
-		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("../../data/Wikipedia Abstracts/enwiki-latest-pages-articles_UTF8.xml");
+		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath), "UTF8"));
+		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(inputFilePath);
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.MINUTES);

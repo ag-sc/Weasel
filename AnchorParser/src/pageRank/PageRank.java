@@ -1,3 +1,4 @@
+package pageRank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,41 +13,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
-import configuration.Config;
 import stopwatch.Stopwatch;
 import datatypes.H2List;
 import datatypes.PageRankNode;
 
 public class PageRank {
 
-	// static final String dbPathH2 =
-	// "E:/Master Project/data/H2/AnchorsPlusPagelinks/h2_anchors_pagelinks";
-	// static final String arrayFileName =
-	// "../../data/pageRank/entityToEntity.bin";
-	// static final String pageRankFileName =
-	// "../../data/pageRank/pageRankArray.bin";
-
-	static final String dbPathH2 = "~/data/h2_anchors_pagelinks";
-	static final String arrayFileName = "entityToEntity.bin";
-	static final String pageRankFileName = "pageRankArray.bin";
-
 	static Connection connection;
 	static double initialPageRank;
 	static final int stepSize = 10000;
 
-	public PageRank() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public static void main(String[] args) throws ClassNotFoundException, SQLException, FileNotFoundException, IOException {
+	public static void run(String dbPathH2, String entityToEntityArrayPath, String pageRankArrayPath) throws ClassNotFoundException, SQLException, FileNotFoundException, IOException {
 		System.out.println("Starting PageRank calculation.");
-		Config config = Config.getInstance();
 		int nrOfMaxPageRankIterations = 15;
 		double epsilon = 1E-8;
 
 		PageRankNode[] pageRankArray;
 
-		File f = new File(arrayFileName);
+		File f = new File(entityToEntityArrayPath);
 		if (!f.exists() || f.isDirectory()) {
 			System.out.println("Array file does not exist yet. Build it.");
 
@@ -105,7 +89,7 @@ public class PageRank {
 			System.out.println("Write array to binary file");
 			try {
 				ObjectOutputStream out;
-				out = new ObjectOutputStream(new FileOutputStream(arrayFileName));
+				out = new ObjectOutputStream(new FileOutputStream(entityToEntityArrayPath));
 				out.writeObject(pageRankArray);
 				out.close();
 			} catch (FileNotFoundException e) {
@@ -117,7 +101,7 @@ public class PageRank {
 			}
 		} else { // file exists
 			System.out.println("File exists, load it");
-			ObjectInputStream objectReader = new ObjectInputStream(new FileInputStream(arrayFileName));
+			ObjectInputStream objectReader = new ObjectInputStream(new FileInputStream(entityToEntityArrayPath));
 			pageRankArray = (PageRankNode[]) objectReader.readObject();
 			objectReader.close();
 			System.out.println("Array size: " + pageRankArray.length);
@@ -203,7 +187,7 @@ public class PageRank {
 		
 		try {
 			ObjectOutputStream out;
-			out = new ObjectOutputStream(new FileOutputStream(pageRankFileName));
+			out = new ObjectOutputStream(new FileOutputStream(pageRankArrayPath));
 			out.writeObject(output);
 			out.close();
 		} catch (FileNotFoundException e) {

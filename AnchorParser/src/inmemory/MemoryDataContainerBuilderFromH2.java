@@ -23,21 +23,9 @@ import edu.jhu.nlp.wikipedia.WikiXMLParserFactory;
 
 public class MemoryDataContainerBuilderFromH2 {
 	
-	static String h2Connection = "jdbc:h2:~/anchor_db/h2/h2_anchors";
-	static String outputPath = "inMemoryDataContainer_fromH2.bin";
-	static String wikiAbstractPath = "enwiki-latest-pages-articles.xml";
-
-//	static String h2Connection = "jdbc:h2:E:/Master Project/data/toyData/anchorH2";
-//	static String outputPath = "E:/Master Project/data/toyData/inMemoryDataContainer_fromH2.bin";
-//	static String wikiAbstractPath = "../../data/Wikipedia Abstracts/enwiki-latest-pages-articles_UTF8.xml";
-	
 	static int abstractCounter = 0;
-	
-	public MemoryDataContainerBuilderFromH2() {
-		// TODO Auto-generated constructor stub
-	}
 
-	public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
+	public static void run(String h2Connection, String inMemoryDataContainerPath, String wikiDumpPath) throws IOException, SQLException, ClassNotFoundException {
 		System.out.println("Starting inMemoryDataContainer creation...");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		final Map<String, Integer> entityToID = new HashMap<String, Integer>();
@@ -154,7 +142,7 @@ public class MemoryDataContainerBuilderFromH2 {
 		
 		// Find redirects and disambiguation pages.
 		System.out.println("Find all redirects and disambiguations.");
-		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(wikiAbstractPath);
+		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(wikiDumpPath);
 		final Map<Integer, Integer> redirects = new HashMap<Integer, Integer>();
 		final Set<Integer> disambiguation = new HashSet<Integer>();
 		
@@ -162,18 +150,19 @@ public class MemoryDataContainerBuilderFromH2 {
 			wxsp.setPageCallback(new PageCallbackHandler() {
 				public void process(WikiPage page) {
 					abstractCounter++;
-					if(abstractCounter % 100000 == 0) System.out.println("Processed abstracts: " + abstractCounter);
-					
+					if(abstractCounter % 1000000 == 0) System.out.println("Processed abstracts: " + abstractCounter);
+					if(page.getTitle().trim().equals("Reuters Television")) System.out.println("Reuters Television");
 					if(page.isRedirect()){
 						//System.out.println("Is redirect: " + page.getTitle().trim() + " -> " + page.getRedirectPage());
-						Integer redirect = entityToID.get(page.getTitle().trim());
-						Integer target = entityToID.get(page.getRedirectPage().trim());
+						Integer redirect = entityToID.get(page.getTitle().trim().replace(" ", "_"));
+						Integer target = entityToID.get(page.getRedirectPage().trim().replace(" ", "_"));
+						
+						
 						if(redirect != null && target != null){
 							redirects.put(redirect, target);
 						}
 					}
 					else if (page.isDisambiguationPage()){
-//						System.out.println("Is disambiguation: " + page.getTitle());
 						Integer disambiguationID = entityToID.get(page.getTitle().trim());
 						if(disambiguationID != null){
 							disambiguation.add(disambiguationID);
@@ -203,7 +192,7 @@ public class MemoryDataContainerBuilderFromH2 {
 		
 		try {
 			ObjectOutputStream out;
-			out = new ObjectOutputStream(new FileOutputStream(outputPath));
+			out = new ObjectOutputStream(new FileOutputStream(inMemoryDataContainerPath));
 			out.writeObject(data);
 			out.close();
 		} catch (FileNotFoundException e) {

@@ -1,25 +1,18 @@
+package documentFrequency;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-
 import org.nustaq.serialization.FSTObjectOutput;
 
 import tfidf.DocumentFrequency;
 
 
-public class AbstractSandbox {
+public class DocumentFrequencyObjectBuilder {
 
-	public AbstractSandbox() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public static void main(String[] args) throws IOException {
-//		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("abstracts_cleaned_correct.txt")));
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../../data/toyData/abstracts.txt"), "UTF8"));
+	public static void run(String inputFile, String outputFile) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF8"));
 		String line;
 		int counter = 0;
 		
@@ -27,7 +20,8 @@ public class AbstractSandbox {
 		
 		while((line = br.readLine()) != null){
 			counter++;
-			String title = br.readLine().replace(" ", "_");
+			br.readLine(); // skip title line
+			//String title = br.readLine().replace(" ", "_");
 			//if(title.contains("?"))System.out.println(title);
 			line = br.readLine().toLowerCase();
 			
@@ -43,7 +37,7 @@ public class AbstractSandbox {
 //		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("../../data/Wikipedia Abstracts/documentFrequency"));
 //		out.writeObject(df);
 //		out.close();
-		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream("../../data/toyData/documentFrequency_fst"));
+		FSTObjectOutput out_fst = new FSTObjectOutput(new FileOutputStream(outputFile));
 		out_fst.writeObject( df );
 		out_fst.close(); // required !
 		

@@ -49,8 +49,10 @@ public class EntityLinker {
 			LinkedList<String> foundEntitiesList = anchors.getFragmentTargets(originWord);
 			
 			if(foundEntitiesList.isEmpty()){	// if there are no candidates, check whether the entity appears directly (happens for obscure names for example)
-				Integer id = anchors.resolveName(originWord.replace(" ", "_"));
+				String tmp = originWord.replace(" ", "_");
+				Integer id = anchors.resolveName(tmp);
 				if(id != null) foundEntitiesList.add(id + "_1");
+//				if(f.originWord.equals("Reuters Television")) System.out.println("reuters id: " + id + " word: " + tmp + " size: " + foundEntitiesList.size());
 			}
 			if(foundEntitiesList.isEmpty()){
 				if(originWord.length() > 1 && originWord.equals(originWord.toUpperCase())){
@@ -59,16 +61,31 @@ public class EntityLinker {
 				}
 			}
 			
+//			if(f.originWord.equals("Reuters Television")){
+//				for(String s: foundEntitiesList)System.out.println("found entity reuters: " + s); 
+//			}
+			
 			LinkedList<String> cleanedList = new LinkedList<String>();
 			for(String s: foundEntitiesList){
-				Integer id = Integer.parseInt(s.split("_")[0]);
-				if(id != null && !anchors.isRedirect(id) && !anchors.isDisambiguation(id)){
-					cleanedList.add(s);
+				String[] split = s.split("_");
+				Integer id = Integer.parseInt(split[0]);
+				if(anchors.getRedirect(id) >= 0){
+					cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
+//					if(f.originWord.equals("Reuters Television")) System.out.println("reuters is redirect: " + anchors.getRedirect(id));
 //					System.out.println("Is redirect: " + anchors.resolveID(id.toString()));
+				}else if(id != null && !anchors.isDisambiguation(id)){
+					cleanedList.add(s);
 				}
 			}
 			
-			f.addCandidateStrings(cleanedList);
+//			if(cleanedList.size() == 0) System.out.println("LIST SIZE 0 FOR: " + f.originWord);
+//			if(f.originWord.equals("Reuters Television")){
+//				for(String s: cleanedList){
+//					System.out.println("reuters:\t" + s);
+//				}
+//			}
+			
+			f.addCandidateStrings(foundEntitiesList);
 			
 			// find entities for candidate vector score computation in vector evaluation step
 			while (foundEntitiesList.size() > 0) {

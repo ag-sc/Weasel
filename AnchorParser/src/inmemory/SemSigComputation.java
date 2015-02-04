@@ -15,21 +15,17 @@ import datatypes.TinyEdge;
 import datatypes.Tuple;
 import fileparser.WikiParser;
 
-public class InMemoryComputation {
+public class SemSigComputation {
 
-	final static String pageLinksFilePath = "page_links_en.nt";
+	static String pageLinksFilePath = "page_links_en.nt";
 	//final static String pageLinksFilePath = "../../data/Wikipedia/Pagelinks/test/merkel_wiki.txt";
-	final static String semSigFile = "semsig.txt";
+	static String semSigFile = "semsig.txt";
 	
 	static HashMap<String, TreeSet<TinyEdge>> graphMap;
 	
 	final static int numberOfSteps = 100000;
 	final static int frequencyThreshold = 10;
 	final static double restartProbability = 0.85;
-	
-	public InMemoryComputation() {
-		// TODO Auto-generated constructor stub
-	}
 	
 	private static void calcWeight(String source, TinyEdge edge){
 		float weight = 1;
@@ -49,7 +45,7 @@ public class InMemoryComputation {
 		edge.weight = weight;
 	}
 	
-	public static ArrayList<Tuple<String, Integer>> randomWalk(String startNode){
+	private static ArrayList<Tuple<String, Integer>> randomWalk(String startNode){
 		
 		String currentNode = startNode;
 		HashMap<String, Integer> tmpSignature = new HashMap<String, Integer>();
@@ -105,8 +101,12 @@ public class InMemoryComputation {
 		return signature;
 	}
 
-	public static void main(String[] args) throws IOException {
-		System.out.println("Program start...");
+	public static void run(String pageLinksPath, String semSigPath) throws IOException {
+		System.out.println("Calculate semsig...");
+		
+		pageLinksFilePath = pageLinksPath;
+		semSigFile = semSigPath;
+		
 		// TODO Auto-generated method stub
 		graphMap = new HashMap<String, TreeSet<TinyEdge>>(30000000);
 		WikiParser parser = new WikiParser(pageLinksFilePath);

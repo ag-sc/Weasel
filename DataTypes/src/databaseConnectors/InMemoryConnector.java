@@ -77,8 +77,12 @@ public class InMemoryConnector extends DatabaseConnector {
 	}
 
 	@Override
-	public boolean isRedirect(Integer id) {
-		return redirects.containsKey(id);
+	public int getRedirect(Integer id) {
+		if(redirects.containsKey(id)){
+			return redirects.get(id);
+		}else{
+			return -1;
+		}
 	}
 
 	@Override

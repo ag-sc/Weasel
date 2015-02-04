@@ -77,6 +77,7 @@ public class Fragment implements Comparable<Fragment>{
 	public void addCandidateStrings(Collection<String> newCandidates){
 		for(String s: newCandidates){
 			String[] tmp = s.split("_");
+			if(tmp[0] == null) System.out.println("tmp[0] == null for: " + s);
 			candidates.add(new Candidate(tmp[0], Integer.parseInt(tmp[1])));
 //			candidates.add(new Candidate(s, (int)Math.floor(Math.random() * 100)));
 		}

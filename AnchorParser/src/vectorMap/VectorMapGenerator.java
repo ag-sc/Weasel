@@ -1,3 +1,4 @@
+package vectorMap;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -5,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.text.Normalizer;
@@ -16,42 +16,26 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.nustaq.serialization.FSTObjectInput;
-import org.nustaq.serialization.FSTObjectOutput;
 
-import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
+import databaseConnectors.ConnectorFactory;
 import databaseConnectors.DatabaseConnector;
-import databaseConnectors.H2Connector;
-import databaseConnectors.InMemoryConnector;
 import datatypes.TFIDFResult;
 import datatypes.VectorEntry;
 
 
-public class VectorMapGenerationSandbox {
-
-	final static String dfPath = "../../data/toyData/documentFrequency_fst";
-	final static String abstractPath = "../../data/toyData/abstracts.txt";
-	final static String dbPathH = "E:/Master Project/data/toyData/anchorH2";
-	final static String semsigPath = "../../data/toyData/semsig.txt";
-	final static String vectorMapOutputPath = "../../data/toyData/vectorMap";
-	final static String inMemoryDataContainerPath = "../data/toyData/inMemoryDataContainer.bin";
-	
-//	final static String dfPath = "data/documentFrequency_fst";
-//	final static String abstractPath = "data/abstracts_cleaned_correct.txt";
-//	final static String dbPathH = "~/vectormap/data/h2_anchors_pagelinks";
-//	final static String semsigPath = "../semsig/semsig.txt";
-//	final static String vectorMapOutputPath = "vectorMap_inMemory";
-//	final static String inMemoryDataContainerPath = "../anchor_db/inMemoryDataContainer.bin";
+public class VectorMapGenerator {
 	
 	final static int initialMapSize = 15000000;
 	
-	public VectorMapGenerationSandbox() {
+	public VectorMapGenerator() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
+	public static void run(String vectorMapOutputPath, String dfPath, String abstractPath, String semsigPath, String inMemoryDataContainerPath) throws IOException, ClassNotFoundException, SQLException {
+		
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.HOURS);
 		
 		// get df object
@@ -76,8 +60,8 @@ public class VectorMapGenerationSandbox {
 		
 		// Set up H2 Connector
 		String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
-		DatabaseConnector entityDB = new H2Connector(dbPathH, "sa", "", sql, false);
-//		DatabaseConnector entityDB = new InMemoryConnector(inMemoryDataContainerPath);
+//		DatabaseConnector entityDB = new H2Connector(dbPathH, "sa", "", sql, false);
+		DatabaseConnector entityDB = ConnectorFactory.getInMemoryConnector(inMemoryDataContainerPath);
 		
 		System.out.println("Starting Loop");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
@@ -88,16 +72,6 @@ public class VectorMapGenerationSandbox {
 				System.out.println(counter + " - " + sw.stop() + " s");
 				sw.start();
 			}
-			
-//			if(counter % 100000 == 0){
-//				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outputPath + partCounter));
-//				out.writeObject(vectorMap);
-//				out.close();
-//				System.out.println("Wrote 'bigmap_"+partCounter + "' to file - " + sw.stop() + " s");
-//				sw.start();
-//				partCounter++;
-//				vectorMap = new HashMap<Integer, VectorEntry>(initialMapSize);
-//			}
 			
 			// Get EntityID and Semantic Signature
 			//String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");

@@ -174,6 +174,13 @@ public class VectorEvaluation extends EvaluationEngine {
 				// Find candidate
 				int candidateID = Integer.parseInt(candidate.getWord());
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
+				
+				if(fragment.originWord.equals("Reuters Television")){
+					System.out.println("word: " + candidate.getWord());
+					System.out.println("id: " + candidateID + " - vectormap size: " + vectorMap.size());
+					System.out.println(candidateEntry);
+				}
+				
 				if (candidateEntry == null) {
 					// System.out.println(h2.resolveID(candidate) +
 					// " not found in bigMap!");
@@ -254,7 +261,7 @@ public class VectorEvaluation extends EvaluationEngine {
 			double tmp1 = (1 - lambda);
 			double tmp2 = (1 - pageRankWeight);
 			
-			System.err.println(lambda + " - " + tmp1 + " --- " + pageRankWeight + " -" + tmp2);
+//			System.err.println(lambda + " - " + tmp1 + " --- " + pageRankWeight + " -" + tmp2);
 
 			for (Fragment fragment : fragmentList) {
 				fw.write(fragment.originWord + "\n");
@@ -289,9 +296,13 @@ public class VectorEvaluation extends EvaluationEngine {
 						bestScore = candidateScore;
 						bestCandidate = candidate.getWord();
 					}
+//					if(fragment.originWord.equals("Reuters Television")){
+//						System.out.println("score " + candidate.getWord() + " "+ candidateScore);
+//					}
 				}
 				if (bestScore > 0) {
 					fragment.setEntity(dbConnector.resolveID(bestCandidate));
+//					System.out.println("best candidate: " + bestCandidate + " -> " + fragment.getEntity());
 					fragment.probability = bestScore;
 				}
 				fw.write("\n");
