@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -144,6 +145,10 @@ public class KORE50Parser extends DatasetParser {
 				}
 
 				String[] splitLine = line.split("\\t");
+				// encode to be compatible with database
+				splitLine[0] = URLEncoder.encode(splitLine[0], "UTF-8");
+				splitLine[2] = URLEncoder.encode(splitLine[2], "UTF-8");
+				
 				if (splitLine.length >= 4) {
 					if(splitLine[1].equals("I")){
 						continue;

@@ -22,8 +22,8 @@ public class DatasetEvaluatorSandbox {
 		try {
 			Config config = Config.getInstance();
 
-			String dbPathH2 = config.getParameter("H2Path");
-			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
+//			String dbPathH2 = config.getParameter("H2Path");
+//			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
 //			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
 			DatabaseConnector anchors = ConnectorFactory.getInMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
 			

@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ public class AnchorFileParser extends FileParser{
 	
 	public AnchorFileParser(String filePath) throws FileNotFoundException, UnsupportedEncodingException{
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
-		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase "));
+		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase"));
 	}
 	
 	public String[] parseTuple() throws IOException {
@@ -45,6 +46,8 @@ public class AnchorFileParser extends FileParser{
 				continue;
 			}
 
+			triplet[0] = URLEncoder.encode(triplet[0], "UTF-8");
+			
 			String stringPattern = ".*?resource/(.+)";
 			Pattern resourcePattern = Pattern.compile(stringPattern);
 			Matcher matcher = resourcePattern.matcher(triplet[1]);
