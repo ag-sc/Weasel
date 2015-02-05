@@ -34,7 +34,7 @@ public class KORE50Parser extends DatasetParser {
 		setBufferedReader();
 		Config config = Config.getInstance();
 		this.readFullDocument = Boolean.parseBoolean(config.getParameter("readFullDocument"));
-		this.allLowerCase = Boolean.parseBoolean(config.getParameter("treatAllAsLowerCase "));
+		this.allLowerCase = Boolean.parseBoolean(config.getParameter("treatAllAsLowerCase"));
 	}
 	
 	private void setBufferedReader(){
@@ -147,12 +147,12 @@ public class KORE50Parser extends DatasetParser {
 				String[] splitLine = line.split("\\t");
 				// encode to be compatible with database
 				splitLine[0] = URLEncoder.encode(splitLine[0], "UTF-8");
-				splitLine[2] = URLEncoder.encode(splitLine[2], "UTF-8");
 				
 				if (splitLine.length >= 4) {
 					if(splitLine[1].equals("I")){
 						continue;
 					}
+					splitLine[2] = URLEncoder.encode(splitLine[2], "UTF-8");
 					if (splitLine[3].equals("--NME--")) {
 						annotatedSentence.appendFragment(new Fragment(splitLine[2]));
 					}else{

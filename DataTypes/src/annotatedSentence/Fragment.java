@@ -1,5 +1,7 @@
 package annotatedSentence;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -19,7 +21,12 @@ public class Fragment implements Comparable<Fragment>{
 	}
 
 	public void setOriginEntity(String originEntity) {
-		this.originEntity = originEntity;
+		try {
+			this.originEntity = URLEncoder.encode(originEntity, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public Fragment(String originWord){

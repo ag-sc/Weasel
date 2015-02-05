@@ -47,6 +47,7 @@ public class AnchorFileParser extends FileParser{
 			}
 
 			triplet[0] = URLEncoder.encode(triplet[0], "UTF-8");
+			triplet[1] = URLEncoder.encode(triplet[1], "UTF-8");
 			
 			String stringPattern = ".*?resource/(.+)";
 			Pattern resourcePattern = Pattern.compile(stringPattern);

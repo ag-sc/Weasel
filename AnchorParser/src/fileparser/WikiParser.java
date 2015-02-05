@@ -5,6 +5,7 @@ import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +25,7 @@ public class WikiParser extends FileParser implements Closeable{
 	public WikiParser(String filePath) throws IOException{
 		br  = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 		setPatters(stringPattern1, stringPattern2);
-		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase "));
+		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase"));
 	}
 	
 	public void setPatters(String pattern1, String pattern2){
@@ -55,6 +56,9 @@ public class WikiParser extends FileParser implements Closeable{
 			else{
 				return new String[1];
 			}
+			
+			tuple[0] = URLEncoder.encode(tuple[0], "UTF-8");
+			tuple[1] = URLEncoder.encode(tuple[1], "UTF-8");
 			
 		}else return null;
 		

@@ -1,6 +1,7 @@
 package datasetEvaluator;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class DatasetEvaluator {
 						// System.out.println(" - In DB: " + entity);
 						numberOfPossiblyKnownEntities++;
 					} else {
-						System.err.println("not in db: " + entity);
+						System.err.println("not in db: " + entity + " - " + URLEncoder.encode(entity, "UTF-8"));
 					}
 
 					numberOfEntities++;

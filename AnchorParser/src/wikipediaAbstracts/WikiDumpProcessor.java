@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.regex.Pattern;
 
 import javax.swing.text.html.HTMLEditorKit;
@@ -49,12 +51,15 @@ public class WikiDumpProcessor {
 
 		try {
 			wxsp.setPageCallback(new PageCallbackHandler() {
+				MarkupLanguage language = ServiceLocator.getInstance().getMarkupLanguage("MediaWiki");
+				
+		        
 				public void process(WikiPage page) {
 
 					if(page.isRedirect() || page.isSpecialPage() || page.isDisambiguationPage()) return;
 					
 					counter++;
-					if(counter % 500000 == 0){
+					if(counter % 100000 == 0){
 						System.out.println(counter + "\t- time: " + sw.stop() + " s");
 						sw.start();
 					}
@@ -64,11 +69,11 @@ public class WikiDumpProcessor {
 					String tmpArray[] = textAbstract.split("==");
 					textAbstract = tmpArray[0];
 					StringWriter writer = new StringWriter();
-		            HtmlDocumentBuilder builder = new HtmlDocumentBuilder(writer);
+					HtmlDocumentBuilder builder = new HtmlDocumentBuilder(writer);
 		            builder.setEmitAsDocument(false);
 		            //builder.setEncoding("ISO-8859-15");
 		            //System.out.println(builder.getEncoding());
-		            MarkupLanguage language = ServiceLocator.getInstance().getMarkupLanguage("MediaWiki");
+		            
 		            MarkupParser parser = new MarkupParser(language, builder);
 		            parser.parse(textAbstract);
 		            
@@ -103,6 +108,14 @@ public class WikiDumpProcessor {
 		            
 		            String title = page.getTitle().trim();
 		            title =  pattern6.matcher(title).replaceAll("-");
+		            
+		            try {
+						title = URLEncoder.encode(title, "UTF-8").replace("+", "_");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		            
 		            //if(counter > 370 && counter < 380) System.out.println(title);
 //		            System.out.println(tmp);
 //		            try {
