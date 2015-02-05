@@ -55,6 +55,7 @@ public class InMemoryQuery {
 			
 			if(entityID != -1){
 				if(entityID < container.idToEntity.length) System.out.println("Entity: " + container.idToEntity[entityID]);
+				else System.out.println("Entity ID larger than entity array lenght: "+ entityID + " >= " + container.idToEntity.length);
 			}
 			System.out.println("");
 			
@@ -65,7 +66,7 @@ public class InMemoryQuery {
 						int tmpEntityID = container.anchorToCandidates[anchorID][j];
 						System.out.println(tmpEntityID + " == " + container.idToEntity[tmpEntityID] + " count: " + container.anchorToCandidatesCount[anchorID][j]);
 					}
-				}
+				}else System.out.println("Anchor ID larger than anchor array lenght: "+ anchorID + " >= " + container.anchorToCandidates.length);
 			}
 		}
 	}

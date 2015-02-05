@@ -65,8 +65,8 @@ public class InMemoryConnector extends DatabaseConnector {
 	}
 
 	@Override
-	public boolean fragmentExists(String fragment) {
-		// TODO Auto-generated method stub
+	public boolean entityExists(String entity) {
+		if(entityToID.containsKey(entity)) return true;
 		return false;
 	}
 
@@ -78,7 +78,7 @@ public class InMemoryConnector extends DatabaseConnector {
 
 	@Override
 	public int getRedirect(Integer id) {
-		if(redirects.containsKey(id)){
+		if(id != null && redirects.containsKey(id)){
 			return redirects.get(id);
 		}else{
 			return -1;
@@ -88,6 +88,11 @@ public class InMemoryConnector extends DatabaseConnector {
 	@Override
 	public boolean isDisambiguation(Integer id) {
 		return disambiguation.contains(id);
+	}
+
+	@Override
+	public int totalNumberOfEntities() {
+		return entityToID.size();
 	}
 
 }

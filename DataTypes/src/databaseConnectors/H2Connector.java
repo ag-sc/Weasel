@@ -81,7 +81,7 @@ public class H2Connector extends DatabaseConnector {
 	}
 
 	@Override
-	public boolean fragmentExists(String fragment) {
+	public boolean entityExists(String fragment) {
 		// TODO Auto-generated method stub
 		return false;
 	}

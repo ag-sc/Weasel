@@ -6,7 +6,10 @@ import inmemory.SemSigComputation;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import pageRank.PageRank;
 import stopwatch.Stopwatch;
@@ -88,7 +91,8 @@ public class FullDataBuilder {
 		String pageLinksFilePath = config.getParameter("pageLinksFilePath");
 		String stopWordsPath = config.getParameter("stopwordsPath");
 		
-		File f = new File(h2Path + ".mv.db");
+		String path = h2Path + ".mv.db";
+		File f = new File(path);
 		if (f.exists() && !f.isDirectory()) {
 			if (!forceOverride){
 				return;
@@ -110,6 +114,12 @@ public class FullDataBuilder {
         	H2PageLinksBuilder builder2 = new H2PageLinksBuilder(h2Path, pageLinksFilePath, "sa", "");
 			builder2.run();
 			
+			Class.forName("org.h2.Driver");
+			Connection connection = DriverManager.getConnection("jdbc:h2:" + h2Path, "sa", "");
+			
+			Statement stat = connection.createStatement();
+	        stat.execute("SHUTDOWN COMPACT");
+	        
 //			H2WeightBuilder weightBuilder = new H2WeightBuilder(dbPath, "sa", "");
 //			weightBuilder.run();
 		} catch (Exception e) {

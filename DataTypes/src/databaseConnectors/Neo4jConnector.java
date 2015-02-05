@@ -23,7 +23,7 @@ public class Neo4jConnector extends DatabaseConnector{
 	}
 	
 	@Override
-	public boolean fragmentExists(String fragment){
+	public boolean entityExists(String fragment){
 		Node entity = null;
 		try (Transaction tx = graphDB.beginTx()) {
 			for (Node node : graphDB.findNodesByLabelAndProperty(label, "name", fragment)) {

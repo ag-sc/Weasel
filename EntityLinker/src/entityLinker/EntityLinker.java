@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import configuration.Config;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import databaseConnectors.DatabaseConnector;
@@ -39,6 +40,7 @@ public class EntityLinker {
 		HashMap<Integer, Integer> foundEntities = new HashMap<Integer, Integer>();
 
 		List<Fragment> fragmentList = as.getFragmentList();
+		boolean disallowRedirects = Boolean.parseBoolean(Config.getInstance().getParameter("disallowRedirectsAndDisambiguationAsCandidates"));
 		
 		for (Fragment f: fragmentList) {
 			if (stopWords != null && stopWords.contains(f.originWord))
@@ -61,31 +63,21 @@ public class EntityLinker {
 				}
 			}
 			
-//			if(f.originWord.equals("Reuters Television")){
-//				for(String s: foundEntitiesList)System.out.println("found entity reuters: " + s); 
-//			}
-			
-			LinkedList<String> cleanedList = new LinkedList<String>();
-			for(String s: foundEntitiesList){
-				String[] split = s.split("_");
-				Integer id = Integer.parseInt(split[0]);
-				if(anchors.getRedirect(id) >= 0){
-					cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
-//					if(f.originWord.equals("Reuters Television")) System.out.println("reuters is redirect: " + anchors.getRedirect(id));
-//					System.out.println("Is redirect: " + anchors.resolveID(id.toString()));
-				}else if(id != null && !anchors.isDisambiguation(id)){
-					cleanedList.add(s);
+			if (disallowRedirects) {
+				LinkedList<String> cleanedList = new LinkedList<String>();
+				for (String s : foundEntitiesList) {
+					String[] split = s.split("_");
+					Integer id = Integer.parseInt(split[0]);
+					if (anchors.getRedirect(id) >= 0) {
+						cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
+					} else if (id != null && !anchors.isDisambiguation(id)) {
+						cleanedList.add(s);
+					}
+					f.addCandidateStrings(cleanedList);
 				}
+			} else {
+				f.addCandidateStrings(foundEntitiesList);
 			}
-			
-//			if(cleanedList.size() == 0) System.out.println("LIST SIZE 0 FOR: " + f.originWord);
-//			if(f.originWord.equals("Reuters Television")){
-//				for(String s: cleanedList){
-//					System.out.println("reuters:\t" + s);
-//				}
-//			}
-			
-			f.addCandidateStrings(foundEntitiesList);
 			
 			// find entities for candidate vector score computation in vector evaluation step
 			while (foundEntitiesList.size() > 0) {

@@ -36,7 +36,7 @@ public class MemoryDataContainerBuilderFromH2 {
 		
 		Class.forName("org.h2.Driver");
 //		Connection connection = DriverManager.getConnection("jdbc:h2:~/anchor_db/h2/h2_anchors", "sa", "");
-		Connection connection = DriverManager.getConnection(h2Connection, "sa", "");
+		Connection connection = DriverManager.getConnection("jdbc:h2:" + h2Connection + ";IFEXISTS=TRUE", "sa", "");
 		
 		// get max values
 		String sql = "SELECT max(id)  FROM ENTITYID ";
@@ -177,6 +177,8 @@ public class MemoryDataContainerBuilderFromH2 {
 			e.printStackTrace();
 		}
 		
+		connection.commit();
+		connection.close();
 		System.out.println("Done. Number of redirects: " + redirects.size() + " - Number of disambiguations: " + disambiguation.size());
 		
 		// Save data to file

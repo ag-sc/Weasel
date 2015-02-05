@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import configuration.Config;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import annotatedSentence.Word;
@@ -34,6 +35,8 @@ public class DatasetEvaluator {
 	public String evaluate() throws IOException{	
 		//SimpleFileWriter fw = new SimpleFileWriter("../../data/assignments.txt");
 		
+		boolean countRedirectsAsCorrect = Boolean.parseBoolean(Config.getInstance().getParameter("countRedirectsAsCorrect"));
+		
 		AnnotatedSentence parserSentence;
 		int sentenceCounter = 0;
 		//HashSet<Integer> allEntities = parser.getEntitiesInDocument(checkupConnector);
@@ -48,18 +51,30 @@ public class DatasetEvaluator {
 
 				if (entity.length() != 0) {
 					if (f != null) {
-						if (f.containsEntity(entity))
-							numberOfCorrectCandidates++;
+						Integer id = checkupConnector.resolveName(entity);
+						if (id != null && f.containsEntity(id.toString()))
+							numberOfCorrectCandidates++;	
 					}
 
-//					if (checkupConnector.fragmentExists(entity)) {
-//		// System.out.println(" - In DB: " + entity);
-//						numberOfPossiblyKnownEntities++;
-//					} else {
-//						System.out.println("not in db: " + entity);
-//					}
+					if (checkupConnector.entityExists(entity)) {
+						// System.out.println(" - In DB: " + entity);
+						numberOfPossiblyKnownEntities++;
+					} else {
+						System.err.println("not in db: " + entity);
+					}
 
 					numberOfEntities++;
+					
+					if(countRedirectsAsCorrect){
+						Integer redirectCandidate = checkupConnector.getRedirect(checkupConnector.resolveName(candidate));
+						if(redirectCandidate >= 0) candidate = checkupConnector.resolveID(redirectCandidate.toString());
+						
+						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(entity));
+						if(redirectEntity >= 0) entity = checkupConnector.resolveID(redirectEntity.toString());
+						if(redirectCandidate >= 0 || redirectEntity >= 0)
+							System.out.println("Redirects found for next line.");
+					}
+					
 					if (entity.equalsIgnoreCase(candidate)) {
 						correctEntities++;
 						System.out.println(correctEntities + ": " + f.originWord + " -> " + candidate);
@@ -80,7 +95,7 @@ public class DatasetEvaluator {
 		System.out.println(numberOfEntities + " entities in evaluation set.");
 		System.out.println(numberOfPossiblyKnownEntities + " entities are in our database ("+ ((double)numberOfPossiblyKnownEntities / (double)numberOfEntities * 100.00)+"%)");
 		System.out.println(numberOfCorrectCandidates + " fragments have the correct entity in their candidate list ("+ ((double)numberOfCorrectCandidates / (double)numberOfEntities * 100.00)+"%)");
-		System.out.println(correctEntities + " entities were correctly assigned ("+ ((double)correctEntities / (double)numberOfEntities * 100.00)+"%)");
+		System.out.println(correctEntities + " entities were correctly assigned ("+ ((double)correctEntities / (double)numberOfEntities * 100.00)+"%, " + ((double)correctEntities / (double)numberOfPossiblyKnownEntities * 100.00) + "% if we count only the possibly correct ones)");
 	
 		checkupConnector.close();
 		linker.closeConnectors();

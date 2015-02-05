@@ -48,6 +48,7 @@ public class H2PageLinksBuilder extends H2BuilderCore {
 			}
 		}
 		
+		connection.commit();
 		connection.close();
 
 		long timeEnd = System.nanoTime();

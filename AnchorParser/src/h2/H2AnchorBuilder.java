@@ -108,6 +108,9 @@ public class H2AnchorBuilder extends H2BuilderCore{
 //
 //		connection.close();
 
+		connection.commit();
+		connection.close();
+		
 		long timeEnd = System.nanoTime();
 		double passedTime = (timeEnd - timeStart) / 60000000000.0;
 		System.out.println("Passed time: " + passedTime + " mins");

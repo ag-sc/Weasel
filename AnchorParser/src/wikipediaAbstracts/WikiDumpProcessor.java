@@ -32,8 +32,8 @@ public class WikiDumpProcessor {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
 		
-		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath), "UTF8"));
 		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(inputFilePath);
+		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath), "UTF8"));
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.MINUTES);
@@ -50,16 +50,11 @@ public class WikiDumpProcessor {
 		try {
 			wxsp.setPageCallback(new PageCallbackHandler() {
 				public void process(WikiPage page) {
-					if(page.isRedirect()) System.out.println("Is redirect: " + page.getTitle().trim() + " -> " + page.getRedirectPage());
-					else if (page.isDisambiguationPage()) System.out.println("Is disambiguation: " + page.getTitle());
-					else if(page.isSpecialPage()) System.out.println("Is special: " + page.getTitle());
-					
-//					if(page.isRedirect() || page.isSpecialPage() || page.isDisambiguationPage()) return;
-					
-					if(true)return;
+
+					if(page.isRedirect() || page.isSpecialPage() || page.isDisambiguationPage()) return;
 					
 					counter++;
-					if(counter % 100000 == 0){
+					if(counter % 500000 == 0){
 						System.out.println(counter + "\t- time: " + sw.stop() + " s");
 						sw.start();
 					}
