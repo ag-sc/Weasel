@@ -8,13 +8,17 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import configuration.Config;
+
 
 public class AnchorFileParser extends FileParser{
 	private BufferedReader br = null;
 	private int lineCounter = 0;
+	private boolean allLowerCase = false;
 	
 	public AnchorFileParser(String filePath) throws FileNotFoundException, UnsupportedEncodingException{
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
+		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase "));
 	}
 	
 	public String[] parseTuple() throws IOException {
@@ -34,6 +38,8 @@ public class AnchorFileParser extends FileParser{
 			if (line == null)
 				return null;
 
+			if(allLowerCase) line = line.toLowerCase();
+			
 			triplet = line.split("\\t");
 			if (triplet.length != 3) {
 				continue;
@@ -51,24 +57,24 @@ public class AnchorFileParser extends FileParser{
 		return triplet;
 	}
 	
-	public String[] getLine() {
-		try{
-			String line;
-			String[] splitLine;
-			
-			line = br.readLine();
-			if(line == null) return null;
-				
-			if(lineCounter % 10000 == 0) System.out.println("Processing line: " + lineCounter);
-			splitLine = line.split("\\t");	
-			lineCounter++;
-			return splitLine;
-			
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	public String[] getLine() {
+//		try{
+//			String line;
+//			String[] splitLine;
+//			
+//			line = br.readLine();
+//			if(line == null) return null;
+//				
+//			if(lineCounter % 10000 == 0) System.out.println("Processing line: " + lineCounter);
+//			splitLine = line.split("\\t");	
+//			lineCounter++;
+//			return splitLine;
+//			
+//		}catch(IOException e){
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
 
 

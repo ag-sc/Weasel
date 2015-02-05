@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import configuration.Config;
+
 public class WikiParser extends FileParser implements Closeable{
 	
 	protected BufferedReader br;
@@ -17,10 +19,12 @@ public class WikiParser extends FileParser implements Closeable{
 	protected Pattern resourcePattern2;
 	protected Matcher matcher1;
 	protected Matcher matcher2;
+	protected boolean allLowerCase = false;
 	
 	public WikiParser(String filePath) throws IOException{
 		br  = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 		setPatters(stringPattern1, stringPattern2);
+		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase "));
 	}
 	
 	public void setPatters(String pattern1, String pattern2){
@@ -36,6 +40,8 @@ public class WikiParser extends FileParser implements Closeable{
 		String line;
 		
 		if((line = br.readLine()) != null){
+			if(allLowerCase) line = line.toLowerCase();
+			
 			String[] splitLine = line.split(" ");
 			//if(splitLine.length != 4) return new String[1];
 			

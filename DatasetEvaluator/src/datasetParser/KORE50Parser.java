@@ -21,6 +21,7 @@ public class KORE50Parser extends DatasetParser {
 	private BufferedReader br = null;
 	private String line;
 	private boolean readFullDocument = false;
+	private boolean allLowerCase = false;
 
 	// public KORE50Parser() throws IOException {
 	// this(false);
@@ -30,7 +31,9 @@ public class KORE50Parser extends DatasetParser {
 
 	public KORE50Parser() {
 		setBufferedReader();
-		this.readFullDocument = Boolean.parseBoolean(Config.getInstance().getParameter("readFullDocument"));
+		Config config = Config.getInstance();
+		this.readFullDocument = Boolean.parseBoolean(config.getParameter("readFullDocument"));
+		this.allLowerCase = Boolean.parseBoolean(config.getParameter("treatAllAsLowerCase "));
 	}
 	
 	private void setBufferedReader(){
@@ -61,53 +64,54 @@ public class KORE50Parser extends DatasetParser {
 			}
 	}
 
-	public String parseString() throws NumberFormatException, IOException {
-		String sentence = "";
-
-		while ((line = br.readLine()) != null) {
-			if (line.split(" ")[0].equals("-DOCSTART-")) {
-				if (readFullDocument)
-					return sentence;
-				else
-					continue;
-			} else if (line.equals(".")) {
-				if (readFullDocument)
-					continue;
-				else
-					return sentence;
-			} else if (line.equals(",") || line.equals("\n")) {
-				continue;
-			} else {
-				String tmp;
-				String unicodeString = "\\\\u(\\w\\w\\w\\w)";
-				Pattern unicodePattern = Pattern.compile(unicodeString);
-				Matcher matcher = unicodePattern.matcher(line);
-				while (matcher.find()) {
-					tmp = matcher.group(1);
-					// System.out.println("found unicode: " + tmp);
-					// System.out.println("translates to: " +
-					// (char)Integer.parseInt(tmp, 16));
-					String tmp3 = "\\\\u" + tmp;
-					String tmp4 = Character.toString((char) Integer.parseInt(tmp, 16));
-					line = line.replaceAll(tmp3, tmp4);
-				}
-
-				String[] splitLine = line.split("\\t");
-				for (String s : splitLine[0].split(" ")) {
-					sentence += s + " ";
-				}
-
-			}
-		}
-
-		return sentence;
-	}
+//	public String parseString() throws NumberFormatException, IOException {
+//		String sentence = "";
+//
+//		while ((line = br.readLine()) != null) {
+//			if (line.split(" ")[0].equals("-DOCSTART-")) {
+//				if (readFullDocument)
+//					return sentence;
+//				else
+//					continue;
+//			} else if (line.equals(".")) {
+//				if (readFullDocument)
+//					continue;
+//				else
+//					return sentence;
+//			} else if (line.equals(",") || line.equals("\n")) {
+//				continue;
+//			} else {
+//				String tmp;
+//				String unicodeString = "\\\\u(\\w\\w\\w\\w)";
+//				Pattern unicodePattern = Pattern.compile(unicodeString);
+//				Matcher matcher = unicodePattern.matcher(line);
+//				while (matcher.find()) {
+//					tmp = matcher.group(1);
+//					// System.out.println("found unicode: " + tmp);
+//					// System.out.println("translates to: " +
+//					// (char)Integer.parseInt(tmp, 16));
+//					String tmp3 = "\\\\u" + tmp;
+//					String tmp4 = Character.toString((char) Integer.parseInt(tmp, 16));
+//					line = line.replaceAll(tmp3, tmp4);
+//				}
+//
+//				String[] splitLine = line.split("\\t");
+//				for (String s : splitLine[0].split(" ")) {
+//					sentence += s + " ";
+//				}
+//
+//			}
+//		}
+//
+//		return sentence;
+//	}
 
 	@Override
 	public AnnotatedSentence parse() throws IOException {
 		AnnotatedSentence annotatedSentence = new AnnotatedSentence();
 
 		while ((line = br.readLine()) != null) {
+			if(allLowerCase) line = line.toLowerCase();
 			if (line.split(" ")[0].equals("-DOCSTART-")) {
 				if (readFullDocument)
 					return annotatedSentence;
