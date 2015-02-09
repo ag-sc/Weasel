@@ -16,7 +16,7 @@ public class InMemoryQuery {
 	public static void main(String[] args) throws IOException, ClassNotFoundException{
 		System.out.println("Loading file...");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
-		FileInputStream fileInputStream = new FileInputStream("inMemoryDataContainer_fromH2.bin");
+		FileInputStream fileInputStream = new FileInputStream("inMemoryDB.bin");
 		ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
 		InMemoryDataContainer container = (InMemoryDataContainer) objectReader.readObject();
 		objectReader.close();

@@ -22,7 +22,6 @@ public class EntityLinking {
 		try {
 			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_results_redirect.txt"));
 			Config config = Config.getInstance();
-			config.setParameter("treatAllAsLowerCase", "false");
 			Boolean countRedirectsAsCorrect = false;
 			config.setParameter("countRedirectsAsCorrect", countRedirectsAsCorrect.toString());
 			String result = DatasetEvaluatorSandbox.evaluate();

@@ -16,10 +16,12 @@ public class AnchorFileParser extends FileParser{
 	private BufferedReader br = null;
 	private int lineCounter = 0;
 	private boolean allLowerCase = false;
+	private boolean useURLEncoding = false;
 	
 	public AnchorFileParser(String filePath) throws FileNotFoundException, UnsupportedEncodingException{
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase"));
+		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
 	public String[] parseTuple() throws IOException {
@@ -46,15 +48,17 @@ public class AnchorFileParser extends FileParser{
 				continue;
 			}
 
-			triplet[0] = URLEncoder.encode(triplet[0], "UTF-8");
-			triplet[1] = URLEncoder.encode(triplet[1], "UTF-8");
-			
 			String stringPattern = ".*?resource/(.+)";
 			Pattern resourcePattern = Pattern.compile(stringPattern);
 			Matcher matcher = resourcePattern.matcher(triplet[1]);
 			if (matcher.find())
 				triplet[1] = matcher.group(1);
 
+			if(useURLEncoding){
+				triplet[0] = URLEncoder.encode(triplet[0], "UTF-8");
+				triplet[1] = URLEncoder.encode(triplet[1], "UTF-8");
+			}
+			
 			lineCounter++;
 		} while (triplet.length != 3);
 

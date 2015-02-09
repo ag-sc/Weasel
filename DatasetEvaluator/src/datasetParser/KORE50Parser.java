@@ -113,7 +113,7 @@ public class KORE50Parser extends DatasetParser {
 
 		while ((line = br.readLine()) != null) {
 			if(allLowerCase) line = line.toLowerCase();
-			if (line.split(" ")[0].equals("-DOCSTART-")) {
+			if (line.split(" ")[0].equalsIgnoreCase("-DOCSTART-")) {
 				if (readFullDocument)
 					return annotatedSentence;
 				else {
@@ -153,7 +153,7 @@ public class KORE50Parser extends DatasetParser {
 						continue;
 					}
 					splitLine[2] = URLEncoder.encode(splitLine[2], "UTF-8");
-					if (splitLine[3].equals("--NME--")) {
+					if (splitLine[3].equalsIgnoreCase("--NME--")) {
 						annotatedSentence.appendFragment(new Fragment(splitLine[2]));
 					}else{
 						Fragment f = new Fragment(splitLine[2]);

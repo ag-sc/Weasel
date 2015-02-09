@@ -21,11 +21,13 @@ public class WikiParser extends FileParser implements Closeable{
 	protected Matcher matcher1;
 	protected Matcher matcher2;
 	protected boolean allLowerCase = false;
+	private boolean useURLEncoding = false;
 	
 	public WikiParser(String filePath) throws IOException{
 		br  = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 		setPatters(stringPattern1, stringPattern2);
 		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase"));
+		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
 	public void setPatters(String pattern1, String pattern2){
@@ -57,8 +59,10 @@ public class WikiParser extends FileParser implements Closeable{
 				return new String[1];
 			}
 			
-			tuple[0] = URLEncoder.encode(tuple[0], "UTF-8");
-			tuple[1] = URLEncoder.encode(tuple[1], "UTF-8");
+			if(useURLEncoding){
+				tuple[0] = URLEncoder.encode(tuple[0], "UTF-8");
+				tuple[1] = URLEncoder.encode(tuple[1], "UTF-8");
+			}
 			
 		}else return null;
 		
