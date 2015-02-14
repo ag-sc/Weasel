@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
+import configuration.Config;
+
 public class Fragment implements Comparable<Fragment>{
 
 	public double probability = 0.0;
@@ -21,12 +23,7 @@ public class Fragment implements Comparable<Fragment>{
 	}
 
 	public void setOriginEntity(String originEntity) {
-		try {
-			this.originEntity = URLEncoder.encode(originEntity, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.originEntity = originEntity;
 	}
 
 	public Fragment(String originWord){
@@ -53,16 +50,9 @@ public class Fragment implements Comparable<Fragment>{
 		else return 0;
 	}
 	
-	public void setID(String id){
-		this.id = new String(id);
-	}
-	
-	public String getID(){
-		return id;
-	}
-	
 	public void setEntity(String entity){
-		this.entity = new String(entity);
+		if(entity == null) this.entity = null;
+		else this.entity = new String(entity);
 	}
 	
 	public String getEntity(){
@@ -85,8 +75,11 @@ public class Fragment implements Comparable<Fragment>{
 		for(String s: newCandidates){
 			String[] tmp = s.split("_");
 			if(tmp[0] == null) System.out.println("tmp[0] == null for: " + s);
-			candidates.add(new Candidate(tmp[0], Integer.parseInt(tmp[1])));
-//			candidates.add(new Candidate(s, (int)Math.floor(Math.random() * 100)));
+			if(tmp.length == 2){
+				candidates.add(new Candidate(tmp[0], Integer.parseInt(tmp[1])));
+			}else{
+				candidates.add(new Candidate(s, (int)Math.floor(Math.random() * 100))); // legacy code for databases without anchor count
+			}	
 		}
 	}
 	

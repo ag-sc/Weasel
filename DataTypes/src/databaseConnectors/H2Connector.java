@@ -82,7 +82,7 @@ public class H2Connector extends DatabaseConnector {
 
 	@Override
 	public boolean entityExists(String fragment) {
-		// TODO Auto-generated method stub
+		if(resolveName(fragment) != null) return true;
 		return false;
 	}
 
@@ -94,6 +94,24 @@ public class H2Connector extends DatabaseConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int getRedirect(Integer id) {
+		// TODO Auto-generated method stub
+		return -1;
+	}
+
+	@Override
+	public boolean isDisambiguation(Integer id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int totalNumberOfEntities() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -2,32 +2,32 @@ package annotatedSentence;
 
 public class Candidate implements Comparable<Candidate>{
 
-	private final String word;
+	private final String entity;
 	public int count;
 	
 	
-	public Candidate(String word, int count) {
-		this.word = word;//.toLowerCase();
+	public Candidate(String entity, int count) {
+		this.entity = entity;//.toLowerCase();
 		this.count = count;
 	}
 
 
 	@Override
 	public int compareTo(Candidate o) {
-		return word.compareTo(o.word);
+		return entity.compareTo(o.entity);
 	}
 	
 	@Override
 	public int hashCode(){
-		return word.hashCode();
+		return entity.hashCode();
 	}
 	
-	public String getWord(){
-		return word;
+	public String getEntity(){
+		return entity;
 	}
 	
 	public String toString(){
-		return "(" + word + ":" + count + ")";
+		return "(" + entity + ":" + count + ")";
 	}
 
 }

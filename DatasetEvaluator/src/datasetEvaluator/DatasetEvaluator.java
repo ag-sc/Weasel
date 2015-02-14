@@ -14,6 +14,7 @@ import databaseConnectors.DatabaseConnector;
 import datasetParser.DatasetParser;
 import datatypes.AnnotatedSentenceDeprecated;
 import datatypes.SimpleFileWriter;
+import datatypes.TitleEncoder;
 import entityLinker.EntityLinker;
 
 
@@ -33,7 +34,7 @@ public class DatasetEvaluator {
 		this.checkupConnector = entityDBconnector;
 	}
 	// TODO: fix the counting so that double entries are not counted twice
-	public String evaluate() throws IOException{	
+	public double evaluate() throws IOException{	
 		//SimpleFileWriter fw = new SimpleFileWriter("../../data/assignments.txt");
 		
 		boolean countRedirectsAsCorrect = Boolean.parseBoolean(Config.getInstance().getParameter("countRedirectsAsCorrect"));
@@ -55,6 +56,8 @@ public class DatasetEvaluator {
 						Integer id = checkupConnector.resolveName(entity);
 						if (id != null && f.containsEntity(id.toString()))
 							numberOfCorrectCandidates++;	
+						else 
+							System.err.println("No correct candidate for '" + f.originWord + " -> " + entity + "'");
 					}
 
 					if (checkupConnector.entityExists(entity)) {
@@ -70,10 +73,10 @@ public class DatasetEvaluator {
 						Integer redirectCandidate = checkupConnector.getRedirect(checkupConnector.resolveName(candidate));
 						if(redirectCandidate >= 0) candidate = checkupConnector.resolveID(redirectCandidate.toString());
 						
-						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(entity));
+						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(TitleEncoder.encodeTitle(entity)));
 						if(redirectEntity >= 0) entity = checkupConnector.resolveID(redirectEntity.toString());
-						if(redirectCandidate >= 0 || redirectEntity >= 0)
-							System.out.println("Redirects found for next line.");
+//						if(redirectCandidate >= 0 || redirectEntity >= 0)
+//							System.out.println("Redirects found for next line.");
 					}
 					
 					if (entity.equalsIgnoreCase(candidate)) {
@@ -96,12 +99,12 @@ public class DatasetEvaluator {
 		System.out.println(numberOfEntities + " entities in evaluation set.");
 		System.out.println(numberOfPossiblyKnownEntities + " entities are in our database ("+ ((double)numberOfPossiblyKnownEntities / (double)numberOfEntities * 100.00)+"%)");
 		System.out.println(numberOfCorrectCandidates + " fragments have the correct entity in their candidate list ("+ ((double)numberOfCorrectCandidates / (double)numberOfEntities * 100.00)+"%)");
-		System.out.println(correctEntities + " entities were correctly assigned ("+ ((double)correctEntities / (double)numberOfEntities * 100.00)+"%, " + ((double)correctEntities / (double)numberOfPossiblyKnownEntities * 100.00) + "% if we count only the possibly correct ones)");
+		System.out.println(correctEntities + " entities were correctly assigned ("+ ((double)correctEntities / (double)numberOfEntities * 100.00)+"%, " + ((double)correctEntities / (double)numberOfCorrectCandidates * 100.00) + "% if we count only the possibly correct ones)");
 	
 		checkupConnector.close();
 		linker.closeConnectors();
 		
-		return Double.toString((double)correctEntities / (double)numberOfEntities * 100.00);
+		return ((double)correctEntities / (double)numberOfEntities * 100.00);
 	}
 	
 }

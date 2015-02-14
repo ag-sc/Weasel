@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import configuration.Config;
+import datatypes.TitleEncoder;
 
 public class WikiParser extends FileParser implements Closeable{
 	
@@ -60,8 +61,8 @@ public class WikiParser extends FileParser implements Closeable{
 			}
 			
 			if(useURLEncoding){
-				tuple[0] = URLEncoder.encode(tuple[0], "UTF-8");
-				tuple[1] = URLEncoder.encode(tuple[1], "UTF-8");
+				tuple[0] = TitleEncoder.encodeTitle(tuple[0]);
+				tuple[1] = TitleEncoder.encodeTitle(tuple[1]);
 			}
 			
 		}else return null;

@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import configuration.Config;
+import datatypes.TitleEncoder;
 
 
 public class AnchorFileParser extends FileParser{
@@ -55,8 +56,8 @@ public class AnchorFileParser extends FileParser{
 				triplet[1] = matcher.group(1);
 
 			if(useURLEncoding){
-				triplet[0] = URLEncoder.encode(triplet[0], "UTF-8");
-				triplet[1] = URLEncoder.encode(triplet[1], "UTF-8");
+				triplet[0] = TitleEncoder.encodeTitle(triplet[0]); // anchor
+				triplet[1] = TitleEncoder.encodeTitle(triplet[1]); // title
 			}
 			
 			lineCounter++;

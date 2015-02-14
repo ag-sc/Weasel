@@ -17,12 +17,14 @@ import java.util.Map.Entry;
 
 import org.nustaq.serialization.FSTObjectInput;
 
+import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
 import databaseConnectors.ConnectorFactory;
 import databaseConnectors.DatabaseConnector;
 import datatypes.TFIDFResult;
+import datatypes.TitleEncoder;
 import datatypes.VectorEntry;
 
 
@@ -35,6 +37,8 @@ public class VectorMapGenerator {
 	}
 
 	public static void run(String vectorMapOutputPath, String dfPath, String abstractPath, String semsigPath, String inMemoryDataContainerPath) throws IOException, ClassNotFoundException, SQLException {
+		
+		boolean urlEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 		
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.HOURS);
 		
@@ -75,17 +79,23 @@ public class VectorMapGenerator {
 			
 			// Get EntityID and Semantic Signature
 			//String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");
-			String title = br.readLine().replace(" ", "_");
+			String title = br.readLine();
+			if(urlEncoding){
+				title = TitleEncoder.encodeTitle(title);
+			}else{
+				title = title.replace(" ", "_");
+			}
+			
 			line = br.readLine();
 			Integer id = entityDB.resolveName(title);
-			if(id == null){
+			if(id == null && !urlEncoding){
 				String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
 				normalized = normalized.replaceAll("[^\\p{ASCII}]", "");
 				id = entityDB.resolveName(normalized);
-				if(id == null){
-					//System.err.println(title + "/" + normalized + " --> Not in DB");
-					continue;
-				}
+			}
+			if(id == null){
+				System.err.println(title + " --> Not in DB");
+				continue;
 			}
 			
 			//System.out.println("Start on TFIDF");

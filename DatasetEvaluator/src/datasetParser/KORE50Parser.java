@@ -16,6 +16,7 @@ import annotatedSentence.Fragment;
 import configuration.Config;
 import databaseConnectors.DatabaseConnector;
 import datatypes.AnnotatedSentenceDeprecated;
+import datatypes.TitleEncoder;
 
 public class KORE50Parser extends DatasetParser {
 
@@ -23,6 +24,7 @@ public class KORE50Parser extends DatasetParser {
 	private String line;
 	private boolean readFullDocument = false;
 	private boolean allLowerCase = false;
+	private boolean useURLEncoding = false;
 
 	// public KORE50Parser() throws IOException {
 	// this(false);
@@ -35,6 +37,7 @@ public class KORE50Parser extends DatasetParser {
 		Config config = Config.getInstance();
 		this.readFullDocument = Boolean.parseBoolean(config.getParameter("readFullDocument"));
 		this.allLowerCase = Boolean.parseBoolean(config.getParameter("treatAllAsLowerCase"));
+		this.useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
 	private void setBufferedReader(){
@@ -146,13 +149,18 @@ public class KORE50Parser extends DatasetParser {
 
 				String[] splitLine = line.split("\\t");
 				// encode to be compatible with database
-				splitLine[0] = URLEncoder.encode(splitLine[0], "UTF-8");
+				if(useURLEncoding){
+					splitLine[0] = TitleEncoder.encodeTitle(splitLine[0]);
+					if (splitLine.length >= 4) {
+						splitLine[2] = TitleEncoder.encodeTitle(splitLine[2]);
+						splitLine[3] = TitleEncoder.encodeTitle(splitLine[3]);
+					}
+				}
 				
 				if (splitLine.length >= 4) {
 					if(splitLine[1].equals("I")){
 						continue;
 					}
-					splitLine[2] = URLEncoder.encode(splitLine[2], "UTF-8");
 					if (splitLine[3].equalsIgnoreCase("--NME--")) {
 						annotatedSentence.appendFragment(new Fragment(splitLine[2]));
 					}else{

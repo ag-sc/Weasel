@@ -1,6 +1,7 @@
 package databaseConnectors;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,11 @@ public class ConnectorFactory {
 			System.out.println("Connector loaded.");
 			return connector;
 		}
+	}
+	
+	public static H2Connector getH2Connector(String h2FilePath, String sql) throws ClassNotFoundException, SQLException{
+		H2Connector connector = new H2Connector(h2FilePath, "sa", "", sql);
+		return connector;
 	}
 	
 	public static boolean deleteConnectorReference(String connectorReferencePath){

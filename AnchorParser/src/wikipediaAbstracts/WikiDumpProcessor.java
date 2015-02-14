@@ -17,6 +17,8 @@ import org.eclipse.mylyn.wikitext.core.parser.builder.HtmlDocumentBuilder;
 import org.eclipse.mylyn.wikitext.core.parser.markup.MarkupLanguage;
 import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
 
+import configuration.Config;
+import datatypes.TitleEncoder;
 import stopwatch.Stopwatch;
 import edu.jhu.nlp.wikipedia.PageCallbackHandler;
 import edu.jhu.nlp.wikipedia.WikiPage;
@@ -29,10 +31,13 @@ public class WikiDumpProcessor {
 	static BufferedWriter fw;
 	static int counter = 0;
 	static Stopwatch sw;
+	static boolean useURLEncoding = false;
 	
 	public static void run(String outputFilePath, String inputFilePath) throws IOException {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
+		
+		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 		
 		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(inputFilePath);
 		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath), "UTF8"));
@@ -109,11 +114,8 @@ public class WikiDumpProcessor {
 		            String title = page.getTitle().trim();
 		            title =  pattern6.matcher(title).replaceAll("-");
 		            
-		            try {
-						title = URLEncoder.encode(title, "UTF-8").replace("+", "_");
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (useURLEncoding) {
+						title = TitleEncoder.encodeTitle(title);
 					}
 		            
 		            //if(counter > 370 && counter < 380) System.out.println(title);

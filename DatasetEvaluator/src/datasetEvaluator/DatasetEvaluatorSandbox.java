@@ -18,29 +18,49 @@ import evaluation.VectorEvaluation;
 
 public class DatasetEvaluatorSandbox {
 
-	public static String evaluate() {
+	public static double evaluate() {
 		try {
 			Config config = Config.getInstance();
-
-//			String dbPathH2 = config.getParameter("H2Path");
-//			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
-//			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
-			DatabaseConnector anchors = ConnectorFactory.getInMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
 			
-//			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
-//			DatabaseConnector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
-//			EvaluationEngine evaluator = EvaluationEngine.getInstance(semSigConnector);
-			EvaluationEngine evaluator = new VectorEvaluation(anchors, 
-					config.getParameter("vectorMapPath"),
-					config.getParameter("dfPath"));
+			// Get correct DB connector
+			DatabaseConnector anchorConnector = null;
+			
+			String connectorType = config.getParameter("dbConnector");
+			try {
+				switch (connectorType) {
+				case "H2":
+					String sql = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
+					anchorConnector = ConnectorFactory.getH2Connector(config.getParameter("H2Path"), sql);
+					break;
+				case "inMemory":
+					anchorConnector = ConnectorFactory.getInMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
+					break;
+				default:
+					System.err.println("Connector type '" + connectorType + "' not recognized. Terminating.");
+					System.exit(-2);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(-1);
+			}
+			
+			// Chose evaluation engine
+			EvaluationEngine evaluator = null;
+			if(connectorType.equals("H2")){
+				String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
+				DatabaseConnector connector = ConnectorFactory.getH2Connector(config.getParameter("H2Path"), sql);
+				evaluator = EvaluationEngine.getInstance(connector);
+			}else{
+				evaluator = EvaluationEngine.getInstance(anchorConnector);
+			}
 			
 			// Linker & Evaluation
 			//System.out.println("About to start evaluation.");
 			String stopwordsPath = config.getParameter("stopwordsPath");
-			EntityLinker linker = new EntityLinker(evaluator, anchors, stopwordsPath);
-			DatasetEvaluator dataEvaluator = new DatasetEvaluator(linker, anchors); // checkupConnector);
+			EntityLinker linker = new EntityLinker(evaluator, anchorConnector, stopwordsPath);
+			DatasetEvaluator dataEvaluator = new DatasetEvaluator(linker, anchorConnector); // checkupConnector);
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
-			String result = dataEvaluator.evaluate();
+			double result = dataEvaluator.evaluate();
 			System.out.println("Evaluation time (including data load): " + sw.stop() + " minutes");
 //			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime + " ms");
 //			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime + " ms");
@@ -51,12 +71,11 @@ public class DatasetEvaluatorSandbox {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} 
-//		catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		return "No result - try catch fail?";
+		return -1;
 	}
 
 }

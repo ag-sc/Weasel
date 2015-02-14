@@ -41,45 +41,72 @@ public class EntityLinker {
 
 		List<Fragment> fragmentList = as.getFragmentList();
 		boolean disallowRedirects = Boolean.parseBoolean(Config.getInstance().getParameter("disallowRedirectsAndDisambiguationAsCandidates"));
-		
-		for (Fragment f: fragmentList) {
+
+		for (Fragment f : fragmentList) {
 			if (stopWords != null && stopWords.contains(f.originWord))
 				continue;
 
 			String originWord = f.originWord;
-			
+
 			LinkedList<String> foundEntitiesList = anchors.getFragmentTargets(originWord);
-			
-			if(foundEntitiesList.isEmpty()){	// if there are no candidates, check whether the entity appears directly (happens for obscure names for example)
+
+			// System.out.println("Entities for originWord " + originWord);
+			// for(String s: foundEntitiesList){
+			// System.out.println("\t" + anchors.resolveID(s.split("_")[0]));
+			// }
+			// if there are no candidates, check whether the entity
+			// appears directly (happens for obscure names for example).
+			if (foundEntitiesList.isEmpty()) {
 				String tmp = originWord.replace(" ", "_");
 				Integer id = anchors.resolveName(tmp);
-				if(id != null) foundEntitiesList.add(id + "_1");
-//				if(f.originWord.equals("Reuters Television")) System.out.println("reuters id: " + id + " word: " + tmp + " size: " + foundEntitiesList.size());
+				if (id != null)
+					foundEntitiesList.add(id + "_1");
 			}
-			if(foundEntitiesList.isEmpty()){
-				if(originWord.length() > 1 && originWord.equals(originWord.toUpperCase())){
+			if (foundEntitiesList.isEmpty()) {
+				if (originWord.length() > 1 && originWord.equals(originWord.toUpperCase())) {
 					originWord = originWord.toUpperCase().replace(originWord.substring(1), originWord.substring(1).toLowerCase());
 					foundEntitiesList = anchors.getFragmentTargets(originWord);
 				}
 			}
+
+			 if(f.originWord.equals("reuters_television")){
+				  System.out.println("reuters id: " + anchors.resolveName(f.originWord));
+				  for(String s: foundEntitiesList) System.out.println(" " + s);
+			 }
 			
-			if (disallowRedirects) {
-				LinkedList<String> cleanedList = new LinkedList<String>();
-				for (String s : foundEntitiesList) {
-					String[] split = s.split("_");
-					Integer id = Integer.parseInt(split[0]);
+			
+			LinkedList<String> cleanedList = new LinkedList<String>();
+//			System.out.println("Origin word: " + f.originWord);
+			for (String s : foundEntitiesList) {
+				String[] split = s.split("_");
+				Integer id = Integer.parseInt(split[0]);
+				if(f.originWord.equals("reuters_television")) System.out.println("reuters_television is redirect: " + anchors.isDisambiguation(id));
+				if (id != null && !anchors.isDisambiguation(id)) {
+//					System.out.println("	candidate: " + anchors.resolveID(id.toString()));
 					if (anchors.getRedirect(id) >= 0) {
-						cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
-					} else if (id != null && !anchors.isDisambiguation(id)) {
+						if(disallowRedirects){
+							cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
+						}else{
+							cleanedList.add(s);
+							cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
+						}
+					} else {
 						cleanedList.add(s);
 					}
-					f.addCandidateStrings(cleanedList);
+
 				}
-			} else {
-				f.addCandidateStrings(foundEntitiesList);
+//				else if(id != null && anchors.isDisambiguation(id)){
+//					System.out.println("disambiguation: " + anchors.resolveID(id.toString()));
+//				}
 			}
-			
-			// find entities for candidate vector score computation in vector evaluation step
+			if(f.originWord.equals("reuters_television")){
+				  System.out.println("reuters id: " + anchors.resolveName(f.originWord));
+				  for(String s: cleanedList) System.out.println(" " + s);
+			 }
+			f.addCandidateStrings(cleanedList);
+
+			// find entities for candidate vector score computation in vector
+			// evaluation step
 			while (foundEntitiesList.size() > 0) {
 				String idPlusCount = foundEntitiesList.pop();
 				int foundEntityID = Integer.parseInt(idPlusCount.split("_")[0]);
@@ -90,9 +117,10 @@ public class EntityLinker {
 				}
 			}
 		}
-		
+
 		as.setFoundEntities(foundEntities);
-		//System.out.println("Added all anchor candidates - Time: " + sw.stop() + " ms");
+		// System.out.println("Added all anchor candidates - Time: " + sw.stop()
+		// + " ms");
 		return as;
 
 	}

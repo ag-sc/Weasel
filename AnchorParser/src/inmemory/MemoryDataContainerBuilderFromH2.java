@@ -16,6 +16,7 @@ import java.util.Set;
 
 import stopwatch.Stopwatch;
 import datatypes.InMemoryDataContainer;
+import datatypes.TitleEncoder;
 import edu.jhu.nlp.wikipedia.PageCallbackHandler;
 import edu.jhu.nlp.wikipedia.WikiPage;
 import edu.jhu.nlp.wikipedia.WikiXMLParser;
@@ -151,11 +152,12 @@ public class MemoryDataContainerBuilderFromH2 {
 				public void process(WikiPage page) {
 					abstractCounter++;
 					if(abstractCounter % 1000000 == 0) System.out.println("Processed abstracts: " + abstractCounter);
-					if(page.getTitle().trim().equals("Reuters Television")) System.out.println("Reuters Television");
+					//if(page.getTitle().trim().equals("Reuters Television")) System.out.println("Reuters Television");
 					if(page.isRedirect()){
 						//System.out.println("Is redirect: " + page.getTitle().trim() + " -> " + page.getRedirectPage());
-						Integer redirect = entityToID.get(page.getTitle().trim().replace(" ", "_"));
-						Integer target = entityToID.get(page.getRedirectPage().trim().replace(" ", "_"));
+						
+						Integer redirect = entityToID.get(TitleEncoder.encodeTitle(page.getTitle()));
+						Integer target = entityToID.get(TitleEncoder.encodeTitle(page.getRedirectPage()));
 						
 						
 						if(redirect != null && target != null){
@@ -163,7 +165,7 @@ public class MemoryDataContainerBuilderFromH2 {
 						}
 					}
 					else if (page.isDisambiguationPage()){
-						Integer disambiguationID = entityToID.get(page.getTitle().trim());
+						Integer disambiguationID = entityToID.get(TitleEncoder.encodeTitle(page.getTitle()));
 						if(disambiguationID != null){
 							disambiguation.add(disambiguationID);
 						}
