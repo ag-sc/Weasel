@@ -18,6 +18,8 @@ import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
 import databaseConnectors.DatabaseConnector;
+import databaseConnectors.H2Connector;
+import datatypes.PageRankNode;
 import datatypes.TFIDFResult;
 import datatypes.VectorEntry;
 import fileparser.StopWordParser;
@@ -112,76 +114,116 @@ public class VectorEvaluation extends EvaluationEngine {
 	@Override
 	public void evaluate(AnnotatedSentence annotatedSentence) {
 
-		// TFIDF vector computation for input sentence
+		// TFIDF computation for input sentence
 		LinkedList<TFIDFResult> resultList = TFIDF.compute(annotatedSentence.getSentence(), df);
 		Map<Integer, Float> tfidfMap = new HashMap<Integer, Float>();
 		for (TFIDFResult r : resultList) {
 			if (stopWords.contains(r.token))
 				continue;
-			Integer id = df.getWordID(r.token);
-			if (id == null) {
+			Integer i = df.getWordID(r.token);
+			if (i == null) {
 				System.out.println(r.token + " not found in df");
 				continue;
 			}
-			tfidfMap.put(id, r.tfidf);
+			tfidfMap.put(i, r.tfidf);
 		}
 
-		double sentenceTfidfMagnitude = 0.0;
+		double tfidfMagnitude = 0.0;
 		for (double d : tfidfMap.values()) {
-			sentenceTfidfMagnitude += d * d;
+			tfidfMagnitude += d * d;
 		}
-		sentenceTfidfMagnitude = Math.sqrt(sentenceTfidfMagnitude);
+		tfidfMagnitude = Math.sqrt(tfidfMagnitude);
 
-		// candidate vector computation for input sentence
-		Map<Integer, Integer> foundEntitiesMap = annotatedSentence.getFoundEntities();
-		double sentenceCVMagnitude = 0.0;
-		for(Integer value: foundEntitiesMap.values()){
-			sentenceCVMagnitude += value;
+		// prepare candidate vector
+		List<Fragment> fragmentList = annotatedSentence.getFragmentList();
+		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
+		for (Fragment fragment : fragmentList) {
+			for (Candidate candidate : fragment.getCandidates()) {
+				if (candidateCountMap.containsKey(candidate.getEntity())) {
+					candidateCountMap.put(candidate.getEntity(), candidateCountMap.get(candidate.getEntity()) + 1);
+				} else {
+					candidateCountMap.put(candidate.getEntity(), 1);
+				}
+			}
 		}
-		sentenceCVMagnitude /= foundEntitiesMap.values().size();
-		
-//		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
-//		for (Fragment fragment : fragmentList) {
-//			for (Candidate candidate : fragment.getCandidates()) {
-//				if (candidateCountMap.containsKey(candidate.getEntity())) {
-//					candidateCountMap.put(candidate.getEntity(), candidateCountMap.get(candidate.getEntity()) + 1);
-//				} else {
-//					candidateCountMap.put(candidate.getEntity(), 1);
-//				}
-//			}
-//		}
-//		double candidateMagnitude = 0.0;
-//		for (Integer i : candidateCountMap.values()) {
-//			candidateMagnitude += i * i;
-//		}
-//		candidateMagnitude = Math.sqrt(candidateMagnitude);
+		double candidateMagnitude = 0.0;
+		for (Integer i : candidateCountMap.values()) {
+			candidateMagnitude += i * i;
+		}
+		candidateMagnitude = Math.sqrt(candidateMagnitude);
 
 		// evaluate
-//		double tfidfVectorAverage = 0;
+		double candidateVectorAverage = 0;
+		double tfidfVectorAverage = 0;
+		double count = 0;
 
-		// variables for normalization
+		// normalizing
 		HashMap<String, Double[]> scoreMap = new HashMap<String, Double[]>();
 		double maxCandidateScore = 0.0;
 		double maxTFIDFScore = 0.0;
 		double maxCandidateReferences = 0.0;
+//		String sentence = " ";
+//		for (String substring : annotatedSentence.wordArray)
+//			sentence += substring + " ";
+		//sentence = sentence.toLowerCase();
 
-		List<Fragment> fragmentList = annotatedSentence.getFragmentList();
 		for (Fragment fragment : fragmentList) {
-			if(fragment.originWord.equals("reuters_television")){
-				System.out.println("Reuters outer loop");
-			}
 			for (Candidate candidate : fragment.getCandidates()) {
+				// if (candidateCount % 100 == 0)
+				// System.out.println("working on candidate " + candidateCount);
 				// Find candidate
 				int candidateID = Integer.parseInt(candidate.getEntity());
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
-
-				if (candidateEntry == null) {
-//					System.err.println("#" + dbConnector.resolveID(candidate.getEntity()) +" not found in vectormap!");
-					continue;
-				}else{
-//					System.err.println(dbConnector.resolveID(candidate.getEntity()) +" found in vectormap!");
+				
+				if(fragment.originWord.equals("Reuters Television")){
+					System.out.println("word: " + candidate.getEntity());
+					System.out.println("id: " + candidateID + " - vectormap size: " + vectorMap.size());
+					System.out.println(candidateEntry);
 				}
 				
+				if (candidateEntry == null) {
+					// System.out.println(h2.resolveID(candidate) +
+					// " not found in bigMap!");
+					continue;
+				} else {
+					// System.out.println(h2.resolveID(candidate) +
+					// " found in bigMap!");
+				}
+
+				// Candidate vector overlap
+				Map<Integer, Integer> foundEntitiesMap = annotatedSentence.getFoundEntities();
+				double candidateVectorScore = 0;
+				for (int i = 0; i < candidateEntry.semSigVector.length; i++) {
+					if (candidateEntry.semSigVector[i] < 0)
+						break;
+					else if (foundEntitiesMap.containsKey(candidateEntry.semSigVector[i])) {
+						if (boolScoring) {
+							candidateVectorScore += 1;
+							// if(fragment.originWord.equals("British") &&
+							// candidate.word.equals("12863")){
+							// System.out.println("United_States overlap: " +
+							// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+							// }else if(fragment.originWord.equals("British") &&
+							// candidate.word.equals("122931")){
+							// System.out.println("Great_Britain overlap: " +
+							// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
+							// }
+						}
+
+						else
+							candidateVectorScore += candidateEntry.semSigCount[i] * foundEntitiesMap.get(candidateEntry.semSigVector[i]);
+					}
+				}
+
+				// Collection<Emit> emits = trie.parseText(sentence);
+				// candidateVectorScore += emits.size();
+
+				double mag = magnitude(candidateEntry.semSigCount);
+				if (mag > 0)
+					candidateVectorScore /= candidateMagnitude * mag;
+				else
+					candidateVectorScore = 0;
+
 				// TFIDF vector overlap
 				double tfidfVectorScore = 0;
 				for (int i = 0; i < candidateEntry.tfVector.length; i++) {
@@ -192,48 +234,24 @@ public class VectorEvaluation extends EvaluationEngine {
 					}
 				}
 
-				double tfidfMagnitude = magnitude(candidateEntry.tfScore) * sentenceTfidfMagnitude;
-				if (tfidfMagnitude > 0)
-					tfidfVectorScore /= tfidfMagnitude;
+				double tmp = tfidfMagnitude * magnitude(candidateEntry.tfScore);
+				if (tmp > 0)
+					tfidfVectorScore /= tmp;
 				else
 					tfidfVectorScore = 0;
 
-				// Candidate vector overlap
-				double candidateVectorScore = 0;
-				for (int i = 0; i < candidateEntry.semSigVector.length; i++) {
-					if (candidateEntry.semSigVector[i] < 0)
-						break;
-					else if (foundEntitiesMap.containsKey(candidateEntry.semSigVector[i])) {
-						if (boolScoring) {
-							candidateVectorScore += 1;
-						}else{
-							candidateVectorScore += candidateEntry.semSigCount[i] * foundEntitiesMap.get(candidateEntry.semSigVector[i]);
-						}
-					}
-				}
-
-				double semsigMagnitude = magnitude(candidateEntry.semSigCount) * sentenceCVMagnitude;
-				if (semsigMagnitude > 0)
-					candidateVectorScore /= semsigMagnitude;
-				else
-					candidateVectorScore = 0;
-
-				// normalizing preparation
+				// normalizing
 				Double tmpArray[] = { candidateVectorScore, tfidfVectorScore };
 				scoreMap.put(candidate.getEntity(), tmpArray);
-				if (candidate.count > maxCandidateReferences)
+				if (candidate.count > maxCandidateReferences) {
 					maxCandidateReferences = candidate.count;
+				}
 				if (candidateVectorScore > maxCandidateScore)
 					maxCandidateScore = candidateVectorScore;
 				if (tfidfVectorScore > maxTFIDFScore)
 					maxTFIDFScore = tfidfVectorScore;
 
-				if(fragment.originWord.equals("reuters_television")){
-					System.out.println("candidate: " + dbConnector.resolveID(candidate.getEntity()));
-					System.out.println(candidate.count);
-					System.out.println(candidateVectorScore);
-					System.out.println(tfidfVectorScore);
-				}
+				count += 1;
 			}
 		}
 
@@ -253,20 +271,21 @@ public class VectorEvaluation extends EvaluationEngine {
 					Double[] tmp = scoreMap.get(candidate.getEntity());
 					if (tmp == null)
 						continue;
-//					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
-//					if (Double.isNaN(tfidfVectorAverage))
-//						System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
+					candidateVectorAverage += (tmp[0] / maxCandidateScore);
+					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
+					if (Double.isNaN(tfidfVectorAverage))
+						System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
 					double candidateReferenceFrequency = (candidate.count / maxCandidateReferences);
 					double candidateVectorScore = (tmp[0] / maxCandidateScore);
 					double tfidfScore = (tmp[1] / maxTFIDFScore);
 					
-//					double candidateScore = (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
+//					double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
 					
-					//System.out.println("Candidate: " + dbConnector.resolveID(candidate.getEntity()) + " " + candidateReferenceFrequency+ " " + candidateVectorScore+ " " + tfidfScore);
 					
-					double candidateScore = candidateReferenceFrequency * (  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
-							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] );
+					
+					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
+							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
 
 //					double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())];
 					
@@ -278,7 +297,7 @@ public class VectorEvaluation extends EvaluationEngine {
 						bestCandidate = candidate.getEntity();
 					}
 //					if(fragment.originWord.equals("Reuters Television")){
-//						System.out.println("score " + candidate.getWord() + " "+ candidateScore);
+//						System.out.println("score " + candidate.getEntity() + " "+ candidateScore);
 //					}
 				}
 				if (bestScore > 0) {

@@ -69,32 +69,32 @@ public class EntityLinker {
 				}
 			}
 
-			 if(f.originWord.equals("reuters_television")){
-				  System.out.println("reuters id: " + anchors.resolveName(f.originWord));
-				  for(String s: foundEntitiesList) System.out.println(" " + s);
-			 }
+//			 if(f.originWord.equals("reuters_television")){
+//				  System.out.println("reuters id: " + anchors.resolveName(f.originWord));
+//				  for(String s: foundEntitiesList) System.out.println(" " + s);
+//			 }
 			
 			
 			LinkedList<String> cleanedList = new LinkedList<String>();
 //			System.out.println("Origin word: " + f.originWord);
 			for (String s : foundEntitiesList) {
-				String[] split = s.split("_");
-				Integer id = Integer.parseInt(split[0]);
-				if(f.originWord.equals("reuters_television")) System.out.println("reuters_television is redirect: " + anchors.isDisambiguation(id));
-				if (id != null && !anchors.isDisambiguation(id)) {
-//					System.out.println("	candidate: " + anchors.resolveID(id.toString()));
-					if (anchors.getRedirect(id) >= 0) {
-						if(disallowRedirects){
-							cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
-						}else{
+//				String[] split = s.split("_");
+//				Integer id = Integer.parseInt(split[0]);
+////				if(f.originWord.equalsIgnoreCase("Germany")) System.out.println("Germany is redirect: " + anchors.isDisambiguation(id));
+////				if (id != null && !anchors.isDisambiguation(id)) {
+////					System.out.println("	candidate: " + anchors.resolveID(id.toString()));
+//					if (anchors.getRedirect(id) >= 0) {
+//						if(disallowRedirects){
+//							cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
+//						}else{
 							cleanedList.add(s);
-							cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
-						}
-					} else {
-						cleanedList.add(s);
-					}
+//							cleanedList.add(anchors.getRedirect(id) + "_" + split[1]);
+//						}
+//					} else {
+//						cleanedList.add(s);
+//					}
 
-				}
+//				}
 //				else if(id != null && anchors.isDisambiguation(id)){
 //					System.out.println("disambiguation: " + anchors.resolveID(id.toString()));
 //				}
