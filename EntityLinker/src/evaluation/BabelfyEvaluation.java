@@ -4,12 +4,18 @@ import graph.Graph;
 import graph.GraphEdge;
 import graph.Node;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import configuration.Config;
 import stopwatch.Stopwatch;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Candidate;
@@ -18,6 +24,7 @@ import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
 import databaseConnectors.H2Connector;
 import datatypes.FragmentCandidateTuple;
+import datatypes.PageRankNode;
 import datatypes.SimpleFileWriter;
 
 public class BabelfyEvaluation extends EvaluationEngine{
@@ -35,6 +42,7 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		this.semanticSignatureDB = semanticSignatureDB;
 		this.minimumScore = minimumScore;
 		this.ambiguityLevel = ambiguityLevel;
+		
 	}
 	
 	private void writeGraphToDotFile(String path, Graph<FragmentCandidateTuple> graph, H2Connector connector){
@@ -60,36 +68,50 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		Graph<FragmentCandidateTuple> trimmedGraph = graph.deepcopy();
 		double avrgDegree = 0.0;
 		
-		for (int sanityCounter = 0; sanityCounter < 100000; sanityCounter++) {
+		for (int sanityCounter = 0; sanityCounter < 50000; sanityCounter++) {
 			// Get most ambiguous fragment
 			Fragment mostAmbigousFragment = null;
 			HashMap<Fragment, Integer> tmpMap = new HashMap<Fragment, Integer>();
-			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
-				if (tmpMap.get(fct.fragment) == null)
-					tmpMap.put(fct.fragment, 1);
-				else
-					tmpMap.put(fct.fragment, tmpMap.get(fct.fragment) + 1);
-			}
 			int max = 0;
-			for (Entry<Fragment, Integer> e : tmpMap.entrySet()) {
-				if (e.getValue() > max) {
-					max = e.getValue();
-					mostAmbigousFragment = e.getKey();
+			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
+				if(fct.fragment == null) continue;
+				if (tmpMap.get(fct.fragment) == null){
+					tmpMap.put(fct.fragment, 1);
+					if(1 > max){
+						max = 1;
+						mostAmbigousFragment = fct.fragment;
+					}
+				}	
+				else{
+					int currentCount = tmpMap.get(fct.fragment) + 1;
+					tmpMap.put(fct.fragment, currentCount);
+					if(currentCount > max){
+						max = currentCount;
+						mostAmbigousFragment = fct.fragment;
+					}
 				}
+					
 			}
 			
+			if(sanityCounter % 500 == 0) System.out.println(sanityCounter + " - Max: " + max + " AmbiguityLevel: " + ambiguityLevel + " - graphsize: " + graph.size());
 			if(max <= ambiguityLevel) return trimmedGraph; // end algorithm if ambiguity low
 			
 			//TODO: only update nodes that are changed
 			scoreAllFragments();
 			
-			double score = 1000000;
+			double score = Double.MAX_VALUE;
 			FragmentCandidateTuple weakestCandidate = null;
 			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
+				//System.out.println(fct.fragment + " ?= " + mostAmbigousFragment + "\t" + fct.score);
 				if(fct.fragment == mostAmbigousFragment && fct.score < score){
 					score = fct.score;
 					weakestCandidate = fct;
 				}
+			}
+			if(weakestCandidate == null){
+				System.err.println("WeakestCandidate is null! Terminating.");
+				System.err.println("Most ambiguous fragment origin entity:" + mostAmbigousFragment.getOriginEntity());
+				System.exit(-2);
 			}
 			graph.removeNode(weakestCandidate);
 			
@@ -165,33 +187,42 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		}
 		//TODO: check division by 0?
 		double weight = (double)connectingFragments.size() / (double)(numberOfFragments - 1);
+		//System.out.println("incoming/outgoing: " + node.incomingEdges.size() + "/" + node.outgoingEdges.size() +" weight: " + weight + " connectingSize: "+ connectingFragments.size() + " nr of fragments: " + (numberOfFragments - 1));
 		return weight;
 	}
 	
 	@Override
 	public void evaluate(AnnotatedSentence annotatedSentence) {
 		System.out.println("Starting evaluation... ");
-		SimpleFileWriter fw = new SimpleFileWriter("../../data/out.txt");
-		fw.writeln("Nodes:");
+		//SimpleFileWriter fw = new SimpleFileWriter("../../data/out.txt");
+		//.writeln("Nodes:");
 		
 		Stopwatch stopwatch = new Stopwatch(Stopwatch.UNIT.SECONDS);
-		LinkedList<Fragment> fragmentList = annotatedSentence.buildFragmentList();
+		List<Fragment> fragmentList = annotatedSentence.getFragmentList();
 		numberOfFragments = fragmentList.size();
 		// add fragments/candidates to graph
 		graph = new Graph<FragmentCandidateTuple>();
+		int counter = 0;
 		for(Fragment fragment: fragmentList){
 			for(Candidate candidate: fragment.getCandidates()){
-				graph.addNode(new FragmentCandidateTuple(candidate.word, fragment));
-				fw.writeln(fragment.originWord + " - candidate: " + ((H2Connector)semanticSignatureDB).resolveID(candidate.word));
+				String entity = candidate.getWord().split("_")[0];
+				graph.addNode(new FragmentCandidateTuple(entity, fragment));
+				counter++;
+				//if(counter % 1000 == 0) System.out.println(counter);
+				//fw.writeln(fragment.originWord + " - candidate: " + ((H2Connector)semanticSignatureDB).resolveID(candidate.getEntity()));
 			}
 		}
 		
 		System.out.println(graph.nodeMap.size() + " graph nodes added. " + stopwatch.stop() + " s");
 		stopwatch.start();
 		// build edges
-		fw.writeln("\nEdges:");
+		//fw.writeln("\nEdges:");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MILLISECONDS);
+		counter = 0;
 		for(Node<FragmentCandidateTuple> nodeSource: graph.nodeMap.values()){
+			counter++;
+			//if(counter % 1000 == 0) System.out.println(counter);
+			
 			sw.start();
 			TreeSet<String> semSig = new TreeSet<String>();
 			//long start = System.nanoTime();
@@ -216,15 +247,15 @@ public class BabelfyEvaluation extends EvaluationEngine{
 				if(semSig.contains(nodeSink.content.candidate)){ // conditions fullfilled, build edge
 					//System.out.println("	Adding edge: " + nodeSource.content.candidate + " --> " + nodeSink.content.candidate);
 					graph.addEdge(nodeSource, nodeSink);
-					fw.writeln(((H2Connector)semanticSignatureDB).resolveID(nodeSource.content.candidate) + " --> " + ((H2Connector)semanticSignatureDB).resolveID(nodeSink.content.candidate));
+					//fw.writeln(semanticSignatureDB).resolveID(nodeSource.content.candidate) + " --> " + (semanticSignatureDB).resolveID(nodeSink.content.candidate));
 				}
 			}
 			sw.stop();
 			searchSetTime += sw.doubleTime;
 		}
 		System.out.println("Graph edges added. Time: " + stopwatch.stop() + " s");
-		fw.close();
-		writeGraphToDotFile("../../data/graph.dot", graph, (H2Connector)semanticSignatureDB);
+		//fw.close();
+		//writeGraphToDotFile("../../data/graph.dot", graph, semanticSignatureDB);
 		
 		
 		// Trim Graph
@@ -232,30 +263,30 @@ public class BabelfyEvaluation extends EvaluationEngine{
 		trimToDenseSubgraph(graph);
 		scoreAllFragments();
 		System.out.println("Graph trimmed. Time: " + stopwatch.stop() + " s");
-		writeGraphToDotFile("../../data/graph_trimmed.dot", graph, (H2Connector)semanticSignatureDB);
+		//writeGraphToDotFile("../../data/graph_trimmed.dot", graph, (H2Connector)semanticSignatureDB);
 		
 		HashMap<Fragment, Double> scoreMap = new HashMap<Fragment, Double>();
 		for(Node<FragmentCandidateTuple> node: graph.nodeMap.values()){
 			Double tmp = scoreMap.get(node.content.fragment);
 			if(tmp == null || tmp < node.content.score){
 				node.content.fragment.probability = node.content.score;
-				node.content.fragment.setID(node.content.candidate);
+				node.content.fragment.setEntity(semanticSignatureDB.resolveID(node.content.candidate));
 				scoreMap.put(node.content.fragment, node.content.score);
 			}
 		}
 		
-		annotatedSentence.assign(minimumScore);
+		//annotatedSentence.assign(minimumScore);
 		
-		if(semanticSignatureDB instanceof H2Connector){
-			for(Word w: annotatedSentence.getWordList()){
-				Fragment f = w.getDominantFragment();
-				if(f != null){
-					String tmp = f.getID();
-					tmp = ((H2Connector)semanticSignatureDB).resolveID(tmp);
-					f.setEntity(tmp);
-				}
-			}
-		}
+//		if(semanticSignatureDB instanceof H2Connector){
+//			for(Word w: annotatedSentence.getWordList()){
+//				Fragment f = w.getDominantFragment();
+//				if(f != null){
+//					String tmp = f.getID();
+//					tmp = ((H2Connector)semanticSignatureDB).resolveID(tmp);
+//					f.setEntity(tmp);
+//				}
+//			}
+//		}
 		
 		System.out.println("	Evaluation complete.");
 	}

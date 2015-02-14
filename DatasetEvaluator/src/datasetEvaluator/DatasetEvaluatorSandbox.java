@@ -24,8 +24,8 @@ public class DatasetEvaluatorSandbox {
 
 			String dbPathH2 = config.getParameter("H2Path");
 			String anchorSQL = "SELECT EntityIdList FROM AnchorToEntity where id is (select id from AnchorID where anchor is (?))";
-//			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
-			DatabaseConnector anchors = ConnectorFactory.getInMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
+			DatabaseConnector anchors = new H2Connector(dbPathH2, "sa", "", anchorSQL);
+//			DatabaseConnector anchors = ConnectorFactory.getInMemoryConnector(config.getParameter("inMemoryDataContainerPath"));
 			
 //			String entityToEntitySQL = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 //			DatabaseConnector semSigConnector = new H2Connector(dbPathH2, "sa", "", entityToEntitySQL);
@@ -52,10 +52,10 @@ public class DatasetEvaluatorSandbox {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-//		catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return "No result - try catch fail?";
 	}
 

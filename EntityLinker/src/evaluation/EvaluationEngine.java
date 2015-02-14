@@ -17,7 +17,7 @@ public abstract class EvaluationEngine {
 			int maxAmbiguity = Integer.parseInt(config.getParameter("maxAmbiguityBabelfy"));
 			return new BabelfyEvaluation(dbConnector, minimumScore, maxAmbiguity);
 		case "random":
-			return new RandomEvaluator();
+			return new RandomEvaluation(dbConnector);
 		case "vector":
 			break;
 		default:

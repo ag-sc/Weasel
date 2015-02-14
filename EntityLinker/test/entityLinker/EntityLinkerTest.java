@@ -11,7 +11,7 @@ import databaseConnectors.DatabaseConnector;
 import datatypes.EntityOccurance;
 import entityLinker.EntityLinker;
 import evaluation.EvaluationEngine;
-import evaluation.RandomEvaluator;
+import evaluation.RandomEvaluation;
 
 
 public class EntityLinkerTest extends EntityLinkerBaseTest {
@@ -19,7 +19,7 @@ public class EntityLinkerTest extends EntityLinkerBaseTest {
 	
 	@Test
 	public void linkTest() {
-		evaluator = new RandomEvaluator();
+		evaluator = new RandomEvaluation();
 		anchors = EasyMock.createMock(DatabaseConnector.class);
 		partialAnchors = EasyMock.createMock(DatabaseConnector.class);
 		

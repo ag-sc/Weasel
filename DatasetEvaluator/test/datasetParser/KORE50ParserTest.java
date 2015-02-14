@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import databaseConnectors.DatabaseConnector;
 import datatypes.AnnotatedSentenceDeprecated;
-import evaluation.RandomEvaluator;
+import evaluation.RandomEvaluation;
 
 public class KORE50ParserTest {
 
