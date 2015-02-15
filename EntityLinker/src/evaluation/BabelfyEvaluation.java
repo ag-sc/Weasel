@@ -72,19 +72,27 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			// Get most ambiguous fragment
 			Fragment mostAmbigousFragment = null;
 			HashMap<Fragment, Integer> tmpMap = new HashMap<Fragment, Integer>();
-			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
-				if (tmpMap.get(fct.fragment) == null)
-					tmpMap.put(fct.fragment, 1);
-				else
-					tmpMap.put(fct.fragment, tmpMap.get(fct.fragment) + 1);
-			}
 			int max = 0;
-			for (Entry<Fragment, Integer> e : tmpMap.entrySet()) {
-				if (e.getValue() > max) {
-					max = e.getValue();
-					mostAmbigousFragment = e.getKey();
+			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
+				if(fct.fragment == null) continue;
+				if (tmpMap.get(fct.fragment) == null){
+					tmpMap.put(fct.fragment, 1);
+					if(1 > max){
+						max = 1;
+						mostAmbigousFragment = fct.fragment;
+					}
+				}	
+				else{
+					int currentCount = tmpMap.get(fct.fragment) + 1;
+					tmpMap.put(fct.fragment, currentCount);
+					if(currentCount > max){
+						max = currentCount;
+						mostAmbigousFragment = fct.fragment;
+					}
 				}
+					
 			}
+			
 			if(sanityCounter % 500 == 0) System.out.println(sanityCounter + " - Max: " + max + " AmbiguityLevel: " + ambiguityLevel + " - graphsize: " + graph.size());
 			if(max <= ambiguityLevel) return trimmedGraph; // end algorithm if ambiguity low
 			

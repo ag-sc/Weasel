@@ -1,6 +1,7 @@
 import h2.H2AnchorBuilder;
 import h2.H2DBCreator;
 import h2.H2PageLinksBuilder;
+import iniloader.IniLoader;
 import inmemory.MemoryDataContainerBuilderFromH2;
 import inmemory.SemSigComputation;
 

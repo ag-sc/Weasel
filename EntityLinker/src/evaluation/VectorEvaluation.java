@@ -256,15 +256,15 @@ public class VectorEvaluation extends EvaluationEngine {
 		}
 
 		// Pick best after normalization
-		try {
-			BufferedWriter fw = new BufferedWriter(new FileWriter("vector_evaluation_evaluation.txt"));
+//		try {
+//			BufferedWriter fw = new BufferedWriter(new FileWriter("vector_evaluation_evaluation.txt"));
 			double tmp1 = (1 - lambda);
 			double tmp2 = (1 - pageRankWeight);
 			
 //			System.err.println(lambda + " - " + tmp1 + " --- " + pageRankWeight + " -" + tmp2);
 
 			for (Fragment fragment : fragmentList) {
-				fw.write(fragment.originWord + "\n");
+//				fw.write(fragment.originWord + "\n");
 				double bestScore = 0;
 				String bestCandidate = "";
 				for (Candidate candidate : fragment.getCandidates()) {
@@ -284,14 +284,14 @@ public class VectorEvaluation extends EvaluationEngine {
 					
 					
 					
-					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
-							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
+//					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
+//							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
 
-//					double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())];
+					double candidateScore = lambda * candidateVectorScore + (1 - lambda) * tfidfScore;
 					
-					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
-							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
-					fw.write("\t" + dbConnector.resolveID(candidate.getEntity()) + "\t" + "pagerank: " + pageRankArray[Integer.parseInt(candidate.getEntity())] + "\n");
+//					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
+//							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
+//					fw.write("\t" + dbConnector.resolveID(candidate.getEntity()) + "\t" + "pagerank: " + pageRankArray[Integer.parseInt(candidate.getEntity())] + "\n");
 					if (candidateScore > bestScore) {
 						bestScore = candidateScore;
 						bestCandidate = candidate.getEntity();
@@ -305,13 +305,13 @@ public class VectorEvaluation extends EvaluationEngine {
 //					System.out.println("best candidate: " + bestCandidate + " -> " + fragment.getEntity());
 					fragment.probability = bestScore;
 				}
-				fw.write("\n");
+//				fw.write("\n");
 			}
-			fw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//			fw.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		annotatedSentence.assign(0);
 
