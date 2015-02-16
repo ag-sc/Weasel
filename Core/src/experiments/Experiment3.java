@@ -16,7 +16,7 @@ import datasetEvaluator.DatasetEvaluatorSandbox;
 
 public class Experiment3 {
 
-	static int experimentNumber = 1;
+	static int experimentNumber = 3;
 	static String dataset = "aida";
 
 	public static void main(String[] args) {
@@ -45,7 +45,7 @@ public class Experiment3 {
 				int testFold = (trainFold + 1) % 2;
 
 				// set experiment file path
-				config.setParameter("datasetPath", "../data/" + dataset + "_2fold_" + trainFold + ".tsv");
+				config.setParameter("datasetPath", "/home/felix/data/" + dataset + "_2fold_" + trainFold + ".tsv");
 
 				fw.write("Experiment number " + experimentNumber + "(" + config.getParameter("datasetPath") + ")\n\n");
 				fw.write("id\tcorrect\t\tPR\tLamda\tTime\n");
@@ -57,8 +57,8 @@ public class Experiment3 {
 				int bestID = 0;
 				Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 
-				for (int pageRankFactor = 0; pageRankFactor <= 2; pageRankFactor++) {
-					double pageRank = round(0.05 * pageRankFactor, 2);
+				for (int pageRankFactor = 0; pageRankFactor <= 100; pageRankFactor++) {
+					double pageRank = round(0.01 * pageRankFactor, 2);
 					config.setParameter("vector_evaluation_pageRankWeight", Double.toString(pageRank));
 
 					sw.start();
@@ -74,7 +74,6 @@ public class Experiment3 {
 						bestID = id;
 					}
 					id++;
-					fw.write("\n");
 				}
 
 				fw.write("Best result: " + Double.toString(bestScore) + "\n");
@@ -82,7 +81,7 @@ public class Experiment3 {
 
 				config.setParameter("vector_evaluation_pageRankWeight", Double.toString(bestPR));
 				config.setParameter("vector_evaluation_lamda", Double.toString(bestL));
-				config.setParameter("datasetPath", "../data/" + dataset + "_2fold_" + testFold + ".tsv");
+				config.setParameter("datasetPath", "/home/felix/data/" + dataset + "_2fold_" + testFold + ".tsv");
 				result = DatasetEvaluatorSandbox.evaluate();
 				fw.write("Result on testset: " + result + "\n");
 				fw.write("(" + config.getParameter("datasetPath") + ")\n");
@@ -91,12 +90,13 @@ public class Experiment3 {
 				} else if (testFold == 1) {
 					resultFold1 = result;
 				}
+				fw.write("\n");
 			}
-			fw.close();
 			swTotal.stop();
 			fw.write("Total time: " + round(swTotal.doubleTime, 4) + " minutes.\n");
 			double resultAverage = (resultFold0 + resultFold1) / 2.0;
 			fw.write("Average of the two results: " + resultAverage);
+			fw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

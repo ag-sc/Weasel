@@ -74,18 +74,20 @@ public class VectorEvaluation extends EvaluationEngine {
 		if(df == null){
 			sw.start();
 			System.out.println("DocumentFrequencyObject not loaded yet. Loading now...");
+			
 			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
-			FSTObjectInput in = new FSTObjectInput(fileInputStream);
-			df = (DocumentFrequency) in.readObject();
-			in.close();
+			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+			df = (DocumentFrequency) objectReader.readObject();
+			objectReader.close();
+			
+//			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
+//			FSTObjectInput in = new FSTObjectInput(fileInputStream);
+//			df = (DocumentFrequency) in.readObject();
+//			in.close();
+			
 			fileInputStream.close();
 			System.out.println("Done. Took " + sw.stop() + " minutes.");
 		}
-
-		// fileInputStream = new FileInputStream(dfFilePath);
-		// objectReader = new ObjectInputStream(fileInputStream);
-		// df = (DocumentFrequency) objectReader.readObject();
-		// df = new DocumentFrequency();
 		
 		Config config = Config.getInstance();
 		lambda = Double.parseDouble(config.getParameter("vector_evaluation_lamda"));
@@ -135,19 +137,18 @@ public class VectorEvaluation extends EvaluationEngine {
 		tfidfMagnitude = Math.sqrt(tfidfMagnitude);
 
 		// prepare candidate vector
-		List<Fragment> fragmentList = annotatedSentence.getFragmentList();
-		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
-		for (Fragment fragment : fragmentList) {
-			for (Candidate candidate : fragment.getCandidates()) {
-				if (candidateCountMap.containsKey(candidate.getEntity())) {
-					candidateCountMap.put(candidate.getEntity(), candidateCountMap.get(candidate.getEntity()) + 1);
-				} else {
-					candidateCountMap.put(candidate.getEntity(), 1);
-				}
-			}
-		}
+//		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
+//		for (Fragment fragment : fragmentList) {
+//			for (Candidate candidate : fragment.getCandidates()) {
+//				if (candidateCountMap.containsKey(candidate.getEntity())) {
+//					candidateCountMap.put(candidate.getEntity(), candidateCountMap.get(candidate.getEntity()) + 1);
+//				} else {
+//					candidateCountMap.put(candidate.getEntity(), 1);
+//				}
+//			}
+		Map<Integer, Integer> foundEntitiesMap = annotatedSentence.getFoundEntities();
 		double candidateMagnitude = 0.0;
-		for (Integer i : candidateCountMap.values()) {
+		for (Integer i : foundEntitiesMap.values()) {
 			candidateMagnitude += i * i;
 		}
 		candidateMagnitude = Math.sqrt(candidateMagnitude);
@@ -167,6 +168,7 @@ public class VectorEvaluation extends EvaluationEngine {
 //			sentence += substring + " ";
 		//sentence = sentence.toLowerCase();
 
+		List<Fragment> fragmentList = annotatedSentence.getFragmentList();
 		for (Fragment fragment : fragmentList) {
 			for (Candidate candidate : fragment.getCandidates()) {
 				// if (candidateCount % 100 == 0)
@@ -191,7 +193,6 @@ public class VectorEvaluation extends EvaluationEngine {
 				}
 
 				// Candidate vector overlap
-				Map<Integer, Integer> foundEntitiesMap = annotatedSentence.getFoundEntities();
 				double candidateVectorScore = 0;
 				for (int i = 0; i < candidateEntry.semSigVector.length; i++) {
 					if (candidateEntry.semSigVector[i] < 0)
@@ -199,15 +200,6 @@ public class VectorEvaluation extends EvaluationEngine {
 					else if (foundEntitiesMap.containsKey(candidateEntry.semSigVector[i])) {
 						if (boolScoring) {
 							candidateVectorScore += 1;
-							// if(fragment.originWord.equals("British") &&
-							// candidate.word.equals("12863")){
-							// System.out.println("United_States overlap: " +
-							// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
-							// }else if(fragment.originWord.equals("British") &&
-							// candidate.word.equals("122931")){
-							// System.out.println("Great_Britain overlap: " +
-							// h2.resolveID(Integer.toString(candidateEntry.semSigVector[i])));
-							// }
 						}
 
 						else
@@ -287,7 +279,22 @@ public class VectorEvaluation extends EvaluationEngine {
 //					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
 //							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
 
-					double candidateScore = lambda * candidateVectorScore + (1 - lambda) * tfidfScore;
+					//double candidateScore = (1 - pageRankWeight) * candidateReferenceFrequency + pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())];
+					//double candidateScore = lambda * candidateVectorScore + (1 - lambda) * tfidfScore; // 4
+					//double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 5
+					//double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())] * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 6
+					//double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())] + (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 7
+					
+					// 8
+//					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
+//							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
+					
+					// 9
+//					double candidateScore = (lambda * candidateVectorScore + (1- lambda) * tfidfScore) * 
+//							(pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] + candidateReferenceFrequency * (1 - pageRankWeight));
+					
+					// 10
+					double candidateScore = Math.sqrt(candidateReferenceFrequency) * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
 					
 //					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
 //							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");

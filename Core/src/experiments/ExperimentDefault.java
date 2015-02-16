@@ -16,7 +16,7 @@ import datasetEvaluator.DatasetEvaluatorSandbox;
 
 public class ExperimentDefault {
 
-	static int experimentNumber = 1;
+	static int experimentNumber = 9;
 	static String dataset = "aida";
 
 	public static void main(String[] args) {
@@ -45,7 +45,7 @@ public class ExperimentDefault {
 				int testFold = (trainFold + 1) % 2;
 
 				// set experiment file path
-				config.setParameter("datasetPath", "../data/" + dataset + "_2fold_" + trainFold + ".tsv");
+				config.setParameter("datasetPath", "/home/felix/data/" + dataset + "_2fold_" + trainFold + ".tsv");
 
 				fw.write("Experiment number " + experimentNumber + "(" + config.getParameter("datasetPath") + ")\n\n");
 				fw.write("id\tcorrect\t\tPR\tLamda\tTime\n");
@@ -57,11 +57,11 @@ public class ExperimentDefault {
 				int bestID = 0;
 				Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 
-				for (int pageRankFactor = 0; pageRankFactor <= 2; pageRankFactor++) {
+				for (int pageRankFactor = 0; pageRankFactor <= 20; pageRankFactor++) {
 					double pageRank = round(0.05 * pageRankFactor, 2);
 					config.setParameter("vector_evaluation_pageRankWeight", Double.toString(pageRank));
 
-					for (int lamdaFactor = 0; lamdaFactor <= 2; lamdaFactor++) {
+					for (int lamdaFactor = 0; lamdaFactor <= 20; lamdaFactor++) {
 						double lambda = round(0.05 * lamdaFactor, 2);
 						config.setParameter("vector_evaluation_lamda", Double.toString(lambda));
 
@@ -80,7 +80,6 @@ public class ExperimentDefault {
 						}
 						id++;
 					}
-					fw.write("\n");
 				}
 
 				fw.write("Best result: " + Double.toString(bestScore) + "\n");
@@ -88,7 +87,7 @@ public class ExperimentDefault {
 
 				config.setParameter("vector_evaluation_pageRankWeight", Double.toString(bestPR));
 				config.setParameter("vector_evaluation_lamda", Double.toString(bestL));
-				config.setParameter("datasetPath", "../data/" + dataset + "_2fold_" + testFold + ".tsv");
+				config.setParameter("datasetPath", "/home/felix/data/" + dataset + "_2fold_" + testFold + ".tsv");
 				result = DatasetEvaluatorSandbox.evaluate();
 				fw.write("Result on testset: " + result + "\n");
 				fw.write("(" + config.getParameter("datasetPath") + ")\n");
@@ -97,12 +96,13 @@ public class ExperimentDefault {
 				} else if (testFold == 1) {
 					resultFold1 = result;
 				}
+				fw.write("\n");
 			}
-			fw.close();
 			swTotal.stop();
 			fw.write("Total time: " + round(swTotal.doubleTime, 4) + " minutes.\n");
 			double resultAverage = (resultFold0 + resultFold1) / 2.0;
 			fw.write("Average of the two results: " + resultAverage);
+			fw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
