@@ -12,7 +12,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import pageRank.PageRank;
+import pageRank.PageRankBuilder;
 import stopwatch.Stopwatch;
 import vectorMap.VectorMapGenerator;
 import wikipediaAbstracts.WikiDumpProcessor;
@@ -35,7 +35,6 @@ public class FullDataBuilder {
 		config = Config.getInstance();
 		forceOverride = Boolean.parseBoolean(config.getParameter("forceOverride"));
 		
-		// build abstracts
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.HOURS);
 		parseWikipediaAbstracts();
 		buildDocumentFrequencyFile();
@@ -207,7 +206,7 @@ public class FullDataBuilder {
 		System.out.println("Build PageRankArray.");
 		
 		try {
-			PageRank.run(h2Path, entityToEntityArrayPath, pageRankArrayPath);
+			PageRankBuilder.run(h2Path, entityToEntityArrayPath, pageRankArrayPath);
 		} catch (ClassNotFoundException | SQLException | IOException e) {
 			e.printStackTrace();
 			System.exit(-1);

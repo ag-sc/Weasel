@@ -73,7 +73,8 @@ public class DatasetEvaluator {
 						Integer redirectCandidate = checkupConnector.getRedirect(checkupConnector.resolveName(candidate));
 						if(redirectCandidate >= 0) candidate = checkupConnector.resolveID(redirectCandidate.toString());
 						
-						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(TitleEncoder.encodeTitle(entity)));
+//						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(TitleEncoder.encodeTitle(entity)));
+						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(entity));
 						if(redirectEntity >= 0) entity = checkupConnector.resolveID(redirectEntity.toString());
 //						if(redirectCandidate >= 0 || redirectEntity >= 0)
 //							System.out.println("Redirects found for next line.");

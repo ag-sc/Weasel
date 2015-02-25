@@ -279,8 +279,11 @@ public class VectorEvaluation extends EvaluationEngine {
 //					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
 //							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
 
+					//3
 					//double candidateScore = (1 - pageRankWeight) * candidateReferenceFrequency + pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())];
-					//double candidateScore = lambda * candidateVectorScore + (1 - lambda) * tfidfScore; // 4
+					
+					//4
+					//double candidateScore = lambda * candidateVectorScore + (1 - lambda) * tfidfScore;
 					//double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 5
 					//double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())] * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 6
 					//double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())] + (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 7
@@ -294,7 +297,18 @@ public class VectorEvaluation extends EvaluationEngine {
 //							(pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] + candidateReferenceFrequency * (1 - pageRankWeight));
 					
 					// 10
-					double candidateScore = Math.sqrt(candidateReferenceFrequency) * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
+//					double candidateScore = Math.sqrt(candidateReferenceFrequency) * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
+					
+					// 11
+					//double candidateScore = (1 - pageRankWeight) * Math.sqrt(candidateReferenceFrequency) + pageRankWeight * Math.sqrt(pageRankArray[Integer.parseInt(candidate.getEntity())]);
+
+					// 13
+					//double candidateScore = lambda * Math.sqrt(candidateVectorScore) + (1 - lambda) * Math.sqrt(tfidfScore);
+					
+					// 14
+					double candidateScore = (lambda * Math.sqrt(candidateVectorScore) + (1- lambda) * Math.sqrt(tfidfScore)) * 
+					(pageRankWeight * Math.sqrt(pageRankArray[Integer.parseInt(candidate.getEntity())]) + Math.sqrt(candidateReferenceFrequency) * (1 - pageRankWeight));
+
 					
 //					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
 //							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");

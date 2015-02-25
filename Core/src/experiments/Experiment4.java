@@ -16,11 +16,11 @@ import datasetEvaluator.DatasetEvaluatorSandbox;
 
 public class Experiment4 {
 
-	static int experimentNumber = 10;
+	static int experimentNumber = 13;
 	static String dataset = "aida";
 
 	public static void main(String[] args) {
-		String filepath = "../config.ini";
+		String filepath = "config.ini";
 		if (args.length == 1)
 			filepath = args[0];
 		System.out.println("Using config file: " + filepath);
@@ -34,7 +34,8 @@ public class Experiment4 {
 		dataset = config.getParameter("datasetPath");
 
 		try {
-			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + ".txt"));
+			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + "_" + dataset + ".txt"));
+			BufferedWriter plotWriter = new BufferedWriter(new FileWriter("data_" + experimentNumber + "_" + dataset + ".txt"));
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			String formattedDate = sdf.format(date);
@@ -57,8 +58,8 @@ public class Experiment4 {
 				int bestID = 0;
 				Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 
-				for (int lamdaFactor = 0; lamdaFactor <= 25; lamdaFactor++) {
-					double lambda = round(0.04 * lamdaFactor, 2);
+				for (int lamdaFactor = 0; lamdaFactor <= 100; lamdaFactor++) {
+					double lambda = round(0.01 * lamdaFactor, 2);
 					config.setParameter("vector_evaluation_lamda", Double.toString(lambda));
 
 					sw.start();
@@ -67,6 +68,8 @@ public class Experiment4 {
 					result = round(result, 4);
 					fw.write(id + ":\t" + result + "%\t" + "-" + "\t" + lambda + "\t" + round(sw.doubleTime, 4) + " s\n");
 					fw.flush();
+					plotWriter.write("(" + lambda + ", " + result + ")\n");
+					plotWriter.flush();
 
 					if (result > bestScore) {
 						bestScore = result;
@@ -75,6 +78,7 @@ public class Experiment4 {
 					}
 					id++;
 				}
+				plotWriter.write("\n");
 
 				fw.write("Best result: " + Double.toString(bestScore) + "\n");
 				fw.write("id: " + bestID + " PR: " + bestPR + " L: " + bestL + "\n");
@@ -97,6 +101,7 @@ public class Experiment4 {
 			double resultAverage = (resultFold0 + resultFold1) / 2.0;
 			fw.write("Average of the two results: " + resultAverage);
 			fw.close();
+			plotWriter.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

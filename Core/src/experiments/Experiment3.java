@@ -34,7 +34,8 @@ public class Experiment3 {
 		dataset = config.getParameter("datasetPath");
 
 		try {
-			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + ".txt"));
+			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + "_" + dataset + ".txt"));
+			BufferedWriter plotWriter = new BufferedWriter(new FileWriter("data_" + experimentNumber + "_" + dataset + ".txt"));
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			String formattedDate = sdf.format(date);
@@ -67,6 +68,8 @@ public class Experiment3 {
 					result = round(result, 4);
 					fw.write(id + ":\t" + result + "%\t" + pageRank + "\t" + round(sw.doubleTime, 4) + " s\n");
 					fw.flush();
+					plotWriter.write("(" + pageRank + ", " + result + ")\n");
+					plotWriter.flush();
 
 					if (result > bestScore) {
 						bestScore = result;
@@ -75,6 +78,7 @@ public class Experiment3 {
 					}
 					id++;
 				}
+				plotWriter.write("\n");
 
 				fw.write("Best result: " + Double.toString(bestScore) + "\n");
 				fw.write("id: " + bestID + " PR: " + bestPR + " L: " + bestL + "\n");
@@ -97,6 +101,7 @@ public class Experiment3 {
 			double resultAverage = (resultFold0 + resultFold1) / 2.0;
 			fw.write("Average of the two results: " + resultAverage);
 			fw.close();
+			plotWriter.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

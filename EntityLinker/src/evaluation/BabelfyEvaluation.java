@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import databaseConnectors.H2Connector;
 import datatypes.FragmentCandidateTuple;
 import datatypes.PageRankNode;
 import datatypes.SimpleFileWriter;
+import datatypes.VectorEntry;
 
 public class BabelfyEvaluation extends EvaluationEngine{
 
@@ -38,11 +40,27 @@ public class BabelfyEvaluation extends EvaluationEngine{
 	public double lookUpTime = 0.0;
 	public double searchSetTime = 0.0;
 	
+	static HashMap<Integer, ArrayList<Integer>> semsig = null;
+	
 	public BabelfyEvaluation(DatabaseConnector semanticSignatureDB, double minimumScore, int ambiguityLevel){
 		this.semanticSignatureDB = semanticSignatureDB;
 		this.minimumScore = minimumScore;
 		this.ambiguityLevel = ambiguityLevel;
 		
+		if(semsig == null){
+			try{
+			FileInputStream fileInputStream = new FileInputStream("/home/felix/semsig/semsigObject.bin");
+			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+			System.out.println("Semsig map not loaded yet. Loading now...");
+			semsig = (HashMap<Integer, ArrayList<Integer>>) objectReader.readObject();
+			objectReader.close();
+			fileInputStream.close();
+			System.out.println("Done.");
+			}catch(Exception e){
+				e.printStackTrace();
+				System.exit(-3);
+			}
+		}
 	}
 	
 	private void writeGraphToDotFile(String path, Graph<FragmentCandidateTuple> graph, H2Connector connector){
@@ -103,15 +121,17 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			FragmentCandidateTuple weakestCandidate = null;
 			for (FragmentCandidateTuple fct : graph.nodeMap.keySet()) {
 				//System.out.println(fct.fragment + " ?= " + mostAmbigousFragment + "\t" + fct.score);
+				if(fct == null) continue;
 				if(fct.fragment == mostAmbigousFragment && fct.score < score){
 					score = fct.score;
 					weakestCandidate = fct;
 				}
 			}
 			if(weakestCandidate == null){
-				System.err.println("WeakestCandidate is null! Terminating.");
+				System.err.println("WeakestCandidate is null! Terminating loop.");
 				System.err.println("Most ambiguous fragment origin entity:" + mostAmbigousFragment.getOriginEntity());
-				System.exit(-2);
+				//System.exit(-2);
+				return trimmedGraph;
 			}
 			graph.removeNode(weakestCandidate);
 			
@@ -226,7 +246,20 @@ public class BabelfyEvaluation extends EvaluationEngine{
 			sw.start();
 			TreeSet<String> semSig = new TreeSet<String>();
 			//long start = System.nanoTime();
-			LinkedList<String> tmp = semanticSignatureDB.getFragmentTargets(nodeSource.content.candidate);
+			
+			
+			//List<String> tmp = semanticSignatureDB.getFragmentTargets(nodeSource.content.candidate);
+			List<String> tmp = new LinkedList();
+			Integer id = Integer.parseInt(nodeSource.content.candidate);
+			if(semsig.containsKey(id)){
+				for(Integer semsigEntryId: semsig.get(id)){
+					tmp.add(semsigEntryId.toString());
+				}
+			}else{
+				System.err.println("No semsig entry for: " + semanticSignatureDB.resolveID(nodeSource.content.candidate));
+			}
+			
+			
 			//long end = System.nanoTime();
 			//double passedTime = (end - start) / 1000000000.0;
 			//System.out.println("Passed time: " + passedTime + " s");

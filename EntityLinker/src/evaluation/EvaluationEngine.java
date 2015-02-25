@@ -21,6 +21,8 @@ public abstract class EvaluationEngine {
 				return new RandomEvaluation(dbConnector);
 			case "vector":
 				return new VectorEvaluation(dbConnector, config.getParameter("vectorMapPath"), config.getParameter("dfPath"));
+			case "spotlight":
+				return new DBpediaSpotlightEvaluation();
 			default:
 				System.err.println("Evaluation engine '" + engine + "' not recognized. Terminating.");
 				System.exit(-2);

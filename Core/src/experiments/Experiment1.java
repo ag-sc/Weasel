@@ -32,7 +32,7 @@ public class Experiment1 {
 		dataset = config.getParameter("datasetPath");
 
 		try {
-			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + ".txt"));
+			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + "_" + dataset + ".txt"));
 			
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
