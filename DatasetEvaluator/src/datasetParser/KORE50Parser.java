@@ -25,6 +25,7 @@ public class KORE50Parser extends DatasetParser {
 	private boolean readFullDocument = false;
 	private boolean allLowerCase = false;
 	private boolean useURLEncoding = false;
+	static String lastLine = "";
 
 	// public KORE50Parser() throws IOException {
 	// this(false);
@@ -116,7 +117,16 @@ public class KORE50Parser extends DatasetParser {
 
 		while ((line = br.readLine()) != null) {
 			if(allLowerCase) line = line.toLowerCase();
-			if (line.split(" ")[0].equalsIgnoreCase("-DOCSTART-")) {
+			//String tmpLine = line.split(" ")[0];
+			String tmpLine = line.toLowerCase();
+			
+			boolean skip = lastLine.contains("soccer") || lastLine.contains("tennis") || lastLine.contains("cricket") 
+					|| lastLine.contains("golf") || lastLine.contains("athletics") || lastLine.contains("badminton")
+					|| lastLine.contains("nfl")|| lastLine.contains("nhl")|| lastLine.contains("nba") || lastLine.contains("baseball");
+			lastLine = tmpLine;
+			if(skip) return parse();
+			
+			if (tmpLine.contains("-docstart-")) {
 				if (readFullDocument)
 					return annotatedSentence;
 				else {
