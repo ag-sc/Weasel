@@ -1,8 +1,6 @@
 package evaluation;
 
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
@@ -11,15 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.nustaq.serialization.FSTObjectInput;
-
 import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
 import databaseConnectors.DatabaseConnector;
-import databaseConnectors.H2Connector;
-import datatypes.PageRankNode;
 import datatypes.TFIDFResult;
 import datatypes.VectorEntry;
 import fileparser.StopWordParser;

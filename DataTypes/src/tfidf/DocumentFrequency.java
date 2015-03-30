@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import configuration.Config;
+import datatypes.StringEncoder;
+
 
 public class DocumentFrequency implements Serializable{
 	
-	private static final long serialVersionUID = -9086930652499136727L;
+	private static final long serialVersionUID = 1;
 	HashMap<String, Integer> wordID;
 	HashMap<Integer, String> idToWord;
 	HashMap<Integer, Integer> documentFrequency;
@@ -15,17 +18,22 @@ public class DocumentFrequency implements Serializable{
 	public int numberOfDocuments = 0;
 	private int idCounter = 0;
 	private boolean reverseMapReady = false;
+	private boolean useURLEncoding;
 	
 	public DocumentFrequency() {
 		documentFrequency = new HashMap<Integer, Integer>();
 		wordID = new HashMap<String, Integer>();
+		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
 	public void addDocument(String document){
 		numberOfDocuments++;
 		
 		TreeSet<String> set = new TreeSet<String>();
-		for(String s: document.toLowerCase().split(" ")) set.add(s);
+		for(String s: document.toLowerCase().split(" ")){
+			String tmp = StringEncoder.encodeString(s);
+			set.add(tmp);
+		}
 		
 		for(String word: set){
 			Integer id = wordID.get(word);

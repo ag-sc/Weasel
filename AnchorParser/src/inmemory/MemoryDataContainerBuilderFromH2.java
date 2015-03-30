@@ -16,7 +16,7 @@ import java.util.Set;
 
 import stopwatch.Stopwatch;
 import datatypes.InMemoryDataContainer;
-import datatypes.TitleEncoder;
+import datatypes.StringEncoder;
 import edu.jhu.nlp.wikipedia.PageCallbackHandler;
 import edu.jhu.nlp.wikipedia.WikiPage;
 import edu.jhu.nlp.wikipedia.WikiXMLParser;
@@ -156,8 +156,8 @@ public class MemoryDataContainerBuilderFromH2 {
 					if(page.isRedirect()){
 						//System.out.println("Is redirect: " + page.getTitle().trim() + " -> " + page.getRedirectPage());
 						
-						Integer redirect = entityToID.get(TitleEncoder.encodeTitle(page.getTitle()));
-						Integer target = entityToID.get(TitleEncoder.encodeTitle(page.getRedirectPage()));
+						Integer redirect = entityToID.get(StringEncoder.encodeString(page.getTitle()));
+						Integer target = entityToID.get(StringEncoder.encodeString(page.getRedirectPage()));
 						
 						
 						if(redirect != null && target != null){
@@ -165,7 +165,7 @@ public class MemoryDataContainerBuilderFromH2 {
 						}
 					}
 					else if (page.isDisambiguationPage()){
-						Integer disambiguationID = entityToID.get(TitleEncoder.encodeTitle(page.getTitle()));
+						Integer disambiguationID = entityToID.get(StringEncoder.encodeString(page.getTitle()));
 						if(disambiguationID != null){
 							disambiguation.add(disambiguationID);
 						}

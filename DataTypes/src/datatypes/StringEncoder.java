@@ -4,16 +4,15 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 
-public class TitleEncoder {
-	private TitleEncoder(){
+public class StringEncoder {
+	private StringEncoder(){
 		
 	}
 
-	public static String encodeTitle(String title){
-		title = title.trim().replace(" ", "_").toLowerCase();
-		
+	public static String encodeString(String title){
 		try {
 			title = URLDecoder.decode(title, "UTF-8");
+			title = title.trim().replace(" ", "_").toLowerCase();
 			title = URLEncoder.encode(title, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

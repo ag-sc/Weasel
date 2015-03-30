@@ -11,6 +11,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/DatabaseBuilder"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aho-corasick-master"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dbpedia spotlight"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

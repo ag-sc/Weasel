@@ -5,7 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/H2/bin/h2-1.4.181.jar"/>
-	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/wikixmlj/wikixmlj-r43.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/wikixmlj/bzip2.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/org.eclipse.mylyn.wikitext.core_2.3.0.N20140929-1849.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/mylyn/org.eclipse.mylyn.wikitext.mediawiki.core_2.3.0.N20140929-1849.jar"/>
@@ -18,5 +17,6 @@
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/jung2_0/jung-algorithms-2.0.1.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/jung2_0/jung-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/External Jars/jung2_0/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/wikixmlj"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

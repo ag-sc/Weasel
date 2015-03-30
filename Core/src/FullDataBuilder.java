@@ -27,7 +27,7 @@ public class FullDataBuilder {
 
 	public static void main(String[] args) {
 		// load ini file
-		String filepath = "../config_new.ini";
+		String filepath = "../config_testset.ini";
 		if(args.length == 1) filepath = args[0];
 		System.out.println("Using config file: " + filepath);
 		IniLoader iniLoader = new IniLoader();
@@ -38,11 +38,11 @@ public class FullDataBuilder {
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.HOURS);
 		parseWikipediaAbstracts();
 		buildDocumentFrequencyFile();
-		buildDatabase();
-		buildInMemoryDBObject();
-		buildSemanticSignature();
-		buildVectorMap();
-		buildPageRankArray();
+//		buildDatabase();
+//		buildInMemoryDBObject();
+//		buildSemanticSignature();
+//		buildVectorMap();
+//		buildPageRankArray();
 		System.out.println("All done! Total time: " + sw.stop() + " hours");
 	} // main
 	

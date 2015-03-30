@@ -6,7 +6,6 @@ import java.util.HashSet;
 import annotatedSentence.AnnotatedSentence;
 import configuration.Config;
 import databaseConnectors.DatabaseConnector;
-import datatypes.AnnotatedSentenceDeprecated;
 
 public abstract class DatasetParser {
 	

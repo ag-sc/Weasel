@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,15 +14,13 @@ import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
 import configuration.Config;
 import databaseConnectors.DatabaseConnector;
-import datatypes.AnnotatedSentenceDeprecated;
-import datatypes.TitleEncoder;
+import datatypes.StringEncoder;
 
 public class KORE50Parser extends DatasetParser {
 
 	private BufferedReader br = null;
 	private String line;
 	private boolean readFullDocument = false;
-	private boolean allLowerCase = false;
 	private boolean useURLEncoding = false;
 	static String lastLine = "";
 
@@ -37,7 +34,6 @@ public class KORE50Parser extends DatasetParser {
 		setBufferedReader();
 		Config config = Config.getInstance();
 		this.readFullDocument = Boolean.parseBoolean(config.getParameter("readFullDocument"));
-		this.allLowerCase = Boolean.parseBoolean(config.getParameter("treatAllAsLowerCase"));
 		this.useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
@@ -116,15 +112,14 @@ public class KORE50Parser extends DatasetParser {
 		AnnotatedSentence annotatedSentence = new AnnotatedSentence();
 
 		while ((line = br.readLine()) != null) {
-			if(allLowerCase) line = line.toLowerCase();
 			//String tmpLine = line.split(" ")[0];
 			String tmpLine = line.toLowerCase();
 			
-			boolean skip = lastLine.contains("soccer") || lastLine.contains("tennis") || lastLine.contains("cricket") 
-					|| lastLine.contains("golf") || lastLine.contains("athletics") || lastLine.contains("badminton")
-					|| lastLine.contains("nfl")|| lastLine.contains("nhl")|| lastLine.contains("nba") || lastLine.contains("baseball");
-			lastLine = tmpLine;
-			if(skip) return parse();
+//			boolean skip = lastLine.contains("soccer") || lastLine.contains("tennis") || lastLine.contains("cricket") 
+//					|| lastLine.contains("golf") || lastLine.contains("athletics") || lastLine.contains("badminton")
+//					|| lastLine.contains("nfl")|| lastLine.contains("nhl")|| lastLine.contains("nba") || lastLine.contains("baseball");
+//			lastLine = tmpLine;
+//			if(skip) return parse();
 			
 			if (tmpLine.contains("-docstart-")) {
 				if (readFullDocument)
@@ -160,10 +155,10 @@ public class KORE50Parser extends DatasetParser {
 				String[] splitLine = line.split("\\t");
 				// encode to be compatible with database
 				if(useURLEncoding){
-					splitLine[0] = TitleEncoder.encodeTitle(splitLine[0]);
+					splitLine[0] = StringEncoder.encodeString(splitLine[0]);
 					if (splitLine.length >= 4) {
-						splitLine[2] = TitleEncoder.encodeTitle(splitLine[2]);
-						splitLine[3] = TitleEncoder.encodeTitle(splitLine[3]);
+						splitLine[2] = StringEncoder.encodeString(splitLine[2]);
+						splitLine[3] = StringEncoder.encodeString(splitLine[3]);
 					}
 				}
 				

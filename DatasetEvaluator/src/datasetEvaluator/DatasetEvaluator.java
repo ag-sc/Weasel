@@ -2,19 +2,13 @@ package datasetEvaluator;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import configuration.Config;
 import annotatedSentence.AnnotatedSentence;
 import annotatedSentence.Fragment;
-import annotatedSentence.Word;
 import databaseConnectors.DatabaseConnector;
 import datasetParser.DatasetParser;
-import datatypes.AnnotatedSentenceDeprecated;
-import datatypes.SimpleFileWriter;
-import datatypes.TitleEncoder;
 import entityLinker.EntityLinker;
 
 

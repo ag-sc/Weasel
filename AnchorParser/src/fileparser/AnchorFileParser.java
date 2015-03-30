@@ -10,18 +10,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import configuration.Config;
-import datatypes.TitleEncoder;
+import datatypes.StringEncoder;
 
 
 public class AnchorFileParser extends FileParser{
 	private BufferedReader br = null;
 	private int lineCounter = 0;
-	private boolean allLowerCase = false;
 	private boolean useURLEncoding = false;
 	
 	public AnchorFileParser(String filePath) throws FileNotFoundException, UnsupportedEncodingException{
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
-		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase"));
 		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
@@ -42,7 +40,6 @@ public class AnchorFileParser extends FileParser{
 			if (line == null)
 				return null;
 
-			if(allLowerCase) line = line.toLowerCase();
 			
 			triplet = line.split("\\t");
 			if (triplet.length != 3) {
@@ -56,8 +53,8 @@ public class AnchorFileParser extends FileParser{
 				triplet[1] = matcher.group(1);
 
 			if(useURLEncoding){
-				triplet[0] = TitleEncoder.encodeTitle(triplet[0]); // anchor
-				triplet[1] = TitleEncoder.encodeTitle(triplet[1]); // title
+				triplet[0] = StringEncoder.encodeString(triplet[0]); // anchor
+				triplet[1] = StringEncoder.encodeString(triplet[1]); // title
 			}
 			
 			lineCounter++;

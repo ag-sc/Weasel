@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import configuration.Config;
-import datatypes.TitleEncoder;
+import datatypes.StringEncoder;
 
 public class WikiParser extends FileParser implements Closeable{
 	
@@ -21,13 +21,11 @@ public class WikiParser extends FileParser implements Closeable{
 	protected Pattern resourcePattern2;
 	protected Matcher matcher1;
 	protected Matcher matcher2;
-	protected boolean allLowerCase = false;
 	private boolean useURLEncoding = false;
 	
 	public WikiParser(String filePath) throws IOException{
 		br  = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 		setPatters(stringPattern1, stringPattern2);
-		allLowerCase = Boolean.parseBoolean(Config.getInstance().getParameter("treatAllAsLowerCase"));
 		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
@@ -44,7 +42,6 @@ public class WikiParser extends FileParser implements Closeable{
 		String line;
 		
 		if((line = br.readLine()) != null){
-			if(allLowerCase) line = line.toLowerCase();
 			
 			String[] splitLine = line.split(" ");
 			//if(splitLine.length != 4) return new String[1];
@@ -61,8 +58,8 @@ public class WikiParser extends FileParser implements Closeable{
 			}
 			
 			if(useURLEncoding){
-				tuple[0] = TitleEncoder.encodeTitle(tuple[0]);
-				tuple[1] = TitleEncoder.encodeTitle(tuple[1]);
+				tuple[0] = StringEncoder.encodeString(tuple[0]);
+				tuple[1] = StringEncoder.encodeString(tuple[1]);
 			}
 			
 		}else return null;

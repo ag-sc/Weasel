@@ -24,7 +24,7 @@ import tfidf.TFIDF;
 import databaseConnectors.ConnectorFactory;
 import databaseConnectors.DatabaseConnector;
 import datatypes.TFIDFResult;
-import datatypes.TitleEncoder;
+import datatypes.StringEncoder;
 import datatypes.VectorEntry;
 
 
@@ -81,7 +81,7 @@ public class VectorMapGenerator {
 			//String title = StringConverter.convert(br.readLine().replace(" ", "_"), "UTF-8");
 			String title = br.readLine();
 			if(urlEncoding){
-				title = TitleEncoder.encodeTitle(title);
+				title = StringEncoder.encodeString(title);
 			}else{
 				title = title.replace(" ", "_");
 			}
