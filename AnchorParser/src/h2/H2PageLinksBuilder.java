@@ -3,6 +3,7 @@ package h2;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 
 import stopwatch.Stopwatch;
 import fileparser.WikiParser;

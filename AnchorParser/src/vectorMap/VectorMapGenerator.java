@@ -134,32 +134,33 @@ public class VectorMapGenerator {
 			}
 			Integer id = entityDB.resolveName(line);
 			if(!vectorMap.containsKey(id)){
-				System.err.println(line + " not in vectorMap");
-				while(line != null && !line.equals("")) line = br.readLine(); // skip entry
-				continue;
-			}else{
-				VectorEntry entry = vectorMap.get(id);
-				for(int i = 0; i < 100; i++){
-					line = br.readLine();
-					if (line == null || line.equals(""))
-						break;
-					String lineArray[] = line.split("\t");
-					Integer tmpID = entityDB.resolveName(lineArray[0]);
-					if (tmpID != null) {
-						entry.semSigVector[i] = tmpID;
-						entry.semSigCount[i] = Integer.parseInt(lineArray[1]);
-					} else {
-						i--; // skip this line
-					}
-				}
-
-				// include entity in its own signature
-//				entry.semSigVector[0] = id;
-//				if(entry.semSigCount[1] > 0) entry.semSigCount[0] = (int)Math.floor(entry.semSigCount[1] * 1.5);
-//				else entry.semSigCount[0] = 1;
-				
-				while(line != null && !line.equals("")) line = br.readLine();
+				System.err.println(line + " not in vectorMap. Adding it.");
+				VectorEntry vEntry = new VectorEntry();
+				vectorMap.put(id, vEntry);
 			}
+			VectorEntry entry = vectorMap.get(id);
+			for (int i = 0; i < 100; i++) {
+				line = br.readLine();
+				if (line == null || line.equals(""))
+					break;
+				String lineArray[] = line.split("\t");
+				Integer tmpID = entityDB.resolveName(lineArray[0]);
+				if (tmpID != null) {
+					entry.semSigVector[i] = tmpID;
+					entry.semSigCount[i] = Integer.parseInt(lineArray[1]);
+				} else {
+					i--; // skip this line
+				}
+			}
+
+			// include entity in its own signature
+			// entry.semSigVector[0] = id;
+			// if(entry.semSigCount[1] > 0) entry.semSigCount[0] =
+			// (int)Math.floor(entry.semSigCount[1] * 1.5);
+			// else entry.semSigCount[0] = 1;
+
+			while (line != null && !line.equals(""))
+				line = br.readLine();
 		}
 		
 		br.close();

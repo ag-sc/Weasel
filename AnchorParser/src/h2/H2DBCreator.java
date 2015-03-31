@@ -36,6 +36,8 @@ public class H2DBCreator {
         sql = "CREATE TABLE EntityId " +
               "(entity VARCHAR(MAX) not NULL, " +
               " id INTEGER AUTO_INCREMENT, " + 
+              " redirectTo INTEGER DEFAULT -1, " + 
+              " isDisambiguation BOOLEAN DEFAULT FALSE, " + 
               " SemanticSignature VARCHAR(MAX), " + 
               " PRIMARY KEY ( entity ))"; 
         stmt.executeUpdate(sql);

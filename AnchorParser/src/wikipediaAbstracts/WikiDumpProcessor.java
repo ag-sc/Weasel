@@ -70,7 +70,7 @@ public class WikiDumpProcessor {
 		        
 				public void process(WikiPage page) {
 
-					if(page.isRedirect() || page.isSpecialPage() || page.isDisambiguationPage()) return;
+//					if(page.isRedirect() || page.isSpecialPage() || page.isDisambiguationPage()) return;
 					
 					counter++;
 					if(counter % 100000 == 0){

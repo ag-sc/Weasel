@@ -1,6 +1,7 @@
 import h2.H2AnchorBuilder;
 import h2.H2DBCreator;
 import h2.H2PageLinksBuilder;
+import h2.H2RedirectsBuilder;
 import iniloader.IniLoader;
 import inmemory.MemoryDataContainerBuilderFromH2;
 import inmemory.SemSigComputation;
@@ -38,11 +39,11 @@ public class FullDataBuilder {
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.HOURS);
 		parseWikipediaAbstracts();
 		buildDocumentFrequencyFile();
-//		buildDatabase();
-//		buildInMemoryDBObject();
-//		buildSemanticSignature();
-//		buildVectorMap();
-//		buildPageRankArray();
+		buildDatabase();
+		buildInMemoryDBObject();
+		buildSemanticSignature();
+		buildVectorMap();
+		buildPageRankArray();
 		System.out.println("All done! Total time: " + sw.stop() + " hours");
 	} // main
 	
@@ -90,6 +91,7 @@ public class FullDataBuilder {
 		String anchorFilePath = config.getParameter("anchorFilePath");
 		String pageLinksFilePath = config.getParameter("pageLinksFilePath");
 		String stopWordsPath = config.getParameter("stopwordsPath");
+		String wikiDumpPath = config.getParameter("wikipediaDump");
 		
 		String path = h2Path + ".mv.db";
 		File f = new File(path);
@@ -114,11 +116,17 @@ public class FullDataBuilder {
         	H2PageLinksBuilder builder2 = new H2PageLinksBuilder(h2Path, pageLinksFilePath, "sa", "");
 			builder2.run();
 			
+			System.out.println("Build redirects & disambiguation part of DB.");
+			H2RedirectsBuilder builder3 = new H2RedirectsBuilder(h2Path, wikiDumpPath, "sa", "");
+			builder3.run();
+			
 			Class.forName("org.h2.Driver");
 			Connection connection = DriverManager.getConnection("jdbc:h2:" + h2Path, "sa", "");
 			
 			Statement stat = connection.createStatement();
-	        stat.execute("SHUTDOWN COMPACT");
+	        //stat.execute("SHUTDOWN COMPACT");
+			stat.execute("SHUTDOWN");
+	        connection.close();
 	        
 //			H2WeightBuilder weightBuilder = new H2WeightBuilder(dbPath, "sa", "");
 //			weightBuilder.run();
@@ -131,7 +139,6 @@ public class FullDataBuilder {
 	
 	private static void buildInMemoryDBObject(){
 		String h2Path = config.getParameter("H2Path");
-		String wikiDumpPath = config.getParameter("wikipediaDump");
 		String inMemoryDataContainerPath = config.getParameter("inMemoryDataContainerPath");
 		
 		if(!forceOverride){
@@ -143,7 +150,7 @@ public class FullDataBuilder {
 		
 		System.out.println("Build inMemoryDBContainer");
 		try {
-			MemoryDataContainerBuilderFromH2.run(h2Path, inMemoryDataContainerPath, wikiDumpPath);
+			MemoryDataContainerBuilderFromH2.run(h2Path, inMemoryDataContainerPath);
 		} catch (ClassNotFoundException | IOException | SQLException e) {
 			e.printStackTrace();
 			System.exit(-1);

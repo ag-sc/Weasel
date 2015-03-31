@@ -26,7 +26,7 @@ public class MemoryDataContainerBuilderFromH2 {
 	
 	static int abstractCounter = 0;
 
-	public static void run(String h2Connection, String inMemoryDataContainerPath, String wikiDumpPath) throws IOException, SQLException, ClassNotFoundException {
+	public static void run(String h2Connection, String inMemoryDataContainerPath) throws IOException, SQLException, ClassNotFoundException {
 		System.out.println("Starting inMemoryDataContainer creation...");
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		final Map<String, Integer> entityToID = new HashMap<String, Integer>();
@@ -72,22 +72,31 @@ public class MemoryDataContainerBuilderFromH2 {
 		
 		// entities
 		System.out.println("Work on all entities");
-		sql = "SELECT entity  FROM ENTITYID where id is (?)";
+		sql = "SELECT *  FROM ENTITYID where id is (?)";
 		idToEntity = new String[maxEntityID + 1];
+		final Map<Integer, Integer> redirects = new HashMap<Integer, Integer>();
+		final Set<Integer> disambiguations = new HashSet<Integer>();
 		for(int i = 1; i <= maxEntityID; i++){
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setInt(1, i);
 			preparedStatement.executeQuery();
 			ResultSet result = preparedStatement.getResultSet();
-			String tmp = null;
+			String entityName = null;
+			Integer redirect = null;
+			Boolean isDismabiguation = null;
 			while (result.next()) {
-				tmp = result.getString("ENTITY");
+				entityName = result.getString("ENTITY");
+				redirect = result.getInt("REDIRECTTO");
+				isDismabiguation  = result.getBoolean("ISDISAMBIGUATION");
 			}
-			idToEntity[i] = tmp;
-			entityToID.put(tmp, i);
+			idToEntity[i] = entityName;
+			entityToID.put(entityName, i);
+			if(redirect > -1) redirects.put(i, redirect);
+			if(isDismabiguation == true) disambiguations.add(i);
 			
 			if(i % 100000 == 0) System.out.println(i + " / " + maxEntityID);
 		}
+		System.out.println("Done. Number of redirects: " + redirects.size() + " - Number of disambiguations: " + disambiguations.size());
 		
 		// anchors
 		System.out.println("Work on all anchors");
@@ -140,48 +149,7 @@ public class MemoryDataContainerBuilderFromH2 {
 
 			if(i % 100000 == 0) System.out.println(i + " / " + maxAnchorID);
 		}
-		
-		// Find redirects and disambiguation pages.
-		System.out.println("Find all redirects and disambiguations.");
-		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(wikiDumpPath);
-		final Map<Integer, Integer> redirects = new HashMap<Integer, Integer>();
-		final Set<Integer> disambiguation = new HashSet<Integer>();
-		
-		try {
-			wxsp.setPageCallback(new PageCallbackHandler() {
-				public void process(WikiPage page) {
-					abstractCounter++;
-					if(abstractCounter % 1000000 == 0) System.out.println("Processed abstracts: " + abstractCounter);
-					//if(page.getTitle().trim().equals("Reuters Television")) System.out.println("Reuters Television");
-					if(page.isRedirect()){
-						//System.out.println("Is redirect: " + page.getTitle().trim() + " -> " + page.getRedirectPage());
-						
-						Integer redirect = entityToID.get(StringEncoder.encodeString(page.getTitle()));
-						Integer target = entityToID.get(StringEncoder.encodeString(page.getRedirectPage()));
-						
-						
-						if(redirect != null && target != null){
-							redirects.put(redirect, target);
-						}
-					}
-					else if (page.isDisambiguationPage()){
-						Integer disambiguationID = entityToID.get(StringEncoder.encodeString(page.getTitle()));
-						if(disambiguationID != null){
-							disambiguation.add(disambiguationID);
-						}
-					}
-				}
-			});
-			
-			wxsp.parse();
-		} catch (Exception e) {
-			System.out.println("Exception in Parse operations: ");
-			e.printStackTrace();
-		}
-		
-		connection.commit();
-		connection.close();
-		System.out.println("Done. Number of redirects: " + redirects.size() + " - Number of disambiguations: " + disambiguation.size());
+
 		
 		// Save data to file
 		System.out.println("Write data to file...");
@@ -192,7 +160,7 @@ public class MemoryDataContainerBuilderFromH2 {
 		data.idToEntity = idToEntity;
 		data.entityToID = entityToID;
 		data.redirects = redirects;
-		data.disambiguation = disambiguation;
+		data.disambiguation = disambiguations;
 		
 		try {
 			ObjectOutputStream out;
