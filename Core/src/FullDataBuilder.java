@@ -28,7 +28,7 @@ public class FullDataBuilder {
 
 	public static void main(String[] args) {
 		// load ini file
-		String filepath = "../config_testset.ini";
+		String filepath = "config.ini";
 		if(args.length == 1) filepath = args[0];
 		System.out.println("Using config file: " + filepath);
 		IniLoader iniLoader = new IniLoader();

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.nustaq.serialization.FSTObjectInput;
+
 import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
@@ -63,21 +65,22 @@ public class VectorEvaluation extends EvaluationEngine {
 			System.out.println("Done. Took " + sw.stop() + " minutes.");
 		}
 		
+		
 		sw.start();
 		// read document frequency object
 		if(df == null){
 			sw.start();
 			System.out.println("DocumentFrequencyObject not loaded yet. Loading now...");
 			
-			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
-			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-			df = (DocumentFrequency) objectReader.readObject();
-			objectReader.close();
-			
 //			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
-//			FSTObjectInput in = new FSTObjectInput(fileInputStream);
-//			df = (DocumentFrequency) in.readObject();
-//			in.close();
+//			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
+//			df = (DocumentFrequency) objectReader.readObject();
+//			objectReader.close();
+			
+			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
+			FSTObjectInput in = new FSTObjectInput(fileInputStream);
+			df = (DocumentFrequency) in.readObject();
+			in.close();
 			
 			fileInputStream.close();
 			System.out.println("Done. Took " + sw.stop() + " minutes.");

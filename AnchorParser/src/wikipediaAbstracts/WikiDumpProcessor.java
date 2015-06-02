@@ -22,6 +22,7 @@ import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
 import org.xml.sax.InputSource;
 
 import configuration.Config;
+import configuration.DebugFileWriter;
 import datatypes.StringEncoder;
 import stopwatch.Stopwatch;
 import edu.jhu.nlp.wikipedia.PageCallbackHandler;
@@ -38,6 +39,8 @@ public class WikiDumpProcessor {
 	static Stopwatch sw;
 	static boolean useURLEncoding = false;
 	
+	static BufferedWriter debugFW;
+	
 	public static void run(String outputFilePath, String inputFilePath) throws IOException {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
 //		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser("enwiki-latest-pages-articles.xml");
@@ -50,6 +53,8 @@ public class WikiDumpProcessor {
 		
 		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(inputFilePath);
 		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath), "UTF8"));
+		
+		debugFW = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("debugFile.txt"), "UTF8"));
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.MINUTES);
@@ -77,7 +82,8 @@ public class WikiDumpProcessor {
 						System.out.println(counter + "\t- time: " + sw.stop() + " s");
 						sw.start();
 					}
-					//if(counter > 400) return;
+					//if(counter < 4400000) return;
+					
 					String textAbstract = page.getWikiText();
 					//System.out.println(textAbstract);
 					String tmpArray[] = textAbstract.split("==");
@@ -88,8 +94,28 @@ public class WikiDumpProcessor {
 		            //builder.setEncoding("ISO-8859-15");
 		            //System.out.println(builder.getEncoding());
 		            
-		            MarkupParser parser = new MarkupParser(language, builder);
-		            parser.parse(textAbstract);
+		            MarkupParser parser = new MarkupParser(language, builder);		            
+		            
+		            String titleTmp = page.getTitle().trim().toLowerCase();
+		            if(titleTmp.contains("wikiproject")){
+		            	System.out.println("Potentially dangerous abstract: '" + titleTmp + "'. Skip.");
+		            	return;
+		            }
+		            try {
+						debugFW.write("Current Abstract: " + titleTmp + " (number: " + counter + ")\n");
+						debugFW.flush();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+		            
+		            try{
+		            	parser.parse(textAbstract);
+		            }catch(OutOfMemoryError oome){
+		            	System.out.println("Abstract crashed Mylyn. Skipping. id: " + counter + " - size: " + textAbstract.length() + " - name: " + page.getTitle().trim());
+		            	return;
+		            }
+		            
 		            
 		            final String html = writer.toString();
 		            //System.out.println(html);

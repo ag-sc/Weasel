@@ -11,7 +11,12 @@ public class StringEncoder {
 
 	public static String encodeString(String title){
 		try {
-			title = URLDecoder.decode(title, "UTF-8");
+			try{
+				title = URLDecoder.decode(title, "UTF-8");
+			}catch (IllegalArgumentException e){
+				// The title probably contained a '%' sign that didn't specify a URL character code. Oh well, just ignore it then.
+			}
+			
 			title = title.trim().replace(" ", "_").toLowerCase();
 			title = URLEncoder.encode(title, "UTF-8");
 		} catch (UnsupportedEncodingException e) {

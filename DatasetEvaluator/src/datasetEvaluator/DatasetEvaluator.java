@@ -45,6 +45,12 @@ public class DatasetEvaluator {
 				String entity = f.getOriginEntity();
 				String candidate = f.getEntity();
 
+				if(entity == null){
+					System.err.println("Entity is null for originword: " + f.originWord);
+					System.out.println("Entity is null for originword: " + f.originWord);
+					continue;
+				}
+				
 				if (entity.length() != 0) {
 					if (f != null) {
 						Integer id = checkupConnector.resolveName(entity);
@@ -65,16 +71,24 @@ public class DatasetEvaluator {
 					
 					if(countRedirectsAsCorrect){
 						Integer redirectCandidate = checkupConnector.getRedirect(checkupConnector.resolveName(candidate));
-						if(redirectCandidate >= 0) candidate = checkupConnector.resolveID(redirectCandidate.toString());
+						if(redirectCandidate >= 0){
+							String tmp = checkupConnector.resolveID(redirectCandidate.toString());
+							if(tmp != null) candidate = tmp;
+						}
 						
 //						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(TitleEncoder.encodeTitle(entity)));
 						Integer redirectEntity = checkupConnector.getRedirect(checkupConnector.resolveName(entity));
-						if(redirectEntity >= 0) entity = checkupConnector.resolveID(redirectEntity.toString());
+						if(redirectEntity >= 0){
+							String tmp = checkupConnector.resolveID(redirectEntity.toString());
+							if(tmp != null) entity = tmp;
+						}
 //						if(redirectCandidate >= 0 || redirectEntity >= 0)
 //							System.out.println("Redirects found for next line.");
 					}
 					
-					if (entity.equalsIgnoreCase(candidate)) {
+					if(entity == null || candidate == null){
+						System.err.println("Candidate or entity null: " + candidate + " - " + entity);
+					}else if (entity.equalsIgnoreCase(candidate)) {
 						correctEntities++;
 						System.out.println(correctEntities + ": " + f.originWord + " -> " + candidate);
 					}else{
