@@ -1,5 +1,8 @@
 package configuration;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -8,6 +11,7 @@ import java.util.Properties;
 public class Config {
 	
 		private Map<String, String> parameters;
+		private BufferedWriter arffWriter;
 		
         // Private constructor. Prevents instantiation from other classes.
         private Config() {
@@ -37,5 +41,18 @@ public class Config {
         
         public void setParameter(String key, String value){
         	parameters.put(key, value);
+        }
+        
+        public void instanciateArffWriter(String fileName){
+        	try {
+				arffWriter = new BufferedWriter(new FileWriter(fileName));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        
+        public BufferedWriter getArffWriter(){
+        	return arffWriter;
         }
 }

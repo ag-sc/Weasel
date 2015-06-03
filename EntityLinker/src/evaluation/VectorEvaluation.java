@@ -1,8 +1,11 @@
 package evaluation;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +44,7 @@ public class VectorEvaluation extends EvaluationEngine {
 
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 		// read vectorMap object
-		if(vectorMap == null){
+		if (vectorMap == null) {
 			sw.start();
 			FileInputStream fileInputStream = new FileInputStream(vectorMapFilePath);
 			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
@@ -51,9 +54,9 @@ public class VectorEvaluation extends EvaluationEngine {
 			fileInputStream.close();
 			System.out.println("Done. Took " + sw.stop() + " minutes.");
 		}
-		
+
 		// read pageRank object
-		if(pageRankArray == null){
+		if (pageRankArray == null) {
 			sw.start();
 			System.out.println("PageRank not loaded yet. Loading now...");
 			String pageRankArrayPath = Config.getInstance().getParameter("pageRankArrayPath");
@@ -64,28 +67,29 @@ public class VectorEvaluation extends EvaluationEngine {
 			fileInputStream.close();
 			System.out.println("Done. Took " + sw.stop() + " minutes.");
 		}
-		
-		
+
 		sw.start();
 		// read document frequency object
-		if(df == null){
+		if (df == null) {
 			sw.start();
 			System.out.println("DocumentFrequencyObject not loaded yet. Loading now...");
-			
-//			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
-//			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-//			df = (DocumentFrequency) objectReader.readObject();
-//			objectReader.close();
-			
+
+			// FileInputStream fileInputStream = new
+			// FileInputStream(dfFilePath);
+			// ObjectInputStream objectReader = new
+			// ObjectInputStream(fileInputStream);
+			// df = (DocumentFrequency) objectReader.readObject();
+			// objectReader.close();
+
 			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
 			FSTObjectInput in = new FSTObjectInput(fileInputStream);
 			df = (DocumentFrequency) in.readObject();
 			in.close();
-			
+
 			fileInputStream.close();
 			System.out.println("Done. Took " + sw.stop() + " minutes.");
 		}
-		
+
 		Config config = Config.getInstance();
 		lambda = Double.parseDouble(config.getParameter("vector_evaluation_lamda"));
 		pageRankWeight = Double.parseDouble(config.getParameter("vector_evaluation_pageRankWeight"));
@@ -112,6 +116,7 @@ public class VectorEvaluation extends EvaluationEngine {
 
 	@Override
 	public void evaluate(AnnotatedSentence annotatedSentence) {
+		Config config = Config.getInstance();
 
 		// TFIDF computation for input sentence
 		LinkedList<TFIDFResult> resultList = TFIDF.compute(annotatedSentence.getSentence(), df);
@@ -134,15 +139,17 @@ public class VectorEvaluation extends EvaluationEngine {
 		tfidfMagnitude = Math.sqrt(tfidfMagnitude);
 
 		// prepare candidate vector
-//		Map<String, Integer> candidateCountMap = new HashMap<String, Integer>();
-//		for (Fragment fragment : fragmentList) {
-//			for (Candidate candidate : fragment.getCandidates()) {
-//				if (candidateCountMap.containsKey(candidate.getEntity())) {
-//					candidateCountMap.put(candidate.getEntity(), candidateCountMap.get(candidate.getEntity()) + 1);
-//				} else {
-//					candidateCountMap.put(candidate.getEntity(), 1);
-//				}
-//			}
+		// Map<String, Integer> candidateCountMap = new HashMap<String,
+		// Integer>();
+		// for (Fragment fragment : fragmentList) {
+		// for (Candidate candidate : fragment.getCandidates()) {
+		// if (candidateCountMap.containsKey(candidate.getEntity())) {
+		// candidateCountMap.put(candidate.getEntity(),
+		// candidateCountMap.get(candidate.getEntity()) + 1);
+		// } else {
+		// candidateCountMap.put(candidate.getEntity(), 1);
+		// }
+		// }
 		Map<Integer, Integer> foundEntitiesMap = annotatedSentence.getFoundEntities();
 		double candidateMagnitude = 0.0;
 		for (Integer i : foundEntitiesMap.values()) {
@@ -160,10 +167,10 @@ public class VectorEvaluation extends EvaluationEngine {
 		double maxCandidateScore = 0.0;
 		double maxTFIDFScore = 0.0;
 		double maxCandidateReferences = 0.0;
-//		String sentence = " ";
-//		for (String substring : annotatedSentence.wordArray)
-//			sentence += substring + " ";
-		//sentence = sentence.toLowerCase();
+		// String sentence = " ";
+		// for (String substring : annotatedSentence.wordArray)
+		// sentence += substring + " ";
+		// sentence = sentence.toLowerCase();
 
 		List<Fragment> fragmentList = annotatedSentence.getFragmentList();
 		for (Fragment fragment : fragmentList) {
@@ -173,13 +180,13 @@ public class VectorEvaluation extends EvaluationEngine {
 				// Find candidate
 				int candidateID = Integer.parseInt(candidate.getEntity());
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
-				
-				if(fragment.originWord.equals("Reuters Television")){
+
+				if (fragment.originWord.equals("Reuters Television")) {
 					System.out.println("word: " + candidate.getEntity());
 					System.out.println("id: " + candidateID + " - vectormap size: " + vectorMap.size());
 					System.out.println(candidateEntry);
 				}
-				
+
 				if (candidateEntry == null) {
 					// System.out.println(h2.resolveID(candidate) +
 					// " not found in bigMap!");
@@ -245,97 +252,166 @@ public class VectorEvaluation extends EvaluationEngine {
 		}
 
 		// Pick best after normalization
-//		try {
-//			BufferedWriter fw = new BufferedWriter(new FileWriter("vector_evaluation_evaluation.txt"));
-			double tmp1 = (1 - lambda);
-			double tmp2 = (1 - pageRankWeight);
-			
-//			System.err.println(lambda + " - " + tmp1 + " --- " + pageRankWeight + " -" + tmp2);
+		// try {
+		// BufferedWriter fw = new BufferedWriter(new
+		// FileWriter("vector_evaluation_evaluation.txt"));
+		double tmp1 = (1 - lambda);
+		double tmp2 = (1 - pageRankWeight);
 
-			for (Fragment fragment : fragmentList) {
-//				fw.write(fragment.originWord + "\n");
-				double bestScore = 0;
-				String bestCandidate = "";
-				for (Candidate candidate : fragment.getCandidates()) {
-					Double[] tmp = scoreMap.get(candidate.getEntity());
-					if (tmp == null)
-						continue;
-					candidateVectorAverage += (tmp[0] / maxCandidateScore);
-					tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
-					if (Double.isNaN(tfidfVectorAverage))
-						System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
+		// System.err.println(lambda + " - " + tmp1 + " --- " + pageRankWeight +
+		// " -" + tmp2);
 
-					double candidateReferenceFrequency = (candidate.count / maxCandidateReferences);
-					double candidateVectorScore = (tmp[0] / maxCandidateScore);
-					double tfidfScore = (tmp[1] / maxTFIDFScore);
-					
-//					double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
-					
-					
-					
-//					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
-//							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
-
-					//3
-					//double candidateScore = (1 - pageRankWeight) * candidateReferenceFrequency + pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())];
-					
-					//4
-					//double candidateScore = lambda * candidateVectorScore + (1 - lambda) * tfidfScore;
-					//double candidateScore = candidateReferenceFrequency * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 5
-					//double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())] * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 6
-					//double candidateScore = pageRankArray[Integer.parseInt(candidate.getEntity())] + (lambda * candidateVectorScore + (1 - lambda) * tfidfScore); // 7
-					
-					// 8
-//					double candidateScore = candidateReferenceFrequency *  (lambda * candidateVectorScore + tmp1 * tfidfScore) * tmp2
-//							+ pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] ;
-					
-					// 9
-//					double candidateScore = (lambda * candidateVectorScore + (1- lambda) * tfidfScore) * 
-//							(pageRankWeight * pageRankArray[Integer.parseInt(candidate.getEntity())] + candidateReferenceFrequency * (1 - pageRankWeight));
-					
-					// 10
-//					double candidateScore = Math.sqrt(candidateReferenceFrequency) * (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
-					
-					// 11
-					//double candidateScore = (1 - pageRankWeight) * Math.sqrt(candidateReferenceFrequency) + pageRankWeight * Math.sqrt(pageRankArray[Integer.parseInt(candidate.getEntity())]);
-
-					// 13
-					//double candidateScore = lambda * Math.sqrt(candidateVectorScore) + (1 - lambda) * Math.sqrt(tfidfScore);
-					
-					// 14
-					double candidateScore = (lambda * Math.sqrt(candidateVectorScore) + (1- lambda) * Math.sqrt(tfidfScore)) * 
-					(pageRankWeight * Math.sqrt(pageRankArray[Integer.parseInt(candidate.getEntity())]) + Math.sqrt(candidateReferenceFrequency) * (1 - pageRankWeight));
-
-					
-//					fw.write("reference factor: " + (candidate.count / maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] / maxCandidateScore)
-//							+ "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
-//					fw.write("\t" + dbConnector.resolveID(candidate.getEntity()) + "\t" + "pagerank: " + pageRankArray[Integer.parseInt(candidate.getEntity())] + "\n");
-					if (candidateScore > bestScore) {
-						bestScore = candidateScore;
-						bestCandidate = candidate.getEntity();
-					}
-//					if(fragment.originWord.equals("Reuters Television")){
-//						System.out.println("score " + candidate.getEntity() + " "+ candidateScore);
-//					}
+		for (Fragment fragment : fragmentList) {
+			// .arff file data generation
+			boolean eligibleForARFF = false;
+			Integer tmpID = dbConnector.resolveName(fragment.getOriginEntity());
+			Candidate incorrect = null;
+			Candidate correct = null;
+			if (tmpID != null) {
+				TreeSet<Candidate> candidates = fragment.getCandidates();
+				correct = new Candidate(tmpID.toString(), 0);
+				if (candidates.contains(correct) && candidates.size() > 1) {
+					eligibleForARFF = true;
+					ArrayList<Candidate> al = new ArrayList<Candidate>(candidates);
+					do{
+						int index = (int) Math.floor(Math.random() * al.size());
+						incorrect = al.get(index);
+					}while(incorrect.getEntity().equals(correct.getEntity()));
+					Double[] tmpMap1 = scoreMap.get(correct.getEntity());
+					Double[] tmpMap2 = scoreMap.get(incorrect.getEntity());
+					if(tmpMap1 == null || tmpMap2 == null) eligibleForARFF = false;
 				}
-				if (bestScore > 0) {
-					fragment.setEntity(dbConnector.resolveID(bestCandidate));
-//					System.out.println("best candidate: " + bestCandidate + " -> " + fragment.getEntity());
-					fragment.probability = bestScore;
-				}
-//				fw.write("\n");
 			}
-//			fw.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
+			// fw.write(fragment.originWord + "\n");
+			double bestScore = 0;
+			String bestCandidate = "";
+			for (Candidate candidate : fragment.getCandidates()) {
+				Double[] tmp = scoreMap.get(candidate.getEntity());
+				if (tmp == null)
+					continue;
+				candidateVectorAverage += (tmp[0] / maxCandidateScore);
+				tfidfVectorAverage += (tmp[1] / maxTFIDFScore);
+				if (Double.isNaN(tfidfVectorAverage))
+					System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
+
+				double candidateReferenceFrequency = (candidate.count / maxCandidateReferences);
+				double candidateVectorScore = (tmp[0] / maxCandidateScore);
+				double tfidfScore = (tmp[1] / maxTFIDFScore);
+
+				// double candidateScore = candidateReferenceFrequency * (lambda
+				// * candidateVectorScore + (1 - lambda) * tfidfScore);
+
+				// double candidateScore = candidateReferenceFrequency * (lambda
+				// * candidateVectorScore + tmp1 * tfidfScore) * tmp2
+				// + pageRankWeight *
+				// pageRankArray[Integer.parseInt(candidate.getEntity())] ;
+
+				// 3
+				// double candidateScore = (1 - pageRankWeight) *
+				// candidateReferenceFrequency + pageRankWeight *
+				// pageRankArray[Integer.parseInt(candidate.getEntity())];
+
+				// 4
+				// double candidateScore = lambda * candidateVectorScore + (1 -
+				// lambda) * tfidfScore;
+				// double candidateScore = candidateReferenceFrequency * (lambda
+				// * candidateVectorScore + (1 - lambda) * tfidfScore); // 5
+				// double candidateScore =
+				// pageRankArray[Integer.parseInt(candidate.getEntity())] *
+				// (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
+				// // 6
+				// double candidateScore =
+				// pageRankArray[Integer.parseInt(candidate.getEntity())] +
+				// (lambda * candidateVectorScore + (1 - lambda) * tfidfScore);
+				// // 7
+
+				// 8
+				// double candidateScore = candidateReferenceFrequency * (lambda
+				// * candidateVectorScore + tmp1 * tfidfScore) * tmp2
+				// + pageRankWeight *
+				// pageRankArray[Integer.parseInt(candidate.getEntity())] ;
+
+				// 9
+				// double candidateScore = (lambda * candidateVectorScore + (1-
+				// lambda) * tfidfScore) *
+				// (pageRankWeight *
+				// pageRankArray[Integer.parseInt(candidate.getEntity())] +
+				// candidateReferenceFrequency * (1 - pageRankWeight));
+
+				// 10
+				// double candidateScore =
+				// Math.sqrt(candidateReferenceFrequency) * (lambda *
+				// candidateVectorScore + (1 - lambda) * tfidfScore);
+
+				// 11
+				// double candidateScore = (1 - pageRankWeight) *
+				// Math.sqrt(candidateReferenceFrequency) + pageRankWeight *
+				// Math.sqrt(pageRankArray[Integer.parseInt(candidate.getEntity())]);
+
+				// 13
+				// double candidateScore = lambda *
+				// Math.sqrt(candidateVectorScore) + (1 - lambda) *
+				// Math.sqrt(tfidfScore);
+
+				// 14
+				double candidateScore = (lambda * Math.sqrt(candidateVectorScore) + (1 - lambda) * Math.sqrt(tfidfScore))
+						* (pageRankWeight * Math.sqrt(pageRankArray[Integer.parseInt(candidate.getEntity())]) + Math.sqrt(candidateReferenceFrequency)
+								* (1 - pageRankWeight));
+
+				if (eligibleForARFF) {
+					BufferedWriter fw = config.getArffWriter();
+					try {
+						if (candidate.getEntity().equals(correct.getEntity())) {
+							fw.write(candidateVectorScore + "," + tfidfScore + "," + pageRankArray[Integer.parseInt(candidate.getEntity())] + ","
+									+ candidateReferenceFrequency + ",1\n");
+						} else if (candidate.getEntity().equals(incorrect.getEntity())) {
+							fw.write(candidateVectorScore + "," + tfidfScore + "," + pageRankArray[Integer.parseInt(candidate.getEntity())] + ","
+									+ candidateReferenceFrequency + ",0\n");
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+				// fw.write("reference factor: " + (candidate.count /
+				// maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] /
+				// maxCandidateScore)
+				// + "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
+				// fw.write("\t" + dbConnector.resolveID(candidate.getEntity())
+				// + "\t" + "pagerank: " +
+				// pageRankArray[Integer.parseInt(candidate.getEntity())] +
+				// "\n");
+				if (candidateScore > bestScore) {
+					bestScore = candidateScore;
+					bestCandidate = candidate.getEntity();
+				}
+				// if(fragment.originWord.equals("Reuters Television")){
+				// System.out.println("score " + candidate.getEntity() + " "+
+				// candidateScore);
+				// }
+			}
+			if (bestScore > 0) {
+				fragment.setEntity(dbConnector.resolveID(bestCandidate));
+				// System.out.println("best candidate: " + bestCandidate +
+				// " -> " + fragment.getEntity());
+				fragment.probability = bestScore;
+			}
+			// fw.write("\n");
+		}
+		// fw.close();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		annotatedSentence.assign(0);
 
-//		System.out.println("candidate vector average: " + (candidateVectorAverage / count));
-//		System.out.println("tfidf vector average:     " + (tfidfVectorAverage / count));
+		// System.out.println("candidate vector average: " +
+		// (candidateVectorAverage / count));
+		// System.out.println("tfidf vector average:     " + (tfidfVectorAverage
+		// / count));
 
 	}
-
 }

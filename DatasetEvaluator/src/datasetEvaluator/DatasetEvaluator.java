@@ -54,10 +54,11 @@ public class DatasetEvaluator {
 				if (entity.length() != 0) {
 					if (f != null) {
 						Integer id = checkupConnector.resolveName(entity);
-						if (id != null && f.containsEntity(id.toString()))
+						if (id != null && f.containsEntity(id.toString())){
 							numberOfCorrectCandidates++;	
-						else 
+						}else {
 							System.err.println("No correct candidate for '" + f.originWord + " -> " + entity + "'");
+						}
 					}
 
 					if (checkupConnector.entityExists(entity)) {

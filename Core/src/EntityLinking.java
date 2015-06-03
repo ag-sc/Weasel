@@ -1,15 +1,24 @@
 import iniloader.IniLoader;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
+import weka.classifiers.Classifier;
+import weka.classifiers.functions.LibSVM;
+import weka.core.Instances;
 import configuration.Config;
 import datasetEvaluator.DatasetEvaluatorSandbox;
 
 
 public class EntityLinking {
 
+	static String pathToARFF = "entityLinking.arff";
+	
 	public EntityLinking() {
 		// TODO Auto-generated constructor stub
 	}
@@ -22,7 +31,32 @@ public class EntityLinking {
 		iniLoader.parse(filepath);
 		double result = 0;
 		
+		Config config = Config.getInstance();
+		config.instanciateArffWriter(pathToARFF);
+		BufferedWriter fw = config.getArffWriter();
+		try {
+			fw.write("@RELATION entityLinking\n\n");
+			fw.write("@ATTRIBUTE candidateVectorScore\tNUMERIC\n");
+			fw.write("@ATTRIBUTE tfidfScore\tNUMERIC\n");
+			fw.write("@ATTRIBUTE pageRank\tNUMERIC\n");
+			fw.write("@ATTRIBUTE candidateReferenceFrequency\tNUMERIC\n");
+			fw.write("@ATTRIBUTE class\t{0, 1}\n\n");
+			fw.write("@DATA\n");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		result = DatasetEvaluatorSandbox.evaluate();
+		try {
+			fw.close();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 //		try {
 //			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_results.txt"));

@@ -99,10 +99,10 @@ public class EntityLinker {
 //					System.out.println("disambiguation: " + anchors.resolveID(id.toString()));
 //				}
 			}
-			if(f.originWord.equals("reuters_television")){
-				  System.out.println("reuters id: " + anchors.resolveName(f.originWord));
-				  for(String s: cleanedList) System.out.println(" " + s);
-			 }
+//			if(f.originWord.equals("reuters_television")){
+//				  System.out.println("reuters id: " + anchors.resolveName(f.originWord));
+//				  for(String s: cleanedList) System.out.println(" " + s);
+//			}
 			f.addCandidateStrings(cleanedList);
 
 			// find entities for candidate vector score computation in vector
