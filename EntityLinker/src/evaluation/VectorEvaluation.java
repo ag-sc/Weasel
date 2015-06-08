@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,11 @@ import configuration.Config;
 import stopwatch.Stopwatch;
 import tfidf.DocumentFrequency;
 import tfidf.TFIDF;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
 import databaseConnectors.DatabaseConnector;
 import datatypes.TFIDFResult;
 import datatypes.VectorEntry;
@@ -262,29 +268,58 @@ public class VectorEvaluation extends EvaluationEngine {
 		// " -" + tmp2);
 
 		for (Fragment fragment : fragmentList) {
+			
 			// .arff file data generation
 			boolean eligibleForARFF = false;
 			Integer tmpID = dbConnector.resolveName(fragment.getOriginEntity());
-			Candidate incorrect = null;
+			int numberOfIncorrectExamples = Integer.parseInt(config.getParameter("incorrecExamplesPerCorrect"));
+			TreeSet<String> incorrectSet = new TreeSet<String>();
 			Candidate correct = null;
 			if (tmpID != null) {
 				TreeSet<Candidate> candidates = fragment.getCandidates();
 				correct = new Candidate(tmpID.toString(), 0);
-				if (candidates.contains(correct) && candidates.size() > 1) {
+				if (candidates.contains(correct) && candidates.size() > numberOfIncorrectExamples) {
 					eligibleForARFF = true;
-					ArrayList<Candidate> al = new ArrayList<Candidate>(candidates);
-					do{
-						int index = (int) Math.floor(Math.random() * al.size());
-						incorrect = al.get(index);
-					}while(incorrect.getEntity().equals(correct.getEntity()));
+					LinkedList<Candidate> candidateList = new LinkedList<Candidate>(candidates);
+					
+//					do {
+//						int index = (int) Math.floor(Math.random() * al.size());
+//						incorrect = al.get(index);
+//					} while (incorrect.getEntity().equals(correct.getEntity()));
+					Collections.shuffle(candidateList);
+					for(int i = 0; i < numberOfIncorrectExamples; i++){
+						Candidate tmp = candidateList.pop();
+						if(tmp.getEntity().equals(correct.getEntity())){
+							i--;
+						}else{
+							incorrectSet.add(tmp.getEntity());
+						}
+					}
+					
 					Double[] tmpMap1 = scoreMap.get(correct.getEntity());
-					Double[] tmpMap2 = scoreMap.get(incorrect.getEntity());
-					if(tmpMap1 == null || tmpMap2 == null) eligibleForARFF = false;
+					if (tmpMap1 == null)
+						eligibleForARFF = false;
+					for(String c: incorrectSet){
+						Double[] tmpMap2 = scoreMap.get(c);
+						if (tmpMap2 == null)
+							eligibleForARFF = false;
+					}
+					
 				}
+//				if(eligibleForARFF){
+//					BufferedWriter fw2 = config.getArffWriter();
+//					try {
+//						fw2.write("\n");	
+//					} catch (IOException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//				}
 			}
 
 			// fw.write(fragment.originWord + "\n");
 			double bestScore = 0;
+			double smoScore = 99999;
 			String bestCandidate = "";
 			for (Candidate candidate : fragment.getCandidates()) {
 				Double[] tmp = scoreMap.get(candidate.getEntity());
@@ -359,13 +394,13 @@ public class VectorEvaluation extends EvaluationEngine {
 						* (pageRankWeight * Math.sqrt(pageRankArray[Integer.parseInt(candidate.getEntity())]) + Math.sqrt(candidateReferenceFrequency)
 								* (1 - pageRankWeight));
 
-				if (eligibleForARFF) {
+				if (eligibleForARFF && config.getParameter("wekaModelStatus").equals("train")) {
 					BufferedWriter fw = config.getArffWriter();
 					try {
 						if (candidate.getEntity().equals(correct.getEntity())) {
 							fw.write(candidateVectorScore + "," + tfidfScore + "," + pageRankArray[Integer.parseInt(candidate.getEntity())] + ","
 									+ candidateReferenceFrequency + ",1\n");
-						} else if (candidate.getEntity().equals(incorrect.getEntity())) {
+						} else if (incorrectSet.contains(candidate.getEntity())) {
 							fw.write(candidateVectorScore + "," + tfidfScore + "," + pageRankArray[Integer.parseInt(candidate.getEntity())] + ","
 									+ candidateReferenceFrequency + ",0\n");
 						}
@@ -375,29 +410,64 @@ public class VectorEvaluation extends EvaluationEngine {
 					}
 				}
 
-				// fw.write("reference factor: " + (candidate.count /
-				// maxCandidateReferences) + "\tcandidateScore: " + (tmp[0] /
-				// maxCandidateScore)
-				// + "\ttfidfScore:" + (tmp[1] / maxTFIDFScore) + "\n");
-				// fw.write("\t" + dbConnector.resolveID(candidate.getEntity())
-				// + "\t" + "pagerank: " +
-				// pageRankArray[Integer.parseInt(candidate.getEntity())] +
-				// "\n");
-				if (candidateScore > bestScore) {
-					bestScore = candidateScore;
-					bestCandidate = candidate.getEntity();
+				Attribute Attribute1 = new Attribute("candidateVectorScore");
+				Attribute Attribute2 = new Attribute("tfidfScore");
+				Attribute Attribute3 = new Attribute("pageRank");
+				Attribute Attribute4 = new Attribute("candidateReferenceFrequency");
+				FastVector fvClassVal = new FastVector(2);
+				fvClassVal.addElement("0");
+				fvClassVal.addElement("1");
+				Attribute ClassAttribute = new Attribute("class", fvClassVal);
+				FastVector fvWekaAttributes = new FastVector(5);
+				fvWekaAttributes.addElement(Attribute1);
+				fvWekaAttributes.addElement(Attribute2);
+				fvWekaAttributes.addElement(Attribute3);
+				fvWekaAttributes.addElement(Attribute4);
+				fvWekaAttributes.addElement(ClassAttribute);
+
+				Instance ins = new DenseInstance(5);
+				ins.setValue(0, candidateVectorScore);
+				ins.setValue(1, tfidfScore);
+				ins.setValue(2, pageRankArray[Integer.parseInt(candidate.getEntity())]);
+				ins.setValue(3, candidateReferenceFrequency);
+
+				Instances dataUnlabeled = new Instances("TestInstances", fvWekaAttributes, 0);
+				dataUnlabeled.add(ins);
+				dataUnlabeled.setClassIndex(dataUnlabeled.numAttributes() - 1);
+
+				try {
+					if (config.cls != null) {
+						//double instanceClass = config.cls.classifyInstance(dataUnlabeled.firstInstance());
+						double[] values = config.cls.distributionForInstance(dataUnlabeled.firstInstance());
+						// if(instanceClass == 1.0)
+						// System.out.println("Value for " +
+						// dbConnector.resolveID(candidate.getEntity()) + ": " +
+						// instanceClass + " - " + values[0]);
+						if (values[0] < smoScore) {
+							smoScore = values[0];
+							bestScore = values[1];
+							bestCandidate = candidate.getEntity();
+							fragment.setEntity(dbConnector.resolveID(bestCandidate));
+							fragment.probability = 1.0 - smoScore;
+						}
+					}
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				// if(fragment.originWord.equals("Reuters Television")){
-				// System.out.println("score " + candidate.getEntity() + " "+
-				// candidateScore);
+
+				// if (candidateScore > bestScore) {
+				// bestScore = candidateScore;
+				// bestCandidate = candidate.getEntity();
 				// }
 			}
-			if (bestScore > 0) {
-				fragment.setEntity(dbConnector.resolveID(bestCandidate));
-				// System.out.println("best candidate: " + bestCandidate +
-				// " -> " + fragment.getEntity());
-				fragment.probability = bestScore;
-			}
+			// if (bestScore > 0) {
+			// fragment.setEntity(dbConnector.resolveID(bestCandidate));
+			// // System.out.println("best candidate: " + bestCandidate +
+			// // " -> " + fragment.getEntity());
+			// fragment.probability = bestScore;
+			// }
 			// fw.write("\n");
 		}
 		// fw.close();

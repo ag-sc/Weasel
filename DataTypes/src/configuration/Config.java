@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import weka.classifiers.Classifier;
+
 
 public class Config {
 	
 		private Map<String, String> parameters;
 		private BufferedWriter arffWriter;
+		public Classifier cls = null;
 		
         // Private constructor. Prevents instantiation from other classes.
         private Config() {

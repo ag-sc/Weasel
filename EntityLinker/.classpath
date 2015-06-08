@@ -11,5 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/DatabaseBuilder"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataTypes"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aho-corasick-master"/>
+	<classpathentry kind="lib" path="E:/Master Project/Weka 3_7/Weka-3-7/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
