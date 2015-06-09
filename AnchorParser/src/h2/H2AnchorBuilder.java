@@ -3,6 +3,7 @@ package h2;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
@@ -24,17 +25,22 @@ public class H2AnchorBuilder extends H2BuilderCore{
 	public void run() throws Exception {
 		long timeStart = System.nanoTime();
 		int lineCounter = 0;
+		int totalNumberOfAnchorReferences = 0;
 		String triplet[];
 		String searchQuery, insertQuery, updateQuery;
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 
-//		int johnCounter = 0;
-//		int johnLength = 0;
-//		CountingMap cm = new CountingMap();
 		Class.forName("org.h2.Driver");
 		Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath + ";LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0", username, password);
 		while ((triplet = anchorParser.parseTriplet()) != null) {
 			lineCounter++;
+			try{
+			totalNumberOfAnchorReferences += Integer.parseInt(triplet[2]);
+			}catch(Exception e){
+				System.err.println("Error parsing number of anchor references for:" + triplet[0] + " - " + triplet[1]);
+				e.printStackTrace();
+				continue;
+			}
 			
 			searchQuery = "SELECT ID FROM ANCHORID WHERE ANCHOR IS (?)";
 			insertQuery = "INSERT INTO AnchorId(anchor) VALUES (?)";
@@ -56,6 +62,10 @@ public class H2AnchorBuilder extends H2BuilderCore{
 			}
 				
 		}
+		
+		Statement stmt = connection.createStatement();
+		String sql_tmp = "INSERT INTO MetaInfo(TOTALNUMBEROFANCHORREFERENCES) VALUES (" + totalNumberOfAnchorReferences + ")";
+		stmt.executeUpdate(sql_tmp);
 
 		// create indices		
 		System.out.println("Create index for AnchorId...");

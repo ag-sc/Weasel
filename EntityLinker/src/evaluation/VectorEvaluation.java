@@ -172,7 +172,7 @@ public class VectorEvaluation extends EvaluationEngine {
 		HashMap<String, Double[]> scoreMap = new HashMap<String, Double[]>();
 		double maxCandidateScore = 0.0;
 		double maxTFIDFScore = 0.0;
-		double maxCandidateReferences = 0.0;
+		//double maxCandidateReferences = 0.0;
 		// String sentence = " ";
 		// for (String substring : annotatedSentence.wordArray)
 		// sentence += substring + " ";
@@ -245,9 +245,9 @@ public class VectorEvaluation extends EvaluationEngine {
 				// normalizing
 				Double tmpArray[] = { candidateVectorScore, tfidfVectorScore };
 				scoreMap.put(candidate.getEntity(), tmpArray);
-				if (candidate.count > maxCandidateReferences) {
-					maxCandidateReferences = candidate.count;
-				}
+//				if (candidate.count > maxCandidateReferences) {
+//					maxCandidateReferences = candidate.count;
+//				}
 				if (candidateVectorScore > maxCandidateScore)
 					maxCandidateScore = candidateVectorScore;
 				if (tfidfVectorScore > maxTFIDFScore)
@@ -330,7 +330,7 @@ public class VectorEvaluation extends EvaluationEngine {
 				if (Double.isNaN(tfidfVectorAverage))
 					System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
-				double candidateReferenceFrequency = (candidate.count / maxCandidateReferences);
+				double candidateReferenceFrequency = ((double)candidate.count / (double)dbConnector.getTotalNumberOfReferences());
 				double candidateVectorScore = (tmp[0] / maxCandidateScore);
 				double tfidfScore = (tmp[1] / maxTFIDFScore);
 
@@ -407,6 +407,13 @@ public class VectorEvaluation extends EvaluationEngine {
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					}catch(Exception e){
+						System.err.println("Exception during:");
+						System.err.println(dbConnector.resolveID(candidate.getEntity()));
+						System.err.println(candidateVectorScore);
+						System.err.println(tfidfScore);
+						System.err.println(pageRankArray[Integer.parseInt(candidate.getEntity())]);
+						System.err.println(candidateReferenceFrequency);
 					}
 				}
 
@@ -436,7 +443,7 @@ public class VectorEvaluation extends EvaluationEngine {
 				dataUnlabeled.setClassIndex(dataUnlabeled.numAttributes() - 1);
 
 				try {
-					if (config.cls != null) {
+					if (config.cls != null && config.getParameter("evaluator").equals("vector")) {
 						//double instanceClass = config.cls.classifyInstance(dataUnlabeled.firstInstance());
 						double[] values = config.cls.distributionForInstance(dataUnlabeled.firstInstance());
 						// if(instanceClass == 1.0)

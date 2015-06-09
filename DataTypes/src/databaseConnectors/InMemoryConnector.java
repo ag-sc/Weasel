@@ -21,6 +21,7 @@ public class InMemoryConnector extends DatabaseConnector {
 	final Map<String, Integer> anchorID;
 	final int[][] anchorToCandidates;
 	final int[][] anchorToCandidatesCount;
+	int totalNumberOfCandidateReferences;
 	
 	InMemoryConnector(String inMemoryDataContainerFilePath) throws ClassNotFoundException, IOException {
 		FileInputStream fileInputStream = new FileInputStream(inMemoryDataContainerFilePath);
@@ -35,6 +36,7 @@ public class InMemoryConnector extends DatabaseConnector {
 		anchorToCandidatesCount = container.anchorToCandidatesCount;
 		redirects = container.redirects;
 		disambiguation = container.disambiguation;
+		totalNumberOfCandidateReferences = container.totalNumberOfCandidateReferences;
 	}
 
 	@Override
@@ -93,6 +95,11 @@ public class InMemoryConnector extends DatabaseConnector {
 	@Override
 	public int totalNumberOfEntities() {
 		return entityToID.size();
+	}
+
+	@Override
+	public int getTotalNumberOfReferences() {
+		return totalNumberOfCandidateReferences;
 	}
 
 }

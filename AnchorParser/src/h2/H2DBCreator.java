@@ -68,7 +68,14 @@ public class H2DBCreator {
               " WeightList VARCHAR(MAX), " + 
               " PRIMARY KEY ( id ))"; 
         stmt.executeUpdate(sql);
-    
+        
+        // Meta Table
+        stmt = connection.createStatement();  
+        sql = "CREATE TABLE MetaInfo " +
+              "(id INTEGER AUTO_INCREMENT," +
+              " totalNumberOfAnchorReferences INTEGER not NULL)"; 
+        stmt.executeUpdate(sql);
+        
         // Build the important indices to speed up database building
         System.out.println("Create index for EntityID...");
 		stmt = connection.createStatement();

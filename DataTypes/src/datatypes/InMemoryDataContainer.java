@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class InMemoryDataContainer implements Serializable{
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 3L;
 	
 	// Entities
 	public String[] idToEntity;
@@ -17,7 +17,8 @@ public class InMemoryDataContainer implements Serializable{
 	public Map<String, Integer> anchorID;
 	public int[][] anchorToCandidates;
 	public int[][] anchorToCandidatesCount;
-
+	public int totalNumberOfCandidateReferences;
+	
 	public InMemoryDataContainer() {
 		// TODO Auto-generated constructor stub
 	}

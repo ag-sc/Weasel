@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -112,6 +113,26 @@ public class H2Connector extends DatabaseConnector {
 	public int totalNumberOfEntities() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public int getTotalNumberOfReferences() {
+		int number = 0;
+		Statement stmt;
+		try {
+			stmt = connection.createStatement();
+			String sql_tmp = "SELECT TOTALNUMBEROFANCHORREFERENCES from metainfo where id is 1";
+			stmt.executeQuery(sql_tmp);
+			ResultSet result = stmt.getResultSet();
+			while (result.next()) {
+				number = result.getInt(1);
+				break;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return number;
 	}
 
 }
