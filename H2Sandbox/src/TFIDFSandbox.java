@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import datasetParser.KORE50Parser;
+import datasetEvaluator.datasetParser.KORE50Parser;
 import datatypes.TermFrequency;
 
 

@@ -8,9 +8,10 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
-import databaseConnectors.DatabaseConnector;
 import datatypes.EntityOccurance;
 import datatypes.FragmentPlusCandidates;
+import datatypes.databaseConnectors.DatabaseConnector;
+import entityLinker.evaluation.BabelfyEvaluation;
 
 public class BabelfyEvaluationTest {
 

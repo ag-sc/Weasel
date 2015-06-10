@@ -3,12 +3,12 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
-import stopwatch.Stopwatch;
-import databaseConnectors.H2Connector;
-import h2.H2AnchorBuilder;
-import h2.H2DBCreator;
-import h2.H2PageLinksBuilder;
-import h2.H2WeightBuilder;
+import utility.Stopwatch;
+import databaseBuilder.h2.H2AnchorBuilder;
+import databaseBuilder.h2.H2DBCreator;
+import databaseBuilder.h2.H2PageLinksBuilder;
+import databaseBuilder.h2.H2WeightBuilder;
+import datatypes.databaseConnectors.H2Connector;
 
 
 

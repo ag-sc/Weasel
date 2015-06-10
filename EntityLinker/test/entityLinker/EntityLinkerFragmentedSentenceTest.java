@@ -10,9 +10,9 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
-import annotatedSentence.AnnotatedSentence;
-import annotatedSentence.Fragment;
-import annotatedSentence.Word;
+import datatypes.annotatedSentence.AnnotatedSentence;
+import datatypes.annotatedSentence.Fragment;
+import datatypes.annotatedSentence.Word;
 
 public class EntityLinkerFragmentedSentenceTest extends EntityLinkerBaseTest{
 

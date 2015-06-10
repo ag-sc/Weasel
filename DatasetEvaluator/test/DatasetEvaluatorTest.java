@@ -7,8 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.easymock.*;
 
-import datasetParser.KORE50Parser;
-//import entityLinker.EntityLinker;
+import datasetEvaluator.datasetParser.KORE50Parser;
 
 
 public class DatasetEvaluatorTest {

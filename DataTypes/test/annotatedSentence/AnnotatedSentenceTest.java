@@ -6,6 +6,10 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
+import datatypes.annotatedSentence.AnnotatedSentence;
+import datatypes.annotatedSentence.Fragment;
+import datatypes.annotatedSentence.Word;
+
 public class AnnotatedSentenceTest {
 
 	@Test

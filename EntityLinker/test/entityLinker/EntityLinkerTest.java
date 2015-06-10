@@ -7,11 +7,11 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
-import databaseConnectors.DatabaseConnector;
 import datatypes.EntityOccurance;
+import datatypes.databaseConnectors.DatabaseConnector;
 import entityLinker.EntityLinker;
-import evaluation.EvaluationEngine;
-import evaluation.RandomEvaluation;
+import entityLinker.evaluation.EvaluationEngine;
+import entityLinker.evaluation.RandomEvaluation;
 
 
 public class EntityLinkerTest extends EntityLinkerBaseTest {

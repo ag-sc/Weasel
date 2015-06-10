@@ -6,9 +6,9 @@ import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import databaseConnectors.H2Connector;
 import datatypes.VectorEntry;
-import stopwatch.Stopwatch;
+import datatypes.databaseConnectors.H2Connector;
+import utility.Stopwatch;
 
 
 public class VectorMapLoadTest {

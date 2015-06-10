@@ -15,3 +15,11 @@
 /External Jars
 /Neo4jSandbox/test
 /.metadata
+/Core/entityLinking.arff
+/Core/entityLinking.model
+/Core/experiment_1.txt
+/Core/testModel.arff
+/Core/.settings
+/spotlight
+/config_testset.ini
+/config_toyset.ini

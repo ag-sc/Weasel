@@ -2,9 +2,10 @@ package entityLinker;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
-import databaseConnectors.DatabaseConnector;
-import evaluation.EvaluationEngine;
-import evaluation.RandomEvaluation;
+
+import datatypes.databaseConnectors.DatabaseConnector;
+import entityLinker.evaluation.EvaluationEngine;
+import entityLinker.evaluation.RandomEvaluation;
 
 public class EntityLinkerBaseTest {
 	EvaluationEngine evaluator;

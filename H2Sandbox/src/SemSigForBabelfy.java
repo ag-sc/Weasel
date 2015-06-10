@@ -7,8 +7,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import databaseConnectors.ConnectorFactory;
-import databaseConnectors.DatabaseConnector;
+import datatypes.databaseConnectors.ConnectorFactory;
+import datatypes.databaseConnectors.DatabaseConnector;
 
 
 public class SemSigForBabelfy {

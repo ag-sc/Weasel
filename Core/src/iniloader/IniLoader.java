@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import configuration.Config;
+import datatypes.configuration.Config;
 
 public class IniLoader {
 
