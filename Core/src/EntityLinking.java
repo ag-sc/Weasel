@@ -2,16 +2,10 @@ import iniloader.IniLoader;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-
 import weka.classifiers.Classifier;
-import weka.classifiers.functions.LibSVM;
 import weka.classifiers.functions.SMO;
-import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import configuration.Config;
 import datasetEvaluator.DatasetEvaluatorSandbox;
