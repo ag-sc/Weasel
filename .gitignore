@@ -23,3 +23,7 @@
 /spotlight
 /config_testset.ini
 /config_toyset.ini
+/DataTypes
+/EntityLinker
+/AnchorParser
+/DatasetEvaluator
