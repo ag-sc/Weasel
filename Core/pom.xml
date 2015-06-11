@@ -40,5 +40,10 @@
   		<artifactId>wikitext</artifactId>
   		<version>0.9.4.I20090220-1600-e3x</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.h2database</groupId>
+  		<artifactId>h2</artifactId>
+  		<version>1.4.185</version>
+  	</dependency>
   </dependencies>
 </project>
