@@ -9,6 +9,7 @@ import datatypes.databaseConnectors.ConnectorFactory;
 import datatypes.databaseConnectors.DatabaseConnector;
 import entityLinker.EntityLinker;
 import entityLinker.evaluation.EvaluationEngine;
+import entityLinker.evaluation.WekaLink;
 
 public class DatasetEvaluatorSandbox {
 
@@ -40,12 +41,14 @@ public class DatasetEvaluatorSandbox {
 			
 			// Chose evaluation engine
 			EvaluationEngine evaluator = null;
+			WekaLink wekaLink = null;
+			if(!config.getParameter("wekaModelStatus").equals("off")) wekaLink = new WekaLink();
 			if(connectorType.equals("H2")){
 				String sql = "select entitySinkIDList from EntityToEntity where EntitySourceID is (?)";
 				DatabaseConnector connector = ConnectorFactory.getH2Connector(config.getParameter("H2Path"), sql);
-				evaluator = EvaluationEngine.getInstance(connector);
+				evaluator = EvaluationEngine.getInstance(connector, wekaLink);
 			}else{
-				evaluator = EvaluationEngine.getInstance(anchorConnector);
+				evaluator = EvaluationEngine.getInstance(anchorConnector, wekaLink);
 			}
 			
 			// Linker & Evaluation
@@ -56,10 +59,13 @@ public class DatasetEvaluatorSandbox {
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			double result = dataEvaluator.evaluate();
 			System.out.println("Evaluation time (including data load): " + sw.stop() + " minutes");
-//			System.out.println("Lookup Time: " + ((BabelfyEvaluation)evaluator).lookUpTime + " ms");
-//			System.out.println("search Time: " + ((BabelfyEvaluation)evaluator).searchSetTime + " ms");
-			return result;
-				
+			
+			// build weka model if applicable
+			if(wekaLink != null && config.getParameter("wekaModelStatus").equals("train")){
+				wekaLink.finalizeTraining();
+			}
+			
+			return result;	
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

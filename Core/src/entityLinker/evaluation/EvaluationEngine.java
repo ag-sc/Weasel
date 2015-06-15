@@ -8,7 +8,7 @@ public abstract class EvaluationEngine {
 
 	public abstract void evaluate(AnnotatedSentence annotatedSentence);
 
-	public static EvaluationEngine getInstance(DatabaseConnector dbConnector) {
+	public static EvaluationEngine getInstance(DatabaseConnector dbConnector, WekaLink wekaLink) {
 		Config config = Config.getInstance();
 		String engine = config.getParameter("evaluator");
 		try {
@@ -20,7 +20,7 @@ public abstract class EvaluationEngine {
 			case "random":
 				return new RandomEvaluation(dbConnector);
 			case "vector":
-				return new VectorEvaluation(dbConnector, config.getParameter("vectorMapPath"), config.getParameter("dfPath"));
+				return new VectorEvaluation(dbConnector, config.getParameter("vectorMapPath"), config.getParameter("dfPath"), wekaLink);
 			case "spotlight":
 				return new DBpediaSpotlightEvaluation();
 			default:
