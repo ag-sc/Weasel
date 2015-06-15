@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
-
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.core.Instances;
