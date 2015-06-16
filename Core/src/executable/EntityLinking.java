@@ -6,8 +6,6 @@ import datasetEvaluator.DatasetEvaluatorSandbox;
 
 public class EntityLinking {
 
-	static String pathToARFF = "defaultName.arff";
-
 	public EntityLinking() {
 		// TODO Auto-generated constructor stub
 	}
