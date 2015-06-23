@@ -38,7 +38,7 @@ public class DatasetEvaluator {
 		//HashSet<Integer> allEntities = parser.getEntitiesInDocument(checkupConnector);
 		while((parserSentence = parser.parse()).length() != 0){
 			System.out.println("Sentence " + (sentenceCounter++) + ":");
-			AnnotatedSentence as = linker.link(parserSentence, null);
+			AnnotatedSentence as = linker.link(parserSentence);
 			List<Fragment> result = as.getFragmentList();
 			
 			for(Fragment f: result){

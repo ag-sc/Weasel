@@ -1,6 +1,8 @@
 package entityLinker.evaluation;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -11,8 +13,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import datatypes.StringEncoder;
 import datatypes.annotatedSentence.AnnotatedSentence;
 import datatypes.annotatedSentence.Fragment;
+import datatypes.configuration.Config;
 
 public class DBpediaSpotlightEvaluation extends EvaluationEngine {
 
@@ -24,9 +28,19 @@ public class DBpediaSpotlightEvaluation extends EvaluationEngine {
 	protected Pattern resourcePattern1;
 	protected Matcher matcher1;
 	
+	boolean useURLEncoding = false;
+	BufferedWriter bw;
+	int counter = 0;
 	
-	DBpediaSpotlightEvaluation(){
+	public DBpediaSpotlightEvaluation(){
 		resourcePattern1 = Pattern.compile(stringPattern1);
+		try {
+			bw = new BufferedWriter(new FileWriter("workingSentences.txt"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
 	@Override
@@ -73,17 +87,31 @@ public class DBpediaSpotlightEvaluation extends EvaluationEngine {
 	        
 	        matcher1 = resourcePattern1.matcher(line);
 	        while(matcher1.find()){
-	        	entityMap.put(matcher1.group(2), matcher1.group(1));
+	        	String originWord = matcher1.group(2);
+	        	String entity = matcher1.group(1);
+	        	if(useURLEncoding){
+	        		originWord = StringEncoder.encodeString(originWord);
+	        		entity = StringEncoder.encodeString(entity);
+	        	}
+	        	entityMap.put(originWord, entity);
 //	        	System.out.println(matcher1.group(2) + " -> " +matcher1.group(1));
 	        }
 		}catch (IOException e){
 			e.printStackTrace();
+			try {
+				bw.write(counter + "\n");
+				bw.flush();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 //			System.exit(-1);
 		}
 		
 		for(Fragment fragment: annotatedSentence.getFragmentList()){
 			fragment.setEntity(entityMap.get(fragment.originWord));
 		}
+	counter++;
 	}
 
 }

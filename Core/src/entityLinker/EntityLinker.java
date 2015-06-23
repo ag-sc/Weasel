@@ -36,7 +36,7 @@ public class EntityLinker {
 		this(evaluator, connector, null);
 	}
 
-	private AnnotatedSentence assignCandidates(AnnotatedSentence as, HashSet<Integer> allEntities) {
+	private AnnotatedSentence assignCandidates(AnnotatedSentence as) {
 		HashMap<Integer, Integer> foundEntities = new HashMap<Integer, Integer>();
 
 		List<Fragment> fragmentList = as.getFragmentList();
@@ -125,9 +125,9 @@ public class EntityLinker {
 
 	}
 
-	public AnnotatedSentence link(AnnotatedSentence as, HashSet<Integer> allEntities) {
+	public AnnotatedSentence link(AnnotatedSentence as) {
 		// sentence = sentence.toLowerCase();
-		assignCandidates(as, allEntities);
+		assignCandidates(as);
 		evaluator.evaluate(as);
 		return as;
 	}

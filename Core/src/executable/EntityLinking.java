@@ -18,7 +18,8 @@ public class EntityLinking {
 		IniLoader iniLoader = new IniLoader();
 		iniLoader.parse(filepath);
 
-		DatasetEvaluatorSandbox.evaluate();
+		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
+		sandbox.evaluate();
 
 	}
 
