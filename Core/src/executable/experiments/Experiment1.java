@@ -41,7 +41,8 @@ public class Experiment1 {
 			
 			Stopwatch swTotal = new Stopwatch(Stopwatch.UNIT.MINUTES);
 
-			result = DatasetEvaluatorSandbox.evaluate();
+			DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
+			result = sandbox.evaluate();
 
 			swTotal.stop();
 			fw.write(dataset);

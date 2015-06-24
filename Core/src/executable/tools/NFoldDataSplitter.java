@@ -11,10 +11,15 @@ import java.util.LinkedList;
 
 public class NFoldDataSplitter {
 
-	static int folds = 2;
-	static int nrOfDataEntries = 1393;
-	static String inputPath = "E:/Master Project/data/aida-yago2-dataset/AIDA-YAGO2-dataset.tsv";
-	static String outputPath = "E:/Master Project/data/aida-yago2-dataset/aida_2fold";
+	static int folds = 10;
+	static int nrOfDataEntries = 1360;
+	static String inputPath = "E:/Master Project/data/aida-yago2-dataset/spotlight/aida_picked_setences.tsv";
+	static String outputPath = "E:/Master Project/data/aida-yago2-dataset/spotlight/aida_spotlight_10fold";
+	
+//	static int folds = 2;
+//	static int nrOfDataEntries = 1393;
+//	static String inputPath = "E:/Master Project/data/aida-yago2-dataset/AIDA-YAGO2-dataset.tsv";
+//	static String outputPath = "E:/Master Project/data/aida-yago2-dataset/aida_2fold";
 	
 //	static int folds = 2;
 //	static int nrOfDataEntries = 50;

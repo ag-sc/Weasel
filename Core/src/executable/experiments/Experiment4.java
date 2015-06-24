@@ -32,6 +32,7 @@ public class Experiment4 {
 		double resultFold1 = 0;
 		Config config = Config.getInstance();
 		dataset = config.getParameter("datasetPath");
+		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
 
 		try {
 			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + "_" + dataset + ".txt"));
@@ -63,7 +64,7 @@ public class Experiment4 {
 					config.setParameter("vector_evaluation_lamda", Double.toString(lambda));
 
 					sw.start();
-					result = DatasetEvaluatorSandbox.evaluate();
+					result = sandbox.evaluate();
 					sw.stop();
 					result = round(result, 4);
 					fw.write(id + ":\t" + result + "%\t" + "-" + "\t" + lambda + "\t" + round(sw.doubleTime, 4) + " s\n");
@@ -86,7 +87,7 @@ public class Experiment4 {
 				config.setParameter("vector_evaluation_pageRankWeight", Double.toString(bestPR));
 				config.setParameter("vector_evaluation_lamda", Double.toString(bestL));
 				config.setParameter("datasetPath", "/home/felix/data/" + dataset + "_2fold_" + testFold + ".tsv");
-				result = DatasetEvaluatorSandbox.evaluate();
+				result = sandbox.evaluate();
 				fw.write("Result on testset: " + result + "\n");
 				fw.write("(" + config.getParameter("datasetPath") + ")\n");
 				if (testFold == 0) {

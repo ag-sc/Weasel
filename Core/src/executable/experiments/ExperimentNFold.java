@@ -16,7 +16,7 @@ import datatypes.configuration.Config;
 
 public class ExperimentNFold {
 
-	static int experimentNumber = 2;
+	static int experimentNumber = 3;
 	static String dataset = "aida";
 	static int numberOfFolds = 10;
 
@@ -31,8 +31,8 @@ public class ExperimentNFold {
 
 		double resultSum = 0.0;
 		Config config = Config.getInstance();
-		String pathToARFF = config.getParameter("arffModelName") + ".arff";
 
+		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
 		try {
 			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + ".txt"));
 			Date date = new Date();
@@ -48,39 +48,16 @@ public class ExperimentNFold {
 
 				
 				sw.start();
-				// Train
-//				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + ".tsv");
-//				config.setParameter("wekaModelStatus", "train");
-//				try {
-//					config.instanciateArffWriter(pathToARFF);
-//					BufferedWriter fw2 = config.getArffWriter();
-//					fw2.write("@RELATION entityLinking\n\n");
-//					fw2.write("@ATTRIBUTE candidateVectorScore\tNUMERIC\n");
-//					fw2.write("@ATTRIBUTE tfidfScore\tNUMERIC\n");
-//					fw2.write("@ATTRIBUTE pageRank\tNUMERIC\n");
-//					fw2.write("@ATTRIBUTE candidateReferenceFrequency\tNUMERIC\n");
-//					fw2.write("@ATTRIBUTE class\t{0, 1}\n\n");
-//					fw2.write("@DATA\n");
-//					DatasetEvaluatorSandbox.evaluate();
-//					fw2.close();
-//				} catch (IOException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//				config.setParameter("wekaModelStatus", "test");
 				
-				// Build Model
-//				Instances inst = new Instances(new BufferedReader(new FileReader(pathToARFF)));
-//				inst.setClassIndex(inst.numAttributes() - 1);
-//				SMO smo = new SMO();
-//				smo.setOptions(weka.core.Utils.splitOptions("-M"));
-//				Classifier cls = smo;
-//				cls.buildClassifier(inst);
-//				config.cls = cls;
+				// Train
+				config.setParameter("wekaModelStatus", "train");
+				config.setParameter("datasetPath", "/home/felix/data/aida10foldSpotlight/aida_spotlight_10fold_" + trainFold + "_testset.tsv");
+				result = sandbox.evaluate();
 				
 				// Test
-				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
-				result = DatasetEvaluatorSandbox.evaluate();
+				config.setParameter("wekaModelStatus", "test");
+				config.setParameter("datasetPath", "/home/felix/data/aida10foldSpotlight/aida_spotlight_10fold_" + trainFold + ".tsv");
+				result = sandbox.evaluate();
 				resultSum += result;
 				
 				sw.stop();

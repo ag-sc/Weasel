@@ -30,6 +30,7 @@ public class Experiment0 {
 
 		Config config = Config.getInstance();
 		dataset = config.getParameter("datasetPath");
+		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
 
 		try {
 			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + ".txt"));
@@ -42,7 +43,7 @@ public class Experiment0 {
 			Stopwatch swTotal = new Stopwatch(Stopwatch.UNIT.MINUTES);
 
 			for (int i = 0; i < 100; i++)
-				result += DatasetEvaluatorSandbox.evaluate();
+				result += sandbox.evaluate();
 
 			result /= 100.0;
 			swTotal.stop();
