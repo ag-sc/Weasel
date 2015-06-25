@@ -2,6 +2,7 @@ package nif;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,7 +17,10 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
 
 import datasetEvaluator.DatasetEvaluatorSandbox;
+import datatypes.SortableAssociate;
+import datatypes.StringEncoder;
 import datatypes.annotatedSentence.AnnotatedSentence;
+import datatypes.annotatedSentence.Fragment;
 
 public class NIFAdapter {
 
@@ -48,16 +52,49 @@ public class NIFAdapter {
 			Resource originResource = stmt.getSubject();
 			
 			StmtIterator tmpIter = model.listStatements(new SimpleSelector(originResource, NIF_SchemaGen.isString,(RDFNode) null));
-			String originSentence = tmpIter.nextStatement().getObject().asLiteral().toString().split("\\^\\^")[0];
+			String originSentence = null;
+			while (tmpIter.hasNext()) {
+				originSentence = tmpIter.nextStatement().getObject().asLiteral().toString().split("\\^\\^")[0];
+			}
+			if(originSentence == null) continue;
 			
 			System.out.println("Origin Sentence: " + originSentence);
 			AnnotatedSentence as = new AnnotatedSentence();
-			
-			List<Resource> wordList = new ArrayList<Resource>();
-			tmpIter = model.listStatements(new SimpleSelector(null, NIF_SchemaGen.referenceContext,(RDFNode) originResource));
-			while (tmpIter.hasNext()) {
-				System.out.println(tmpIter.nextStatement());
+			originSentence = originSentence.replaceAll("\\p{Punct}", "");
+			String[] wordArray = originSentence.split(" ");
+			for(String word: wordArray){
+				Fragment fragment = new Fragment(StringEncoder.encodeString(word));
+				as.appendFragment(fragment);
 			}
+			evaluator.evaluateSentence(as);
+			for(Fragment f: as.getFragmentList()){
+				System.out.println(f.originWord + " -> " + f.getEntity());
+			}
+			
+//			List<SortableAssociate<Integer, Resource>> resourceList = new ArrayList<SortableAssociate<Integer, Resource>>();
+//			tmpIter = model.listStatements(new SimpleSelector(null, NIF_SchemaGen.referenceContext,(RDFNode) originResource));
+//			while (tmpIter.hasNext()) {
+//				stmt = tmpIter.nextStatement();
+//				Resource referenceResource = stmt.getSubject();
+//				StmtIterator indexIter = model.listStatements(new SimpleSelector(referenceResource, NIF_SchemaGen.beginIndex,(RDFNode) null));
+//				while (indexIter.hasNext()) {
+//					stmt = indexIter.nextStatement();
+//					Integer index = Integer.parseInt(stmt.getObject().toString().split("\\^\\^")[0]);
+//					resourceList.add(new SortableAssociate<Integer, Resource>(index, referenceResource));
+//				}
+//				
+//				//System.out.println(tmpIter.nextStatement());
+//			}
+//			
+//			Collections.sort(resourceList);
+//			for(SortableAssociate<Integer, Resource> sa: resourceList){
+//				String word = "<empty>";
+//				StmtIterator wordIter = model.listStatements(new SimpleSelector(sa.getObjectPart(), NIF_SchemaGen.anchorOf,(RDFNode) null));
+//				while (wordIter.hasNext()) {
+//					word = wordIter.next().getObject().toString().split("\\^\\^")[0];
+//				}
+//				System.out.println(sa.getComparablePart() + ": " + word);
+//			}
 		}
 	}
 	
