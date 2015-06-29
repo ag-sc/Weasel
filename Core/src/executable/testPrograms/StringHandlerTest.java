@@ -2,6 +2,7 @@ package executable.testPrograms;
 
 import java.io.IOException;
 
+import nif.NIFAdapter;
 import iniloader.IniLoader;
 import datasetEvaluator.DatasetEvaluatorSandbox;
 import entityLinker.InputStringHandler;
@@ -16,9 +17,12 @@ public class StringHandlerTest {
 		IniLoader iniLoader = new IniLoader();
 		iniLoader.parse(filepath);
 
-		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
-		InputStringHandler handler = new InputStringHandler(sandbox);
+		InputStringHandler handler = new InputStringHandler();
 		handler.handleString("Barack Obama is president of the United States.");
+		
+		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
+		NIFAdapter adapter = new NIFAdapter(handler.getModel(), sandbox);
+		adapter.linkModel();
 	}
 
 }

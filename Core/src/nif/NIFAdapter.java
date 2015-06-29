@@ -27,10 +27,19 @@ public class NIFAdapter {
 	Model model;
 	DatasetEvaluatorSandbox evaluator;
 
+	private NIFAdapter(DatasetEvaluatorSandbox evaluator){
+		this.evaluator = evaluator;
+	}
+	
+	public NIFAdapter(Model model, DatasetEvaluatorSandbox evaluator){
+		this(evaluator);
+		this.model = model;
+	}
+	
 	public NIFAdapter(String filePath, DatasetEvaluatorSandbox evaluator) {
+		this(evaluator);
 		model = ModelFactory.createDefaultModel();
 		loadModelFromFile(filePath);
-		this.evaluator = evaluator;
 	}
 
 	private void loadModelFromFile(String filePath) {
@@ -47,26 +56,44 @@ public class NIFAdapter {
 	
 	public void linkModel(){
 		StmtIterator iter = model.listStatements(new SimpleSelector(null, null, (RDFNode) NIF_SchemaGen.Context));
-		model.write(System.out, "N-TRIPLES");
-		if(true) return;
 		
+		// For all resources labled "context"
 		while (iter.hasNext()) {
 			Statement stmt = iter.nextStatement(); // get next statement
 			Resource originResource = stmt.getSubject();
 			
-			StmtIterator tmpIter = model.listStatements(new SimpleSelector(originResource, NIF_SchemaGen.isString,(RDFNode) null));
-			String originSentence = null;
-			while (tmpIter.hasNext()) {
-				originSentence = tmpIter.nextStatement().getObject().asLiteral().toString().split("\\^\\^")[0];
-			}
+			String originSentence = originResource.getProperty(NIF_SchemaGen.isString).getLiteral().toString().split("\\^\\^")[0];
 			if(originSentence == null) continue;
-			
 			System.out.println("Origin Sentence: " + originSentence);
+			
+			// Find all tokens
+			ArrayList<Resource> tokenList = new ArrayList<Resource>();
+			StmtIterator tokenIter = model.listStatements(new SimpleSelector(null, NIF_SchemaGen.referenceContext, (RDFNode) originResource));
+			while(tokenIter.hasNext()){
+				Statement tokenStmt = tokenIter.next();
+				tokenList.add(tokenStmt.getSubject());
+			}
+			
+			// Use token placeholders to create correct annotatedSentence object.
+			String tmpSentence = originSentence.replaceAll("\\p{Punct}", "");
+			for(int i = 0; i < tokenList.size(); i++){
+				Resource r = tokenList.get(i);
+				String token = r.getProperty(NIF_SchemaGen.anchorOf).getLiteral().toString();
+				tmpSentence = tmpSentence.replace(token, "resourceIndex:" + i);
+			}
+			
 			AnnotatedSentence as = new AnnotatedSentence();
-			originSentence = originSentence.replaceAll("\\p{Punct}", "");
-			String[] wordArray = originSentence.split(" ");
+			String[] wordArray = tmpSentence.split(" ");
 			for(String word: wordArray){
-				Fragment fragment = new Fragment(StringEncoder.encodeString(word));
+				String tmp = word;
+				Fragment fragment = null;
+				if(tmp.contains("resourceIndex:")){
+					Resource tmpResource = tokenList.get(Integer.parseInt(tmp.replace("resourceIndex:", "")));
+					tmp = tmpResource.getProperty(NIF_SchemaGen.anchorOf).getLiteral().toString();
+					fragment = new Fragment(StringEncoder.encodeString(tmp));
+				}else{
+					fragment = new Fragment(StringEncoder.encodeString(tmp));
+				}
 				as.appendFragment(fragment);
 			}
 			evaluator.evaluateSentence(as);
