@@ -23,7 +23,7 @@ public class URLEncodingTest {
 		
 		String[] triplet;
 		int counter = 0;
-		while ((triplet = anchorParser.parseTriplet()) != null && counter < 20) {
+		while ((triplet = anchorParser.parse()) != null && counter < 20) {
 			System.out.println(triplet[0] + " - " + triplet[1]);
 			counter++;
 		}

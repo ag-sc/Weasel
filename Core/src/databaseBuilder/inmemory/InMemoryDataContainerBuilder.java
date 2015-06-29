@@ -28,20 +28,20 @@ public class InMemoryDataContainerBuilder {
 		int currentEntityID = 0;
 		int currentAnchorID = 0;
 		
-		String triplet[];
+		String quadruple[];
 		// find amount of entities and anchors
 		System.out.println("Find amount of entities and anchors...");
 		AnchorFileParser anchorParser = new AnchorFileParser("anchors.txt");
 		int counter = 0;
-		while ((triplet = anchorParser.parseTriplet()) != null) {
-			String anchor = triplet[0].toLowerCase();
+		while ((quadruple = anchorParser.parse()) != null) {
+			String anchor = quadruple[0].toLowerCase();
 			Integer anchorID = anchorIDMap.get(anchor);
 			if(anchorID == null){
 				anchorID = currentAnchorID;
 				anchorIDMap.put(anchor, currentAnchorID++);
 			}
 			
-			String entity = triplet[1].toLowerCase();
+			String entity = quadruple[1].toLowerCase();
 			Integer entityID = entityToID.get(entity);
 			if(entityID == null){
 				entityID = currentEntityID;
@@ -54,9 +54,9 @@ public class InMemoryDataContainerBuilder {
 				targetEntities = anchorToCandidateMap.get(anchorID);
 			}
 			
-			targetEntities.add(entityID + "_" + triplet[2]);
+			targetEntities.add(entityID + "_" + quadruple[2] + "_" + quadruple[3]);
 			
-			if(counter % 100000 == 0) System.out.println("Triplet nr.: " + counter);
+			if(counter % 100000 == 0) System.out.println("Quadruple nr.: " + counter);
 			counter++;
 		}
 		anchorParser.close();

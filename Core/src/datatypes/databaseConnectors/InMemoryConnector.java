@@ -97,9 +97,9 @@ public class InMemoryConnector extends DatabaseConnector {
 		return entityToID.size();
 	}
 
-	@Override
-	public int getTotalNumberOfReferences() {
-		return totalNumberOfCandidateReferences;
-	}
+//	@Override
+//	public int getTotalNumberOfReferences() {
+//		return totalNumberOfCandidateReferences;
+//	}
 
 }

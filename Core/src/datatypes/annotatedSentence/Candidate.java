@@ -4,11 +4,16 @@ public class Candidate implements Comparable<Candidate>{
 
 	private final String entity;
 	public int count;
+	private int totalNumberOfReferencesToEntity;
+	private double referenceProbability = 0.0;
 	
-	
-	public Candidate(String entity, int count) {
+	public Candidate(String entity, int count, int totalNumberOfReferencesToEntity) {
 		this.entity = entity;//.toLowerCase();
 		this.count = count;
+		this.totalNumberOfReferencesToEntity = totalNumberOfReferencesToEntity;
+		if(this.totalNumberOfReferencesToEntity != 0){
+			referenceProbability = (double) this.count / (double) this.totalNumberOfReferencesToEntity;
+		}
 	}
 
 
@@ -20,6 +25,10 @@ public class Candidate implements Comparable<Candidate>{
 	@Override
 	public int hashCode(){
 		return entity.hashCode();
+	}
+	
+	public double getReferenceProbability(){
+		return referenceProbability;
 	}
 	
 	public String getEntity(){

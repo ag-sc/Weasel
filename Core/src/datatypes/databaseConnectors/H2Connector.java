@@ -115,24 +115,24 @@ public class H2Connector extends DatabaseConnector {
 		return 0;
 	}
 
-	@Override
-	public int getTotalNumberOfReferences() {
-		int number = 0;
-		Statement stmt;
-		try {
-			stmt = connection.createStatement();
-			String sql_tmp = "SELECT TOTALNUMBEROFANCHORREFERENCES from metainfo where id is 1";
-			stmt.executeQuery(sql_tmp);
-			ResultSet result = stmt.getResultSet();
-			while (result.next()) {
-				number = result.getInt(1);
-				break;
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return number;
-	}
+//	@Override
+//	public int getTotalNumberOfReferences() {
+//		int number = 0;
+//		Statement stmt;
+//		try {
+//			stmt = connection.createStatement();
+//			String sql_tmp = "SELECT TOTALNUMBEROFANCHORREFERENCES from metainfo where id is 1";
+//			stmt.executeQuery(sql_tmp);
+//			ResultSet result = stmt.getResultSet();
+//			while (result.next()) {
+//				number = result.getInt(1);
+//				break;
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return number;
+//	}
 
 }

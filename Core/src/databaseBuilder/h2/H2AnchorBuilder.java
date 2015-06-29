@@ -24,34 +24,34 @@ public class H2AnchorBuilder extends H2BuilderCore{
 		long timeStart = System.nanoTime();
 		int lineCounter = 0;
 		int totalNumberOfAnchorReferences = 0;
-		String triplet[];
+		String quadruple[];
 		String searchQuery, insertQuery, updateQuery;
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 
 		Class.forName("org.h2.Driver");
 		Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath + ";LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0", username, password);
-		while ((triplet = anchorParser.parseTriplet()) != null) {
+		while ((quadruple = anchorParser.parse()) != null) {
 			lineCounter++;
 			try{
-			totalNumberOfAnchorReferences += Integer.parseInt(triplet[2]);
+			totalNumberOfAnchorReferences += Integer.parseInt(quadruple[2]);
 			}catch(Exception e){
-				System.err.println("Error parsing number of anchor references for:" + triplet[0] + " - " + triplet[1]);
+				System.err.println("Error parsing number of anchor references for:" + quadruple[0] + " - " + quadruple[1]);
 				e.printStackTrace();
 				continue;
 			}
 			
 			searchQuery = "SELECT ID FROM ANCHORID WHERE ANCHOR IS (?)";
 			insertQuery = "INSERT INTO AnchorId(anchor) VALUES (?)";
-			int source = getId(triplet[0], searchQuery, insertQuery, connection);
+			int source = getId(quadruple[0], searchQuery, insertQuery, connection);
 			searchQuery = "SELECT ID FROM EntityId WHERE entity IS (?)";
 			insertQuery = "INSERT INTO EntityId(entity) VALUES (?)";
-			int sink = getId(triplet[1], searchQuery, insertQuery, connection);
+			int sink = getId(quadruple[1], searchQuery, insertQuery, connection);
 			
 			searchQuery = "SELECT entityIdList FROM AnchorToEntity WHERE anchorId IS (?)";
 			insertQuery = "INSERT INTO AnchorToEntity(anchorId, entityIdList) VALUES (?,?)";
 			updateQuery = "UPDATE anchorToEntity SET entityIdList = (?) WHERE anchorId = (?)";
 
-			String entry = Integer.toString(sink) + "_" + triplet[2];
+			String entry = Integer.toString(sink) + "_" + quadruple[2] + "_" + quadruple[3];
 			addListEntry(source, entry, searchQuery, insertQuery, updateQuery, connection);
 
 			if (lineCounter % 1000000 == 0){

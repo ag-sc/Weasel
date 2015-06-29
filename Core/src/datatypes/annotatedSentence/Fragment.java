@@ -64,7 +64,7 @@ public class Fragment implements Comparable<Fragment> {
 	}
 
 	public boolean containsEntity(String entity) {
-		return candidates.contains(new Candidate(entity, 0));
+		return candidates.contains(new Candidate(entity, 0, 0));
 	}
 
 	public int getCandidatesSize() {
@@ -76,23 +76,18 @@ public class Fragment implements Comparable<Fragment> {
 			String[] tmp = s.split("_");
 			if (tmp[0] == null)
 				System.out.println("tmp[0] == null for: " + s);
-			if (tmp.length == 2) {
-				candidates.add(new Candidate(tmp[0], Integer.parseInt(tmp[1])));
+			if (tmp.length == 3) {
+				candidates.add(new Candidate(tmp[0], Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2])));
 			} else {
-				candidates.add(new Candidate(s, (int) Math.floor(Math.random() * 100))); // legacy
-																							// code
-																							// for
-																							// databases
-																							// without
-																							// anchor
-																							// count
+				System.err.println("New candidate incorrect format for: "+ s);
+				continue;
 			}
 		}
 	}
 
-	public void addCandidates(Collection<Candidate> newCandidates) {
-		candidates.addAll(newCandidates);
-	}
+//	public void addCandidates(Collection<Candidate> newCandidates) {
+//		candidates.addAll(newCandidates);
+//	}
 
 	public int length() {
 		return stop - start + 1;

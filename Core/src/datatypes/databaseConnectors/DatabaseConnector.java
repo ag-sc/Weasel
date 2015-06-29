@@ -12,5 +12,4 @@ public abstract class DatabaseConnector {
 	public abstract int getRedirect(Integer id);
 	public abstract boolean isDisambiguation(Integer id);
 	public abstract int totalNumberOfEntities();
-	public abstract int getTotalNumberOfReferences();
 }

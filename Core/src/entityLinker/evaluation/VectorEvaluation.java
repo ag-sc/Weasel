@@ -260,7 +260,7 @@ public class VectorEvaluation extends EvaluationEngine {
 			Candidate correct = null;
 			if (tmpID != null) {
 				TreeSet<Candidate> candidates = fragment.getCandidates();
-				correct = new Candidate(tmpID.toString(), 0);
+				correct = new Candidate(tmpID.toString(), 0, 0);
 				if (candidates.contains(correct) && candidates.size() > numberOfIncorrectExamples) {
 					eligibleForARFF = true;
 					LinkedList<Candidate> candidateList = new LinkedList<Candidate>(candidates);
@@ -299,7 +299,7 @@ public class VectorEvaluation extends EvaluationEngine {
 				if (Double.isNaN(tfidfVectorAverage))
 					System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
-				double candidateReferenceFrequency = ((double) candidate.count / (double) dbConnector.getTotalNumberOfReferences());
+				double candidateReferenceFrequency = candidate.getReferenceProbability();//((double) candidate.count / (double) dbConnector.getTotalNumberOfReferences());
 				double candidateVectorScore = (tmp[0] / maxCandidateScore);
 				double tfidfScore = (tmp[1] / maxTFIDFScore);
 
