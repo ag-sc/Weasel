@@ -1,4 +1,4 @@
-package executable;
+package executable.testPrograms;
 import iniloader.IniLoader;
 
 import java.io.IOException;

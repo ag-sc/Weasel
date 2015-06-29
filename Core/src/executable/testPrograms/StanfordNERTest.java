@@ -14,14 +14,14 @@ public class StanfordNERTest {
 		// TODO Auto-generated method stub
 		String serializedClassifier = "E:/Master Project/data/stanford models/english.all.3class.distsim.crf.ser.gz";
 		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifier(serializedClassifier);
-		
+
 		List<List<CoreLabel>> out = classifier.classify("Tiger was lost in the woods.");
-	      for (List<CoreLabel> sentence : out) {
-	        for (CoreLabel word : sentence) {
-	          System.out.print(word.word() + '/' + word.get(CoreAnnotations.AnswerAnnotation.class) + ' ');
-	        }
-	        System.out.println();
-	      }
+		for (List<CoreLabel> sentence : out) {
+			for (CoreLabel word : sentence) {
+				System.out.print(word.word() + '/' + word.get(CoreAnnotations.AnswerAnnotation.class) + ' ');
+			}
+			System.out.println();
+		}
 	}
 
 }

@@ -47,6 +47,9 @@ public class NIFAdapter {
 	
 	public void linkModel(){
 		StmtIterator iter = model.listStatements(new SimpleSelector(null, null, (RDFNode) NIF_SchemaGen.Context));
+		model.write(System.out, "N-TRIPLES");
+		if(true) return;
+		
 		while (iter.hasNext()) {
 			Statement stmt = iter.nextStatement(); // get next statement
 			Resource originResource = stmt.getSubject();

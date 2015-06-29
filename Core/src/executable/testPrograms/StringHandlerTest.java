@@ -1,12 +1,14 @@
 package executable.testPrograms;
 
-import nif.NIFAdapter;
+import java.io.IOException;
+
 import iniloader.IniLoader;
 import datasetEvaluator.DatasetEvaluatorSandbox;
+import entityLinker.InputStringHandler;
 
-public class NIFTest {
+public class StringHandlerTest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassCastException, ClassNotFoundException, IOException {
 		String filepath = "../config.ini";
 		if (args.length == 1)
 			filepath = args[0];
@@ -15,9 +17,8 @@ public class NIFTest {
 		iniLoader.parse(filepath);
 
 		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
-		NIFAdapter adapter = new NIFAdapter("E:/Master Project/data/NIF/nifTest.ttl", sandbox);
-//		NIFAdapter adapter = new NIFAdapter("E:/Master Project/data/kore50/kore50.ttl", sandbox);
-		adapter.linkModel();
+		InputStringHandler handler = new InputStringHandler(sandbox);
+		handler.handleString("Barack Obama is president of the United States.");
 	}
 
 }
