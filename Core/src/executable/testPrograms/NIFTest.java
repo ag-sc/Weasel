@@ -1,4 +1,4 @@
-package executable;
+package executable.testPrograms;
 
 import nif.NIFAdapter;
 import iniloader.IniLoader;

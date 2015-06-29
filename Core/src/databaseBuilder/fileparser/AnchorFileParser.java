@@ -26,10 +26,9 @@ public class AnchorFileParser extends FileParser{
 		String[] triplet;
 		try {
 			while((line = br.readLine()) != null){
-				triplet = line.split("\\t");
-				if(triplet.length != 3) continue;
+				triplet = getLineTriplet(line);
+				if(triplet == null) continue;
 				String entity = triplet[1];
-				if(useURLEncoding) entity = StringEncoder.encodeString(entity);
 				Integer count = Integer.parseInt(triplet[2]);
 				if(totalReferencesPerEntity.containsKey(entity)){
 					totalReferencesPerEntity.put(entity, totalReferencesPerEntity.get(entity) + count);
@@ -53,6 +52,27 @@ public class AnchorFileParser extends FileParser{
 		tuple[1] = triplet[1];
 		return tuple;
 	}
+	
+	private String[] getLineTriplet(String line){
+		if(line == null) return null;
+		String triplet[];
+		triplet = line.split("\\t");
+		if (triplet.length != 3) {
+			return null;
+		}
+
+		String stringPattern = ".*?resource/(.+)";
+		Pattern resourcePattern = Pattern.compile(stringPattern);
+		Matcher matcher = resourcePattern.matcher(triplet[1]);
+		if (matcher.find())
+			triplet[1] = matcher.group(1);
+
+		if(useURLEncoding){
+			triplet[0] = StringEncoder.encodeString(triplet[0]); // anchor
+			triplet[1] = StringEncoder.encodeString(triplet[1]); // entity
+		}
+		return triplet;
+	}
 
 	public String[] parse() throws IOException {
 		String line;
@@ -61,27 +81,8 @@ public class AnchorFileParser extends FileParser{
 
 		do {
 			line = br.readLine();
-			if (line == null)
-				return null;
-
-			
-			triplet = line.split("\\t");
-			if (triplet.length != 3) {
-				continue;
-			}
-
-			String stringPattern = ".*?resource/(.+)";
-			Pattern resourcePattern = Pattern.compile(stringPattern);
-			Matcher matcher = resourcePattern.matcher(triplet[1]);
-			if (matcher.find())
-				triplet[1] = matcher.group(1);
-
-			if(useURLEncoding){
-				triplet[0] = StringEncoder.encodeString(triplet[0]); // anchor
-				triplet[1] = StringEncoder.encodeString(triplet[1]); // entity
-			}
-			
-		} while (triplet.length != 3);
+			triplet = getLineTriplet(line);		
+		} while (triplet == null);
 
 		quadruple[0] = triplet[0];
 		quadruple[1] = triplet[1];

@@ -1,4 +1,4 @@
-package executable;
+package executable.testPrograms;
 
 import java.io.InputStream;
 import java.util.ArrayList;
