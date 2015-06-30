@@ -10,11 +10,19 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nif.NIF_SchemaGen;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+
 import datatypes.StringEncoder;
 import datatypes.annotatedSentence.AnnotatedSentence;
 import datatypes.annotatedSentence.Fragment;
 import datatypes.configuration.Config;
 import datatypes.databaseConnectors.DatabaseConnector;
+import entityLinker.InputStringHandler;
 
 public class KORE50Parser extends DatasetParser {
 
@@ -112,14 +120,7 @@ public class KORE50Parser extends DatasetParser {
 		AnnotatedSentence annotatedSentence = new AnnotatedSentence();
 
 		while ((line = br.readLine()) != null) {
-			//String tmpLine = line.split(" ")[0];
 			String tmpLine = line.toLowerCase();
-			
-//			boolean skip = lastLine.contains("soccer") || lastLine.contains("tennis") || lastLine.contains("cricket") 
-//					|| lastLine.contains("golf") || lastLine.contains("athletics") || lastLine.contains("badminton")
-//					|| lastLine.contains("nfl")|| lastLine.contains("nhl")|| lastLine.contains("nba") || lastLine.contains("baseball");
-//			lastLine = tmpLine;
-//			if(skip) return parse();
 			
 			if (tmpLine.contains("-docstart-")) {
 				if (readFullDocument)
@@ -182,6 +183,34 @@ public class KORE50Parser extends DatasetParser {
 		}
 
 		return annotatedSentence;
+	}
+	
+	@Override
+	public void parseIntoStringHandler(InputStringHandler handler) throws IOException {
+		Model model = handler.getModel();
+		StringBuilder sb = new StringBuilder();
+		while ((line = br.readLine()) != null) {
+			if (line.contains("-DOCSTART-")) {
+				handler.handleString(sb.toString().trim());
+				sb = new StringBuilder();
+			}else{
+				String[] splitLine = line.split("\\t");
+				String word = splitLine[0];
+				if(!word.matches("\\p{Punct}+.*")){
+					sb.append(" ");
+				}
+				
+				// If entity is mentioned, add to model
+				if(splitLine.length > 1 && !splitLine[3].equalsIgnoreCase("--NME--")){
+					int offset = sb.toString().length() - 1;
+					Resource tmp = model.createResource("Sentence_" + handler.getStringCounter() + "#char=" + offset + "," + (offset +  word.length()))
+							.addProperty(Config.datasetEntityProp, splitLine[3]);
+				}
+				sb.append(word);
+			}
+		}
+		
+		handler.handleString(sb.toString().trim());
 	}
 
 	@Override

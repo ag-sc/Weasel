@@ -16,7 +16,7 @@ public class TestHTTPClient {
 
 	public static void main(String[] args) throws ClientProtocolException, IOException, URISyntaxException {
 		// TODO Auto-generated method stub
-		String string = "The philosopher and mathematician Leibniz was born in Leipzig.";
+		String string = "In this musical, Madonna played the role of the First Lady.";
 		//string = URLEncoder.encode(string, "UTF-8");
 		
 		URI uri = new URIBuilder()

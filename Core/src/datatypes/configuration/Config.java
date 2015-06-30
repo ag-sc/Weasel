@@ -6,12 +6,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+
 import weka.classifiers.Classifier;
 
 
 public class Config {
 	
 		private Map<String, String> parameters;
+		public static Property datasetEntityProp = ResourceFactory.createProperty("V-SEL:", "datasetEntity");
 		
         // Private constructor. Prevents instantiation from other classes.
         private Config() {

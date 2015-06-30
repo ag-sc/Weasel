@@ -2,9 +2,14 @@ package executable.testPrograms;
 
 import java.io.IOException;
 
+import com.hp.hpl.jena.rdf.model.Model;
+
+import nif.FOXAdapter;
 import nif.NIFAdapter;
 import iniloader.IniLoader;
+import datasetEvaluator.DatasetEvaluator;
 import datasetEvaluator.DatasetEvaluatorSandbox;
+import datasetEvaluator.datasetParser.DatasetParser;
 import entityLinker.InputStringHandler;
 
 public class StringHandlerTest {
@@ -18,11 +23,22 @@ public class StringHandlerTest {
 		iniLoader.parse(filepath);
 
 		InputStringHandler handler = new InputStringHandler();
-		handler.handleString("Barack Obama is president of the United States.");
+		DatasetParser parser = DatasetParser.getInstance();
+		parser.parseIntoStringHandler(handler);
+		//handler.handleString("Merkel is the chancellor of Germany. She leads the Bundesrepublik.");
+		Model model = handler.getModel();
 		
-		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
-		NIFAdapter adapter = new NIFAdapter(handler.getModel(), sandbox);
-		adapter.linkModel();
+		FOXAdapter foxAdapter = new FOXAdapter();
+		foxAdapter.linkModel(model);
+		
+//		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
+//		NIFAdapter adapter = new NIFAdapter(sandbox);
+//		adapter.linkModel(model);
+//		
+//		System.out.println();
+//		model.write(System.out, "Turtle");
+		
+		DatasetEvaluator.evaluateModel(model);
 	}
 
 }

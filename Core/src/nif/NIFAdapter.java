@@ -24,37 +24,13 @@ import datatypes.annotatedSentence.Fragment;
 
 public class NIFAdapter {
 
-	Model model;
 	DatasetEvaluatorSandbox evaluator;
 
-	private NIFAdapter(DatasetEvaluatorSandbox evaluator){
+	public NIFAdapter(DatasetEvaluatorSandbox evaluator){
 		this.evaluator = evaluator;
 	}
 	
-	public NIFAdapter(Model model, DatasetEvaluatorSandbox evaluator){
-		this(evaluator);
-		this.model = model;
-	}
-	
-	public NIFAdapter(String filePath, DatasetEvaluatorSandbox evaluator) {
-		this(evaluator);
-		model = ModelFactory.createDefaultModel();
-		loadModelFromFile(filePath);
-	}
-
-	private void loadModelFromFile(String filePath) {
-		// create an empty model
-		model = ModelFactory.createDefaultModel();
-		// use the FileManager to find the input file
-		InputStream in = FileManager.get().open(filePath);
-		if (in == null) {
-			throw new IllegalArgumentException("File not found");
-		}
-		// read the RDF/XML file
-		model.read(in, null, "TTL");
-	}
-	
-	public void linkModel(){
+	public void linkModel(Model model){
 		StmtIterator iter = model.listStatements(new SimpleSelector(null, null, (RDFNode) NIF_SchemaGen.Context));
 		
 		// For all resources labled "context"
@@ -75,13 +51,14 @@ public class NIFAdapter {
 			}
 			
 			// Use token placeholders to create correct annotatedSentence object.
-			String tmpSentence = originSentence.replaceAll("\\p{Punct}", "");
+			String tmpSentence = originSentence.replaceAll("\\p{Punct}", " ");
 			for(int i = 0; i < tokenList.size(); i++){
 				Resource r = tokenList.get(i);
 				String token = r.getProperty(NIF_SchemaGen.anchorOf).getLiteral().toString();
 				tmpSentence = tmpSentence.replace(token, "resourceIndex:" + i);
 			}
 			
+			// Create AnnotatedSentence
 			AnnotatedSentence as = new AnnotatedSentence();
 			String[] wordArray = tmpSentence.split(" ");
 			for(String word: wordArray){
@@ -90,15 +67,25 @@ public class NIFAdapter {
 				if(tmp.contains("resourceIndex:")){
 					Resource tmpResource = tokenList.get(Integer.parseInt(tmp.replace("resourceIndex:", "")));
 					tmp = tmpResource.getProperty(NIF_SchemaGen.anchorOf).getLiteral().toString();
-					fragment = new Fragment(StringEncoder.encodeString(tmp));
+					fragment = new Fragment(StringEncoder.encodeString(tmp), tmpResource);
 				}else{
 					fragment = new Fragment(StringEncoder.encodeString(tmp));
 				}
 				as.appendFragment(fragment);
 			}
+			
+			// Annotate
 			evaluator.evaluateSentence(as);
-			for(Fragment f: as.getFragmentList()){
-				System.out.println(f.originWord + " -> " + f.getEntity());
+//			for(Fragment f: as.getFragmentList()){
+//				System.out.println(f.originWord + " -> " + f.getEntity());
+//			}
+			
+			// Assign annotation results to model
+			for(Fragment fragment: as.getFragmentList()){
+				if(fragment.getEntity() != null && fragment.getOriginResource() != null){
+					model.add(fragment.getOriginResource(), ITSRDF_SchemaGen.taIdentRef, fragment.getEntity());
+					System.out.println(fragment.getEntity() + " - " + fragment.getOriginResource());
+				}
 			}
 			
 //			List<SortableAssociate<Integer, Resource>> resourceList = new ArrayList<SortableAssociate<Integer, Resource>>();

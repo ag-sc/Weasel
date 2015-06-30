@@ -15,9 +15,9 @@ public class NIFTest {
 		iniLoader.parse(filepath);
 
 		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
-		NIFAdapter adapter = new NIFAdapter("E:/Master Project/data/NIF/nifTest.ttl", sandbox);
+		NIFAdapter adapter = new NIFAdapter(sandbox);
 //		NIFAdapter adapter = new NIFAdapter("E:/Master Project/data/kore50/kore50.ttl", sandbox);
-		adapter.linkModel();
+		//adapter.linkModel();
 	}
 
 }

@@ -3,6 +3,8 @@ package datatypes.annotatedSentence;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 public class Fragment implements Comparable<Fragment> {
 
 	public double probability = 0.0;
@@ -12,6 +14,20 @@ public class Fragment implements Comparable<Fragment> {
 	String entity = null;
 	public String originWord = "<none>";
 	String originEntity = "";
+	Resource originResource = null;
+
+	public Resource getOriginResource() {
+		return originResource;
+	}
+
+	public void setOriginResource(Resource originResource) {
+		this.originResource = originResource;
+	}
+	
+	public Fragment(String originWord, Resource originResource){
+		this(originWord);
+		setOriginResource(originResource);
+	}
 
 	public Fragment(String originWord) {
 		this.originWord = originWord;
@@ -79,8 +95,9 @@ public class Fragment implements Comparable<Fragment> {
 			if (tmp.length == 3) {
 				candidates.add(new Candidate(tmp[0], Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2])));
 			} else {
-				System.err.println("New candidate incorrect format for: "+ s);
-				continue;
+				candidates.add(new Candidate(tmp[0], 1, 1));
+//				System.err.println("New candidate incorrect format for: "+ s);
+//				continue;
 			}
 		}
 	}

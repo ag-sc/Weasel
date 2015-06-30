@@ -3,6 +3,7 @@ package entityLinker;
 import java.io.IOException;
 import java.util.List;
 
+import nif.ITSRDF_SchemaGen;
 import nif.NIF_SchemaGen;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -21,12 +22,13 @@ public class InputStringHandler {
 	int stringCounter = 0;
 	
 	public InputStringHandler() throws ClassCastException, ClassNotFoundException, IOException{
-		String serializedClassifier = "E:/Master Project/data/stanford models/english.all.3class.distsim.crf.ser.gz";
+		String serializedClassifier = "E:/Master Project/data/stanford models/english.conll.4class.distsim.crf.ser.gz";
 		classifier = CRFClassifier.getClassifier(serializedClassifier);
 		
 		// Create Model
 		model = ModelFactory.createDefaultModel();
 		model.setNsPrefix("nif", NIF_SchemaGen.getURI());
+		model.setNsPrefix("itsrdf", ITSRDF_SchemaGen.getURI());
 	}
 	
 	public void handleString(String input){
@@ -43,9 +45,10 @@ public class InputStringHandler {
 			model.add(wordResource, NIF_SchemaGen.beginIndex, triple.second.toString());
 			model.add(wordResource, NIF_SchemaGen.endIndex, triple.third.toString());
 		}
-		
-		System.out.println();
-		model.write(System.out, "Turtle");
+	}
+	
+	public int getStringCounter(){
+		return stringCounter;
 	}
 	
 	public Model getModel(){
