@@ -55,15 +55,16 @@ public class H2AnchorBuilder extends H2BuilderCore{
 			addListEntry(source, entry, searchQuery, insertQuery, updateQuery, connection);
 
 			if (lineCounter % 1000000 == 0){
-				System.out.println("	processed lines: " + lineCounter + "\ttime passed: " + sw.stop());
+				System.out.println("	processed lines: " + lineCounter + "\ttime passed: " + sw.stop() + " seconds");
 				sw.start();
 			}
 				
 		}
+		System.out.println("Done with anchors. Processed lines: " + lineCounter);
 		
-		Statement stmt = connection.createStatement();
-		String sql_tmp = "INSERT INTO MetaInfo(TOTALNUMBEROFANCHORREFERENCES) VALUES (" + totalNumberOfAnchorReferences + ")";
-		stmt.executeUpdate(sql_tmp);
+//		Statement stmt = connection.createStatement();
+//		String sql_tmp = "INSERT INTO MetaInfo(TOTALNUMBEROFANCHORREFERENCES) VALUES (" + totalNumberOfAnchorReferences + ")";
+//		stmt.executeUpdate(sql_tmp);
 
 		// create indices		
 		System.out.println("Create index for AnchorId...");

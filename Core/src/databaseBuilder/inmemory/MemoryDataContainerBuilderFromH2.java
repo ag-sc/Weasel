@@ -28,6 +28,7 @@ public class MemoryDataContainerBuilderFromH2 {
 		final Map<String, Integer> anchorIDMap = new HashMap<String, Integer>();
 		int[][] anchorToCandidates;
 		int[][] anchorToCandidatesCount;
+		int[][] anchorToCandidatesProb;
 		String[] idToEntity;
 		
 		Class.forName("org.h2.Driver");
@@ -111,10 +112,11 @@ public class MemoryDataContainerBuilderFromH2 {
 		}
 		
 		// anchor to entity
-		int totalNumberOfAnchorReferences = 0;
+		//int totalNumberOfAnchorReferences = 0;
 		System.out.println("Work on anchor to entity");
 		anchorToCandidates = new int[maxAnchorID + 1][];
 		anchorToCandidatesCount = new int[maxAnchorID + 1][];
+		anchorToCandidatesProb = new int[maxAnchorID + 1][];
 		sql = "SELECT entityidlist  FROM ANCHORTOENTITY where id is (?)";
 		for(int i = 1; i <= maxAnchorID; i++){
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -128,20 +130,24 @@ public class MemoryDataContainerBuilderFromH2 {
 			String[] splitList = tmp.split(" ");
 			anchorToCandidates[i] = new int[splitList.length];
 			anchorToCandidatesCount[i] = new int[splitList.length];
+			anchorToCandidatesProb[i] = new int[splitList.length];
 			
 			for (int j = 0; j < splitList.length; j++) {
-				String[] idPlusCount = splitList[j].split("_");
-				if(idPlusCount.length != 2){
+				String[] idPlusCounts = splitList[j].split("_");
+				if(idPlusCounts.length < 3){
 					System.err.println(tmp);
 					break;
 				}
-				Integer int1 = Integer.parseInt(idPlusCount[0]);
-				if(int1 == null) System.out.println(idPlusCount[0]);
-				anchorToCandidates[i][j] = int1;
-				Integer int2 = Integer.parseInt(idPlusCount[1]);
-				if(int1 == null) System.out.println(idPlusCount[1]);
+				Integer entityId = Integer.parseInt(idPlusCounts[0]);
+				if(entityId == null) System.out.println(idPlusCounts[0]);
+				anchorToCandidates[i][j] = entityId;
+				Integer int2 = Integer.parseInt(idPlusCounts[1]);
+				if(entityId == null) System.out.println(idPlusCounts[1]);
 				anchorToCandidatesCount[i][j] = int2;
-				totalNumberOfAnchorReferences += int2;
+				Integer int3 = Integer.parseInt(idPlusCounts[2]);
+				if(entityId == null) System.out.println(idPlusCounts[2]);
+				anchorToCandidatesProb[i][j] = int3;
+				//totalNumberOfAnchorReferences += int2;
 			}
 
 			if(i % 100000 == 0) System.out.println(i + " / " + maxAnchorID);
@@ -158,7 +164,8 @@ public class MemoryDataContainerBuilderFromH2 {
 		data.entityToID = entityToID;
 		data.redirects = redirects;
 		data.disambiguation = disambiguations;
-		data.totalNumberOfCandidateReferences = totalNumberOfAnchorReferences;
+		data.anchorToCandidatesProb = anchorToCandidatesProb;
+		//data.totalNumberOfCandidateReferences = totalNumberOfAnchorReferences;
 		
 		try {
 			ObjectOutputStream out;
