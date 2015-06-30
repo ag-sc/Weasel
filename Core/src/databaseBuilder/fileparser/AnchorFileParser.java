@@ -47,6 +47,7 @@ public class AnchorFileParser extends FileParser{
 	
 	public String[] parseTuple() throws IOException {
 		String[] triplet = parse();
+		if(triplet == null) return null;
 		String[] tuple = new String[2];
 		tuple[0] = triplet[0];
 		tuple[1] = triplet[1];
@@ -81,6 +82,7 @@ public class AnchorFileParser extends FileParser{
 
 		do {
 			line = br.readLine();
+			if(line == null) return null;
 			triplet = getLineTriplet(line);		
 		} while (triplet == null);
 
