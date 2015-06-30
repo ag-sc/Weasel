@@ -21,6 +21,7 @@ public class InMemoryConnector extends DatabaseConnector {
 	final Map<String, Integer> anchorID;
 	final int[][] anchorToCandidates;
 	final int[][] anchorToCandidatesCount;
+	final int[][] anchorToCandidatesProb;
 	int totalNumberOfCandidateReferences;
 	
 	InMemoryConnector(String inMemoryDataContainerFilePath) throws ClassNotFoundException, IOException {
@@ -34,6 +35,7 @@ public class InMemoryConnector extends DatabaseConnector {
 		anchorID = container.anchorID;
 		anchorToCandidates = container.anchorToCandidates;
 		anchorToCandidatesCount = container.anchorToCandidatesCount;
+		anchorToCandidatesProb = container.anchorToCandidatesProb;
 		redirects = container.redirects;
 		disambiguation = container.disambiguation;
 		totalNumberOfCandidateReferences = container.totalNumberOfCandidateReferences;
@@ -57,7 +59,7 @@ public class InMemoryConnector extends DatabaseConnector {
 		Integer id = anchorID.get(fragment);
 		if (id != null) {
 			for (int i = 0; i < anchorToCandidates[id].length; i++) {
-				result.add(anchorToCandidates[id][i] + "_" + anchorToCandidatesCount[id][i]);
+				result.add(anchorToCandidates[id][i] + "_" + anchorToCandidatesCount[id][i] + "_" + anchorToCandidatesProb[id][i]);
 			}
 		}else{
 			//System.err.println("InMemoryConnector: Can't find fragment '" + fragment + "'");
