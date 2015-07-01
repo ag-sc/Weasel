@@ -195,22 +195,36 @@ public class KORE50Parser extends DatasetParser {
 				sb = new StringBuilder();
 			}else{
 				String[] splitLine = line.split("\\t");
-				String word = splitLine[0];
-				if(!word.matches("\\p{Punct}+.*")){
-					sb.append(" ");
-				}
+				String word = "";
 				
 				// If entity is mentioned, add to model
-				if(splitLine.length > 1 && !splitLine[3].equalsIgnoreCase("--NME--")){
+				if(splitLine.length > 1){
+					if(splitLine[1].equals("I")){
+						continue;
+					}
+					
+					sb.append(" ");
 					int offset = sb.toString().length() - 1;
-					Resource tmp = model.createResource("Sentence_" + handler.getStringCounter() + "#char=" + offset + "," + (offset +  word.length()))
+					Resource tmp = model.createResource("Sentence_" + handler.getStringCounter() + "#char=" + offset + "," + (offset +  splitLine[2].length()))
 							.addProperty(Config.datasetEntityProp, splitLine[3]);
+					word = splitLine[2];
+				}else{
+					word = splitLine[0];
+					if(!word.matches("\\p{Punct}+.*") && !word.isEmpty()){
+						sb.append(" ");
+					}
 				}
+				
 				sb.append(word);
 			}
 		}
 		
-		handler.handleString(sb.toString().trim());
+		// Refine result
+		String sentence = sb.toString();
+		sentence = sentence.trim();
+		//sentence = sentence.replaceAll("\\s+", " ");
+		
+		handler.handleString(sentence);
 	}
 
 	@Override

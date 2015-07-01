@@ -26,7 +26,7 @@ public class H2AnchorBuilder extends H2BuilderCore{
 		int totalNumberOfAnchorReferences = 0;
 		String quadruple[];
 		String searchQuery, insertQuery, updateQuery;
-		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
+		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 
 		Class.forName("org.h2.Driver");
 		Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath + ";LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0", username, password);
@@ -55,7 +55,7 @@ public class H2AnchorBuilder extends H2BuilderCore{
 			addListEntry(source, entry, searchQuery, insertQuery, updateQuery, connection);
 
 			if (lineCounter % 1000000 == 0){
-				System.out.println("	processed lines: " + lineCounter + "\ttime passed: " + sw.stop() + " seconds");
+				System.out.println("	processed lines: " + lineCounter + "\ttime passed: " + sw.stop() + " minutes");
 				sw.start();
 			}
 				

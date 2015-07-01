@@ -28,15 +28,15 @@ public class StringHandlerTest {
 		//handler.handleString("Merkel is the chancellor of Germany. She leads the Bundesrepublik.");
 		Model model = handler.getModel();
 		
-		FOXAdapter foxAdapter = new FOXAdapter();
-		foxAdapter.linkModel(model);
+//		FOXAdapter foxAdapter = new FOXAdapter();
+//		foxAdapter.linkModel(model);
 		
-//		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
-//		NIFAdapter adapter = new NIFAdapter(sandbox);
-//		adapter.linkModel(model);
+		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
+		NIFAdapter adapter = new NIFAdapter(sandbox);
+		adapter.linkModel(model);
 //		
 //		System.out.println();
-//		model.write(System.out, "Turtle");
+		model.write(System.out, "Turtle");
 		
 		DatasetEvaluator.evaluateModel(model);
 	}

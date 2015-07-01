@@ -55,7 +55,7 @@ public class NIFAdapter {
 			for(int i = 0; i < tokenList.size(); i++){
 				Resource r = tokenList.get(i);
 				String token = r.getProperty(NIF_SchemaGen.anchorOf).getLiteral().toString();
-				tmpSentence = tmpSentence.replace(token, "resourceIndex:" + i);
+				tmpSentence = tmpSentence.replaceAll("\\b" + token + "\\b", "resourceIndex:" + i);
 			}
 			
 			// Create AnnotatedSentence

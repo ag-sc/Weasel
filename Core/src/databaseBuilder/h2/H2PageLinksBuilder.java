@@ -42,7 +42,7 @@ public class H2PageLinksBuilder extends H2BuilderCore {
 
 				if (lineCounter % 1000000 == 0) {
 					sw.stop();
-					System.out.println("Processed lines:\t" + lineCounter + "\tTime since last message: " + sw);
+					System.out.println("Processed lines:\t" + lineCounter + "\tTime since last message: " + sw + " minutes");
 					sw.start();
 				}
 			}
