@@ -14,6 +14,8 @@ public class StringEncoder {
 			try{
 				title = URLDecoder.decode(title, "UTF-8");
 			}catch (IllegalArgumentException e){
+				System.err.println("URL decode error for: " + title);
+				e.printStackTrace();
 				// The title probably contained a '%' sign that didn't specify a URL character code. Oh well, just ignore it then.
 			}
 			

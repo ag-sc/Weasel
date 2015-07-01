@@ -115,6 +115,23 @@ public class KORE50Parser extends DatasetParser {
 //		return sentence;
 //	}
 
+	private String decodeString(String string){
+		String tmp;
+		String unicodeString = "\\\\u(\\w\\w\\w\\w)";
+		Pattern unicodePattern = Pattern.compile(unicodeString);
+		Matcher matcher = unicodePattern.matcher(string);
+		while (matcher.find()) {
+			tmp = matcher.group(1);
+			// System.out.println("found unicode: " + tmp);
+			// System.out.println("translates to: " +
+			// (char)Integer.parseInt(tmp, 16));
+			String tmp3 = "\\\\u" + tmp;
+			String tmp4 = Character.toString((char) Integer.parseInt(tmp, 16));
+			string = string.replaceAll(tmp3, tmp4);
+		}
+		return string;
+	}
+	
 	@Override
 	public AnnotatedSentence parse() throws IOException {
 		AnnotatedSentence annotatedSentence = new AnnotatedSentence();
@@ -139,20 +156,22 @@ public class KORE50Parser extends DatasetParser {
 			} else if (line.equals(",") || line.equals("\n")) {
 				continue;
 			} else {
-				String tmp;
-				String unicodeString = "\\\\u(\\w\\w\\w\\w)";
-				Pattern unicodePattern = Pattern.compile(unicodeString);
-				Matcher matcher = unicodePattern.matcher(line);
-				while (matcher.find()) {
-					tmp = matcher.group(1);
-					// System.out.println("found unicode: " + tmp);
-					// System.out.println("translates to: " +
-					// (char)Integer.parseInt(tmp, 16));
-					String tmp3 = "\\\\u" + tmp;
-					String tmp4 = Character.toString((char) Integer.parseInt(tmp, 16));
-					line = line.replaceAll(tmp3, tmp4);
-				}
-
+//				String tmp;
+//				String unicodeString = "\\\\u(\\w\\w\\w\\w)";
+//				Pattern unicodePattern = Pattern.compile(unicodeString);
+//				Matcher matcher = unicodePattern.matcher(line);
+//				while (matcher.find()) {
+//					tmp = matcher.group(1);
+//					// System.out.println("found unicode: " + tmp);
+//					// System.out.println("translates to: " +
+//					// (char)Integer.parseInt(tmp, 16));
+//					String tmp3 = "\\\\u" + tmp;
+//					String tmp4 = Character.toString((char) Integer.parseInt(tmp, 16));
+//					line = line.replaceAll(tmp3, tmp4);
+//				}
+				line = decodeString(line);
+				
+				
 				String[] splitLine = line.split("\\t");
 				// encode to be compatible with database
 				if(useURLEncoding){
@@ -194,6 +213,7 @@ public class KORE50Parser extends DatasetParser {
 				handler.handleString(sb.toString().trim());
 				sb = new StringBuilder();
 			}else{
+				line = decodeString(line);
 				String[] splitLine = line.split("\\t");
 				String word = "";
 				
@@ -201,6 +221,14 @@ public class KORE50Parser extends DatasetParser {
 				if(splitLine.length > 1){
 					if(splitLine[1].equals("I")){
 						continue;
+					}
+					
+					if(useURLEncoding){
+						splitLine[0] = StringEncoder.encodeString(splitLine[0]);
+						if (splitLine.length >= 4) {
+							splitLine[2] = StringEncoder.encodeString(splitLine[2]);
+							splitLine[3] = StringEncoder.encodeString(splitLine[3]);
+						}
 					}
 					
 					sb.append(" ");

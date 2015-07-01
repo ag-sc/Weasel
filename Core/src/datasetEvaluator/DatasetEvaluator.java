@@ -15,6 +15,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import datasetEvaluator.datasetParser.DatasetParser;
+import datatypes.StringEncoder;
 import datatypes.annotatedSentence.AnnotatedSentence;
 import datatypes.annotatedSentence.Fragment;
 import datatypes.configuration.Config;
@@ -38,27 +39,60 @@ public class DatasetEvaluator {
 	}
 
 	public static double evaluateModel(Model model) {
-		double score = 0.0;
-		int entityCounter = 0;
+		double score = 0.0, precision, recall;
+		int goldStdEntities = 0;
 		int correctAssignments = 0;
-		StmtIterator iter = model.listStatements(new SimpleSelector(null, Config.datasetEntityProp, (RDFNode) null));
+		int totalAssignments = 0;
+		
+		// Count total assignments
+		StmtIterator goldEntitiesIter = model.listStatements(new SimpleSelector(null, Config.datasetEntityProp, (RDFNode) null));
+		while(goldEntitiesIter.hasNext()){
+			Statement stmt = goldEntitiesIter.next();
+			RDFNode subject = stmt.getObject();
+			if(!subject.toString().equalsIgnoreCase("--NME--")){
+				goldStdEntities++;
+			}
+		}
+		
+		StmtIterator assignmentIter = model.listStatements(new SimpleSelector(null, ITSRDF_SchemaGen.taIdentRef, (RDFNode) null));
 		// For all resources with a dataset-assigned entity
-		while (iter.hasNext()) {
-			entityCounter++;
-			Statement stmt = iter.nextStatement(); // get next statement
+		while (assignmentIter.hasNext()) {
+			totalAssignments++;
+			Statement stmt = assignmentIter.nextStatement(); // get next statement
 			Resource resource = stmt.getSubject();
 			Statement correctEntityStmt = resource.getProperty(Config.datasetEntityProp);
 			Statement assignedEntityStmt = resource.getProperty(ITSRDF_SchemaGen.taIdentRef);
-			if(correctEntityStmt == null || assignedEntityStmt == null) continue;
-			RDFNode correctEntity = correctEntityStmt.getObject();
-			RDFNode assignedEntity = assignedEntityStmt.getObject();
-			if(correctEntity != null && assignedEntity != null && correctEntity.toString().equals(assignedEntity.toString())){
-				correctAssignments++;
+			RDFNode assignedEntityNode = assignedEntityStmt.getObject();
+			String assignedEntity = assignedEntityNode.toString();
+			
+			if(correctEntityStmt == null){
+				System.out.println("Assigned: " + assignedEntityNode.toString());
+				continue;
 			}
-			System.out.println("Assigned: " + assignedEntity.toString() + " | Correct: " + correctEntity.toString());
+			RDFNode correctEntityNode = correctEntityStmt.getObject();
+			
+			String correctEntity = correctEntityNode.toString();
+			
+//			if(correctEntity != null && assignedEntity != null) continue;
+			if(correctEntity.equals(assignedEntity)){
+				correctAssignments++;
+				System.out.println("Correctly Assigned: " + assignedEntity);
+			}else{
+				if(correctEntity.equalsIgnoreCase("--NME--")){
+					totalAssignments--;
+					continue;
+				}
+				System.out.println("Assigned: " + assignedEntity + "\t| Correct: " + correctEntity);
+			}
 		}
 		
-		System.out.println("Correct assignments: (" + correctAssignments + "/" + entityCounter + ")");
+		precision = (double) correctAssignments / (double) totalAssignments;
+		recall = (double) correctAssignments / (double) goldStdEntities;
+		double fMeasure = (2 * precision * recall) / (precision + recall);
+		
+		System.out.println("Precision:\t" + (precision * 100) + " %\t(" + correctAssignments + "/" + totalAssignments + ")"); 
+		System.out.println("Recall:\t" + (recall * 100) + " %\t(" + correctAssignments + "/" + goldStdEntities + ")");
+		System.out.println("F-Measure:\t" + fMeasure);
 		return score;
 	}
 

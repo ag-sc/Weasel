@@ -4,11 +4,10 @@ import java.io.IOException;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
-import nif.FOXAdapter;
-import nif.NIFAdapter;
+import nif.ModelAdapter;
+import nif.SpotlightAdapter;
 import iniloader.IniLoader;
 import datasetEvaluator.DatasetEvaluator;
-import datasetEvaluator.DatasetEvaluatorSandbox;
 import datasetEvaluator.datasetParser.DatasetParser;
 import entityLinker.InputStringHandler;
 
@@ -28,14 +27,17 @@ public class StringHandlerTest {
 		//handler.handleString("Merkel is the chancellor of Germany. She leads the Bundesrepublik.");
 		Model model = handler.getModel();
 		
-//		FOXAdapter foxAdapter = new FOXAdapter();
-//		foxAdapter.linkModel(model);
+		ModelAdapter adapter;
+	
+//		adapter = new FOXAdapter();
 		
-		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
-		NIFAdapter adapter = new NIFAdapter(sandbox);
+//		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
+//		adapter = new NIFAdapter(sandbox);
+		
+		adapter = new SpotlightAdapter();
+		
 		adapter.linkModel(model);
-//		
-//		System.out.println();
+		
 		model.write(System.out, "Turtle");
 		
 		DatasetEvaluator.evaluateModel(model);

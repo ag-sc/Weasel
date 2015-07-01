@@ -1,12 +1,9 @@
 package nif;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,55 +22,50 @@ import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
+import datatypes.StringEncoder;
 import datatypes.configuration.Config;
 
-public class FOXAdapter {
-
-	public void linkModel(Model model) {
-		StmtIterator iter = model.listStatements(new SimpleSelector(null, null, (RDFNode) NIF_SchemaGen.Context));
-
-		// For all resources labled "context"
-		while (iter.hasNext()) {
-			Statement stmt = iter.nextStatement(); // get next statement
-			Resource originResource = stmt.getSubject();
-
-			String originSentence = originResource.getProperty(NIF_SchemaGen.isString).getLiteral().toString().split("\\^\\^")[0];
-			if (originSentence == null)
+public class FOXAdapter extends ModelAdapter{
+	
+	public FOXAdapter(){
+		super();
+	}
+	
+	protected void innerLoop(Model model, Statement stmt, String originSentence, Resource originResource){
+		String foxResult = getContentStringFor(originSentence);
+		Model foxModel = ModelFactory.createDefaultModel();
+		for(String line: foxResult.split("\n")){
+			String[] splitLine = line.split(" ");
+			if(splitLine.length != 4){
+				//System.out.println("weird line: " + line);
 				continue;
-			System.out.println("Origin Sentence: " + originSentence);
-
-			String foxResult = getContentStringFor(originSentence);
-			Model foxModel = ModelFactory.createDefaultModel();
-			for(String line: foxResult.split("\n")){
-				String[] splitLine = line.split(" ");
-				if(splitLine.length != 4){
-					//System.out.println("weird line: " + line);
-					continue;
-				}
-				Resource tmpSubject = ResourceFactory.createResource(splitLine[0]);
-				String tmp = splitLine[1].replace("<", "").replace(">", "");
-				Property tmpProperty = ResourceFactory.createProperty(tmp);
-				Resource tmpObject = ResourceFactory.createResource(splitLine[2].replace("<", "").replace(">", ""));
-				foxModel.add(tmpSubject, tmpProperty, tmpObject);
 			}
+			Resource tmpSubject = ResourceFactory.createResource(splitLine[0]);
+			String tmp = splitLine[1].replace("<", "").replace(">", "");
+			Property tmpProperty = ResourceFactory.createProperty(tmp);
+			Resource tmpObject = ResourceFactory.createResource(splitLine[2].replace("<", "").replace(">", ""));
+			foxModel.add(tmpSubject, tmpProperty, tmpObject);
+		}
+		
+//		foxModel.write(System.out, "Turtle");
+		
+		Property means = ResourceFactory.createProperty("http://ns.aksw.org/scms/means");
+		Property beginIndexProp = ResourceFactory.createProperty("http://ns.aksw.org/scms/beginIndex");
+		Property endIndexProp = ResourceFactory.createProperty("http://ns.aksw.org/scms/endIndex");
+		StmtIterator resultIter = foxModel.listStatements(new SimpleSelector(null, means, (RDFNode) null));
+		while (resultIter.hasNext()) {
+			Resource resultResource = resultIter.nextStatement().getSubject();
+			String entity = resultResource.getProperty(means).getObject().toString().replace("http://dbpedia.org/resource/", "");
+			String beginIndex = resultResource.getProperty(beginIndexProp).getObject().toString().split("\"")[1];
+			String endIndex = resultResource.getProperty(endIndexProp).getObject().toString().split("\"")[1];
+			//System.out.println(entity + " - " + beginIndex + "," + endIndex);
 			
-//			foxModel.write(System.out, "Turtle");
+			if(useURLEncoding) entity = StringEncoder.encodeString(entity);
 			
-			Property means = ResourceFactory.createProperty("http://ns.aksw.org/scms/means");
-			Property beginIndexProp = ResourceFactory.createProperty("http://ns.aksw.org/scms/beginIndex");
-			Property endIndexProp = ResourceFactory.createProperty("http://ns.aksw.org/scms/endIndex");
-			StmtIterator resultIter = foxModel.listStatements(new SimpleSelector(null, means, (RDFNode) null));
-			while (resultIter.hasNext()) {
-				Resource resultResource = resultIter.nextStatement().getSubject();
-				String entity = resultResource.getProperty(means).getObject().toString().replace("http://dbpedia.org/resource/", "");
-				String beginIndex = resultResource.getProperty(beginIndexProp).getObject().toString().split("\"")[1];
-				String endIndex = resultResource.getProperty(endIndexProp).getObject().toString().split("\"")[1];
-				//System.out.println(entity + " - " + beginIndex + "," + endIndex);
-				
-				model.createResource(originResource.toString() + "#char=" + beginIndex + "," + endIndex).addProperty(ITSRDF_SchemaGen.taIdentRef, entity);
-			}
+			model.createResource(originResource.toString() + "#char=" + beginIndex + "," + endIndex).addProperty(ITSRDF_SchemaGen.taIdentRef, entity);
 		}
 	}
+	
 	
 	private String getContentStringFor(String sentence){
 		URI uri = buildURI(sentence);
