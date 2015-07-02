@@ -11,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+import datatypes.configuration.Config;
 import edu.stanford.nlp.ie.AbstractSequenceClassifier;
 import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -22,7 +23,9 @@ public class InputStringHandler {
 	int stringCounter = 0;
 	
 	public InputStringHandler() throws ClassCastException, ClassNotFoundException, IOException{
-		String serializedClassifier = "E:/Master Project/data/stanford models/english.conll.4class.distsim.crf.ser.gz";
+		Config config = Config.getInstance();
+		String serializedClassifier = config.getParameter("stanfordModelPath");
+		//String serializedClassifier = "E:/Master Project/data/stanford models/english.conll.4class.distsim.crf.ser.gz";
 		classifier = CRFClassifier.getClassifier(serializedClassifier);
 		
 		// Create Model

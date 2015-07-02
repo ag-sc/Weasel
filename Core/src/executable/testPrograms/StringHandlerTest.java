@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
+import nif.FOXAdapter;
 import nif.ModelAdapter;
 import nif.SpotlightAdapter;
 import iniloader.IniLoader;
