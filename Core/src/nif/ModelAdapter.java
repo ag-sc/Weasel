@@ -29,10 +29,12 @@ public abstract class ModelAdapter {
 			String originSentence = originResource.getProperty(NIF_SchemaGen.isString).getLiteral().toString().split("\\^\\^")[0];
 			if (originSentence == null)
 				continue;
-			System.out.println("Origin Sentence: " + originSentence);
+//			System.out.println("Origin Sentence: " + originSentence);
 			innerLoop(model, stmt, originSentence, originResource);
 		}
+		afterLoop();
 	}
 	
 	protected abstract void innerLoop(Model model, Statement stmt, String originSentence, Resource originResource);
+	protected void afterLoop(){}
 }

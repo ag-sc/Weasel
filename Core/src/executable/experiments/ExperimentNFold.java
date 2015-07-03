@@ -10,9 +10,17 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nif.ModelAdapter;
+import nif.NIFAdapter;
+
+import com.hp.hpl.jena.rdf.model.Model;
+
 import utility.Stopwatch;
+import datasetEvaluator.DatasetEvaluator;
 import datasetEvaluator.DatasetEvaluatorSandbox;
+import datasetEvaluator.datasetParser.DatasetParser;
 import datatypes.configuration.Config;
+import entityLinker.InputStringHandler;
 
 public class ExperimentNFold {
 
@@ -21,7 +29,7 @@ public class ExperimentNFold {
 	static int numberOfFolds = 10;
 
 	public static void main(String[] args) {
-		String filepath = "config.ini";
+		String filepath = "../config.ini";
 		if (args.length == 1)
 			filepath = args[0];
 		System.out.println("Using config file: " + filepath);
@@ -31,6 +39,7 @@ public class ExperimentNFold {
 
 		double resultSum = 0.0;
 		Config config = Config.getInstance();
+		config.setParameter("wekaModelStatus", "train");
 
 		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
 		try {
@@ -50,15 +59,35 @@ public class ExperimentNFold {
 				sw.start();
 				
 				// Train
+				System.out.println("Start training...");
 				config.setParameter("wekaModelStatus", "train");
-				config.setParameter("datasetPath", "/home/felix/data/aida10foldSpotlight/aida_spotlight_10fold_" + trainFold + "_testset.tsv");
-				result = sandbox.evaluate();
+				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
+//				config.setParameter("datasetPath", "E:/Master Project/data/aida-yago2-dataset/aida_fold_" + trainFold + "_testset.tsv");
+				//				result = sandbox.evaluate();
+				InputStringHandler handler = new InputStringHandler();
+				DatasetParser parser = DatasetParser.getInstance();
+				parser.parseIntoStringHandler(handler);
+				Model model = handler.getModel();
+				ModelAdapter adapter = new NIFAdapter(sandbox);
+				adapter.linkModel(model);
+//				model.write(System.out, "Turtle");	
+				DatasetEvaluator.evaluateModel(model);
 				
 				// Test
+				System.out.println("Start testing...");
 				config.setParameter("wekaModelStatus", "test");
-				config.setParameter("datasetPath", "/home/felix/data/aida10foldSpotlight/aida_spotlight_10fold_" + trainFold + ".tsv");
-				result = sandbox.evaluate();
-				resultSum += result;
+				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + ".tsv");
+//				result = sandbox.evaluate();
+//				resultSum += result;
+				handler = new InputStringHandler();
+				parser = DatasetParser.getInstance();
+				parser.parseIntoStringHandler(handler);
+				model = handler.getModel();
+				adapter = new NIFAdapter(sandbox);
+				adapter.linkModel(model);
+				System.out.println("Model for fold " + trainFold);
+				model.write(System.out, "Turtle");	
+				DatasetEvaluator.evaluateModel(model);
 				
 				sw.stop();
 				result = round(result, 4);

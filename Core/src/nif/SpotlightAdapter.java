@@ -93,5 +93,4 @@ public class SpotlightAdapter extends ModelAdapter{
 		}
 		return null;
 	}
-
 }

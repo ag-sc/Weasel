@@ -57,26 +57,29 @@ public class DatasetEvaluatorSandbox {
 		String stopwordsPath = config.getParameter("stopwordsPath");
 		linker = new EntityLinker(evaluator, anchorConnector, stopwordsPath);
 	}
-	
-	public AnnotatedSentence evaluateSentence(AnnotatedSentence input){
+
+	public AnnotatedSentence evaluateSentence(AnnotatedSentence input) {
 		return linker.link(input);
+	}
+
+	public void wekaFinalizeTraining() {
+		Config config = Config.getInstance();
+		// build weka model if applicable
+		if (wekaLink != null && config.getParameter("wekaModelStatus").equals("train")) {
+			wekaLink.finalizeTraining();
+		}
 	}
 
 	public double evaluate() {
 		try {
-			Config config = Config.getInstance();
-
 			// Evaluation
 			DatasetEvaluator dataEvaluator = new DatasetEvaluator(linker, anchorConnector); // checkupConnector);
 			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			double result = dataEvaluator.evaluate();
 			System.out.println("Evaluation time (including data load): " + sw.stop() + " minutes");
 
-			// build weka model if applicable
-			if (wekaLink != null && config.getParameter("wekaModelStatus").equals("train")) {
-				wekaLink.finalizeTraining();
-			}
-
+			wekaFinalizeTraining();
+			
 			return result;
 		} catch (IOException e) {
 			e.printStackTrace();

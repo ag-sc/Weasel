@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+
+import datatypes.configuration.Config;
 
 public class Fragment implements Comparable<Fragment> {
 
@@ -27,6 +30,12 @@ public class Fragment implements Comparable<Fragment> {
 	public Fragment(String originWord, Resource originResource){
 		this(originWord);
 		setOriginResource(originResource);
+		
+		Statement stmt = originResource.getProperty(Config.datasetEntityProp);
+		if(stmt != null){
+			String originEntity = stmt.getObject().toString();
+			setOriginEntity(originEntity);
+		}
 	}
 
 	public Fragment(String originWord) {

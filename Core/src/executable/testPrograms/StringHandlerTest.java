@@ -6,9 +6,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import nif.FOXAdapter;
 import nif.ModelAdapter;
+import nif.NIFAdapter;
 import nif.SpotlightAdapter;
 import iniloader.IniLoader;
 import datasetEvaluator.DatasetEvaluator;
+import datasetEvaluator.DatasetEvaluatorSandbox;
 import datasetEvaluator.datasetParser.DatasetParser;
 import entityLinker.InputStringHandler;
 
@@ -30,12 +32,12 @@ public class StringHandlerTest {
 		
 		ModelAdapter adapter;
 	
-//		adapter = new FOXAdapter();
+		adapter = new FOXAdapter();
 		
 //		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
 //		adapter = new NIFAdapter(sandbox);
 		
-		adapter = new SpotlightAdapter();
+//		adapter = new SpotlightAdapter();
 		
 		adapter.linkModel(model);
 		

@@ -127,7 +127,12 @@ public class WekaLink {
 		dataUnlabeled.setClassIndex(dataUnlabeled.numAttributes() - 1);
 
 		try {
-			values = classifier.distributionForInstance(dataUnlabeled.firstInstance());
+			Instance instance = dataUnlabeled.firstInstance();
+			if(instance != null){
+				values = classifier.distributionForInstance(instance);
+			}else{
+				System.err.println("No instance for instance: " + ins.toString());
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
