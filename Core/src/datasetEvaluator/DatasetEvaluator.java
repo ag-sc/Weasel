@@ -38,7 +38,7 @@ public class DatasetEvaluator {
 		this.checkupConnector = entityDBconnector;
 	}
 
-	public static double evaluateModel(Model model) {
+	public static double[] evaluateModel(Model model) {
 		double score = 0.0, precision, recall;
 		int goldStdEntities = 0;
 		int correctAssignments = 0;
@@ -93,7 +93,12 @@ public class DatasetEvaluator {
 		System.out.println("Precision:\t" + (precision * 100) + " %\t(" + correctAssignments + "/" + totalAssignments + ")"); 
 		System.out.println("Recall:\t" + (recall * 100) + " %\t(" + correctAssignments + "/" + goldStdEntities + ")");
 		System.out.println("F-Measure:\t" + fMeasure);
-		return score;
+		
+		double[] results = new double[3];
+		results[0] = precision;
+		results[1] = recall;
+		results[2] = fMeasure;
+		return results;
 	}
 
 	// TODO: fix the counting so that double entries are not counted twice

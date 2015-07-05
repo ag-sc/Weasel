@@ -38,10 +38,10 @@ public class ExperimentNFold {
 		double result = 0;
 
 		double resultSum = 0.0;
+		double[] results = new double[3];
 		Config config = Config.getInstance();
 		config.setParameter("wekaModelStatus", "train");
 
-		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
 		try {
 			BufferedWriter fw = new BufferedWriter(new FileWriter("experiment_" + experimentNumber + ".txt"));
 			Date date = new Date();
@@ -62,16 +62,19 @@ public class ExperimentNFold {
 				System.out.println("Start training...");
 				config.setParameter("wekaModelStatus", "train");
 				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
-//				config.setParameter("datasetPath", "E:/Master Project/data/aida-yago2-dataset/aida_fold_" + trainFold + "_testset.tsv");
+//				config.setParameter("datasetPath", "/home/felix/data/aidaTestSentence.tsv");
+				//				config.setParameter("datasetPath", "E:/Master Project/data/aida-yago2-dataset/aida_fold_" + trainFold + "_testset.tsv");
 				//				result = sandbox.evaluate();
 				InputStringHandler handler = new InputStringHandler();
 				DatasetParser parser = DatasetParser.getInstance();
 				parser.parseIntoStringHandler(handler);
 				Model model = handler.getModel();
+				DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
 				ModelAdapter adapter = new NIFAdapter(sandbox);
 				adapter.linkModel(model);
 //				model.write(System.out, "Turtle");	
 				DatasetEvaluator.evaluateModel(model);
+//				model.write(System.out, "Turtle");	
 				
 				// Test
 				System.out.println("Start testing...");
@@ -83,11 +86,15 @@ public class ExperimentNFold {
 				parser = DatasetParser.getInstance();
 				parser.parseIntoStringHandler(handler);
 				model = handler.getModel();
+				sandbox = new DatasetEvaluatorSandbox();
 				adapter = new NIFAdapter(sandbox);
 				adapter.linkModel(model);
 				System.out.println("Model for fold " + trainFold);
 				model.write(System.out, "Turtle");	
-				DatasetEvaluator.evaluateModel(model);
+				double[] tmp = DatasetEvaluator.evaluateModel(model);
+				results[0] += tmp[0];
+				results[1] += tmp[1];
+				results[2] += tmp[2];
 				
 				sw.stop();
 				result = round(result, 4);
@@ -98,8 +105,12 @@ public class ExperimentNFold {
 			fw.write("\n");
 			swTotal.stop();
 			fw.write("Total time: " + round(swTotal.doubleTime, 4) + " minutes.\n");
-			resultSum /= (double)numberOfFolds;
-			fw.write("Average of the "+ numberOfFolds +" results: " + resultSum + "%");
+			//resultSum /= (double)numberOfFolds;
+			//fw.write("Average of the "+ numberOfFolds +" results: " + resultSum + "%");
+			System.out.println("Average Precision: " + (results[0] * 10) + "%");
+			System.out.println("Average Recall: " + (results[1] * 10) + "%");
+			System.out.println("Average F-Measure: " + (results[2] * 10) + "%");
+			
 			fw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
