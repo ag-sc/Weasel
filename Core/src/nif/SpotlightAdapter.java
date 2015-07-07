@@ -76,8 +76,8 @@ public class SpotlightAdapter extends ModelAdapter{
 			.setHost("spotlight.dbpedia.org")
 			.setPath("/rest/annotate")
 			.setParameter("text", input)
-			.setParameter("confidence", "0.0")
-			.setParameter("support", "0")
+			.setParameter("confidence", "0.5")
+			.setParameter("support", "20")
 			.build();
 			
 			return Request.Get(uri).addHeader("Accept", "text/xml").execute().returnContent();

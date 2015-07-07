@@ -19,12 +19,17 @@ public class Candidate implements Comparable<Candidate>{
 
 	@Override
 	public int compareTo(Candidate o) {
+		if (entity.compareTo(o.entity) == 0){
+			return count - o.count;
+		}
+		
 		return entity.compareTo(o.entity);
 	}
 	
 	@Override
 	public int hashCode(){
-		return entity.hashCode();
+		String tmp = entity + count;
+		return tmp.hashCode();
 	}
 	
 	public double getReferenceProbability(){

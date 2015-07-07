@@ -24,7 +24,7 @@ import entityLinker.InputStringHandler;
 
 public class ExperimentNFold {
 
-	static int experimentNumber = 3;
+	static int experimentNumber = 7;
 	static String dataset = "aida";
 	static int numberOfFolds = 10;
 
@@ -98,7 +98,11 @@ public class ExperimentNFold {
 				
 				sw.stop();
 				result = round(result, 4);
-				fw.write(trainFold + ":\t" + result + "%\t" + round(sw.doubleTime, 4) + " s\n");
+				
+				fw.write("Precision: " + (tmp[0]) + " %\n");
+				fw.write("Recall: " + (tmp[1]) + " %\n");
+				fw.write("F-Measure: " + (tmp[2]) + "\n");				
+				fw.write(round(sw.doubleTime, 4) + " s\n");
 				fw.flush();
 			}
 
@@ -107,9 +111,9 @@ public class ExperimentNFold {
 			fw.write("Total time: " + round(swTotal.doubleTime, 4) + " minutes.\n");
 			//resultSum /= (double)numberOfFolds;
 			//fw.write("Average of the "+ numberOfFolds +" results: " + resultSum + "%");
-			System.out.println("Average Precision: " + (results[0] * 10) + "%");
-			System.out.println("Average Recall: " + (results[1] * 10) + "%");
-			System.out.println("Average F-Measure: " + (results[2] * 10) + "%");
+			System.out.println("Average Precision: " + (results[0] * 10) + " %");
+			System.out.println("Average Recall: " + (results[1] * 10) + " %");
+			System.out.println("Average F-Measure: " + (results[2] / 10));
 			
 			fw.close();
 		} catch (IOException e) {

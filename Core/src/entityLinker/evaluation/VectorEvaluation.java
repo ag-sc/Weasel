@@ -182,12 +182,6 @@ public class VectorEvaluation extends EvaluationEngine {
 				int candidateID = Integer.parseInt(candidate.getEntity());
 				VectorEntry candidateEntry = vectorMap.get(candidateID);
 
-				if (fragment.originWord.equals("Reuters Television")) {
-					System.out.println("word: " + candidate.getEntity());
-					System.out.println("id: " + candidateID + " - vectormap size: " + vectorMap.size());
-					System.out.println(candidateEntry);
-				}
-
 				if (candidateEntry == null) {
 					// System.out.println(h2.resolveID(candidate) +
 					// " not found in bigMap!");
@@ -290,6 +284,11 @@ public class VectorEvaluation extends EvaluationEngine {
 			double bestScore = 0;
 			double smoScore = 99999;
 			String bestCandidate = "";
+			
+			if(!fragment.getOriginEntity().isEmpty() && fragment.getCandidates().isEmpty()){
+				System.out.println("No candidates for fragment with entity: " + fragment.getOriginEntity());
+			}
+			
 			for (Candidate candidate : fragment.getCandidates()) {
 				Double[] tmp = scoreMap.get(candidate.getEntity());
 				if (tmp == null)
@@ -300,8 +299,9 @@ public class VectorEvaluation extends EvaluationEngine {
 					System.err.println(candidate + " tfidfVector is NaN - " + tmp[1] + " - " + maxTFIDFScore);
 
 				double candidateReferenceFrequency = candidate.getReferenceProbability();//((double) candidate.count / (double) dbConnector.getTotalNumberOfReferences());
-				double candidateVectorScore = (tmp[0] / maxCandidateScore);
-				double tfidfScore = (tmp[1] / maxTFIDFScore);
+				// TODO: change calculation back?
+				double candidateVectorScore = (tmp[0]); // / maxCandidateScore);
+				double tfidfScore = (tmp[1]); // / maxTFIDFScore);
 
 				// double candidateScore = candidateReferenceFrequency * (lambda
 				// * candidateVectorScore + (1 - lambda) * tfidfScore);
@@ -383,6 +383,9 @@ public class VectorEvaluation extends EvaluationEngine {
 
 				try {
 					if (config.getParameter("wekaModelStatus").equals("test")) {
+						
+						
+						
 						double[] values = wekaLink.testInstance(candidateVectorScore, tfidfScore, pageRank, candidateReferenceFrequency);
 						if (values[0] < smoScore) {
 							smoScore = values[0];
@@ -391,6 +394,15 @@ public class VectorEvaluation extends EvaluationEngine {
 							fragment.setEntity(dbConnector.resolveID(bestCandidate));
 							fragment.probability = 1.0 - smoScore;
 						}
+						
+						//System.out.println(candidate.getEntity() + ": candidateVectorScore: " + candidateVectorScore + " tfidf: " + tfidfScore + " pagerank: " + pageRank + " candidateref: " + candidateReferenceFrequency + " values0: " + values[0]  + " values1: " +  values[1]);
+
+						
+//						if(dbConnector.resolveID(candidate.getEntity()).equals("bovine_spongiform_encephalopathy")){
+//							System.out.println("bovine: " + candidateVectorScore + " tfidf: " + tfidfScore + " pagerank: " + pageRank + " candidateref: " + candidateReferenceFrequency + " values0: " + values[0]  + " values1: " +  values[1]);
+//						}else if(dbConnector.resolveID(candidate.getEntity()).equals("bachelor_of_science")){
+//							System.out.println("science: " + candidateVectorScore + " tfidf: " + tfidfScore + " pagerank: " + pageRank + " candidateref: " + candidateReferenceFrequency + " values0: " + values[0]  + " values1: " +  values[1]);
+//						}
 					}
 
 				} catch (Exception e) {

@@ -32,10 +32,10 @@ public class StringHandlerTest {
 		
 		ModelAdapter adapter;
 	
-		adapter = new FOXAdapter();
+//		adapter = new FOXAdapter();
 		
-//		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
-//		adapter = new NIFAdapter(sandbox);
+		DatasetEvaluatorSandbox sandbox = new DatasetEvaluatorSandbox();
+		adapter = new NIFAdapter(sandbox);
 		
 //		adapter = new SpotlightAdapter();
 		
