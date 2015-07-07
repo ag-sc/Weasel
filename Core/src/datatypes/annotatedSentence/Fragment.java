@@ -1,6 +1,7 @@
 package datatypes.annotatedSentence;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.TreeSet;
 
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -86,6 +87,17 @@ public class Fragment implements Comparable<Fragment> {
 
 	public TreeSet<Candidate> getCandidates() {
 		return candidates;
+	}
+	
+	public TreeSet<Candidate> getCandidatesSortByNameOnly(){
+		Comparator<Candidate> c = new Comparator<Candidate>(){
+			public int compare(Candidate o1, Candidate o2) {
+				return o1.entity.compareTo(o2.entity);
+			}
+		};
+		TreeSet<Candidate> set = new TreeSet<Candidate>(c);
+		set.addAll(candidates);
+		return set;
 	}
 
 	public boolean containsEntity(String entity) {

@@ -82,12 +82,14 @@ public class VectorEvaluation extends EvaluationEngine {
 			// df = (DocumentFrequency) objectReader.readObject();
 			// objectReader.close();
 
+//			df = new DocumentFrequency();
+			
 			FileInputStream fileInputStream = new FileInputStream(dfFilePath);
 			FSTObjectInput in = new FSTObjectInput(fileInputStream);
 			df = (DocumentFrequency) in.readObject();
 			in.close();
-
 			fileInputStream.close();
+			
 			System.out.println("Done. Took " + sw.stop() + " minutes.");
 		}
 
@@ -253,9 +255,9 @@ public class VectorEvaluation extends EvaluationEngine {
 			TreeSet<String> incorrectSet = new TreeSet<String>();
 			Candidate correct = null;
 			if (tmpID != null) {
-				TreeSet<Candidate> candidates = fragment.getCandidates();
+				TreeSet<Candidate> candidates = fragment.getCandidatesSortByNameOnly();
 				correct = new Candidate(tmpID.toString(), 0, 0);
-				if (candidates.contains(correct) && candidates.size() > numberOfIncorrectExamples) {
+				if (candidates.contains(correct) && candidates.size() > (numberOfIncorrectExamples + 1)) {
 					eligibleForARFF = true;
 					LinkedList<Candidate> candidateList = new LinkedList<Candidate>(candidates);
 
@@ -285,9 +287,9 @@ public class VectorEvaluation extends EvaluationEngine {
 			double smoScore = 99999;
 			String bestCandidate = "";
 			
-			if(!fragment.getOriginEntity().isEmpty() && fragment.getCandidates().isEmpty()){
-				System.out.println("No candidates for fragment with entity: " + fragment.getOriginEntity());
-			}
+//			if(!fragment.getOriginEntity().isEmpty() && fragment.getCandidates().isEmpty()){
+//				System.out.println("No candidates for fragment with entity: " + fragment.getOriginEntity());
+//			}
 			
 			for (Candidate candidate : fragment.getCandidates()) {
 				Double[] tmp = scoreMap.get(candidate.getEntity());

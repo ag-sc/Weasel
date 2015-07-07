@@ -104,7 +104,7 @@ public class EntityLinker {
 //				  for(String s: cleanedList) System.out.println(" " + s);
 //			}
 			f.addCandidateStrings(cleanedList);
-			if(cleanedList.isEmpty()) System.out.println("no candidates for originWord: " + originWord);
+//			if(cleanedList.isEmpty()) System.out.println("no candidates for originWord: " + originWord);
 			// find entities for candidate vector score computation in vector
 			// evaluation step
 			while (foundEntitiesList.size() > 0) {

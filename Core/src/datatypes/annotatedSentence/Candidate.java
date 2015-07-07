@@ -2,7 +2,7 @@ package datatypes.annotatedSentence;
 
 public class Candidate implements Comparable<Candidate>{
 
-	private final String entity;
+	final String entity;
 	public int count;
 	private int totalNumberOfReferencesToEntity;
 	private double referenceProbability = 0.0;

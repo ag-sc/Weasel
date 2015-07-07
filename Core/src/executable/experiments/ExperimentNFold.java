@@ -24,7 +24,7 @@ import entityLinker.InputStringHandler;
 
 public class ExperimentNFold {
 
-	static int experimentNumber = 7;
+	static int experimentNumber = 8;
 	static String dataset = "aida";
 	static int numberOfFolds = 10;
 
