@@ -22,13 +22,19 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 import datatypes.StringEncoder;
+import datatypes.configuration.Config;
 
 public class SpotlightAdapter extends ModelAdapter{
 	DocumentBuilderFactory dbf;
+	double confidence = 0.2;
+	int support = 10;
 	
 	public SpotlightAdapter(){
 		super();
 		dbf = DocumentBuilderFactory.newInstance();
+		Config config = Config.getInstance();
+		confidence = Double.parseDouble(config.getParameter("SpotlightAdapterConfidence"));
+		support = Integer.parseInt(config.getParameter("SpotlightAdapterSupport"));
 	}
 	
 	@Override
@@ -76,8 +82,8 @@ public class SpotlightAdapter extends ModelAdapter{
 			.setHost("spotlight.dbpedia.org")
 			.setPath("/rest/annotate")
 			.setParameter("text", input)
-			.setParameter("confidence", "0.5")
-			.setParameter("support", "20")
+			.setParameter("confidence", Double.toString(confidence))
+			.setParameter("support", Integer.toString(support))
 			.build();
 			
 			return Request.Get(uri).addHeader("Accept", "text/xml").execute().returnContent();

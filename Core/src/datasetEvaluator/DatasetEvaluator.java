@@ -89,6 +89,7 @@ public class DatasetEvaluator {
 		precision = (double) correctAssignments / (double) totalAssignments;
 		recall = (double) correctAssignments / (double) goldStdEntities;
 		double fMeasure = (2 * precision * recall) / (precision + recall);
+		if(Double.isNaN(fMeasure)) fMeasure = 0;
 		
 		System.out.println("Precision:\t" + (precision * 100) + " %\t(" + correctAssignments + "/" + totalAssignments + ")"); 
 		System.out.println("Recall:\t" + (recall * 100) + " %\t(" + correctAssignments + "/" + goldStdEntities + ")");

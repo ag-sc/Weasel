@@ -11,20 +11,20 @@ import java.util.LinkedList;
 
 public class NFoldDataSplitter {
 
-	static int folds = 10;
-	static int nrOfDataEntries = 1360;
-	static String inputPath = "E:/Master Project/data/aida-yago2-dataset/spotlight/aida_picked_setences.tsv";
-	static String outputPath = "E:/Master Project/data/aida-yago2-dataset/spotlight/aida_spotlight_10fold";
+//	static int folds = 10;
+//	static int nrOfDataEntries = 1360;
+//	static String inputPath = "E:/Master Project/data/aida-yago2-dataset/spotlight/aida_picked_setences.tsv";
+//	static String outputPath = "E:/Master Project/data/aida-yago2-dataset/spotlight/aida_spotlight_10fold";
 	
 //	static int folds = 2;
 //	static int nrOfDataEntries = 1393;
 //	static String inputPath = "E:/Master Project/data/aida-yago2-dataset/AIDA-YAGO2-dataset.tsv";
 //	static String outputPath = "E:/Master Project/data/aida-yago2-dataset/aida_2fold";
 	
-//	static int folds = 2;
-//	static int nrOfDataEntries = 50;
-//	static String inputPath = "E:/Master Project/data/kore50/kore50.tsv";
-//	static String outputPath = "E:/Master Project/data/kore50/kore50_fold";
+	static int folds = 10;
+	static int nrOfDataEntries = 50;
+	static String inputPath = "E:/Master Project/data/kore50/kore50.tsv";
+	static String outputPath = "E:/Master Project/data/kore50/kore50_fold";
 	
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputPath)));
@@ -65,7 +65,7 @@ public class NFoldDataSplitter {
 		
 		if(folds > 2){
 			for(int i = 0; i < folds; i++){
-				BufferedWriter fw = new BufferedWriter(new FileWriter(outputPath + "_" + i + "_testset.tsv"));
+				BufferedWriter fw = new BufferedWriter(new FileWriter(outputPath + "_" + i + "_trainset.tsv"));
 				for(int j = 0; j < folds; j++){
 					if(i == j) continue;
 					br = new BufferedReader(new InputStreamReader(new FileInputStream(outputPath + "_" + j + ".tsv")));

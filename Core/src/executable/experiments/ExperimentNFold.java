@@ -24,7 +24,7 @@ import entityLinker.InputStringHandler;
 
 public class ExperimentNFold {
 
-	static int experimentNumber = 8;
+	static int experimentNumber = 9;
 	static String dataset = "aida";
 	static int numberOfFolds = 10;
 
@@ -61,7 +61,8 @@ public class ExperimentNFold {
 				// Train
 				System.out.println("Start training...");
 				config.setParameter("wekaModelStatus", "train");
-				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
+				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + "_testset.tsv");
+//				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
 //				config.setParameter("datasetPath", "/home/felix/data/aidaTestSentence.tsv");
 				//				config.setParameter("datasetPath", "E:/Master Project/data/aida-yago2-dataset/aida_fold_" + trainFold + "_testset.tsv");
 				//				result = sandbox.evaluate();
@@ -79,7 +80,8 @@ public class ExperimentNFold {
 				// Test
 				System.out.println("Start testing...");
 				config.setParameter("wekaModelStatus", "test");
-				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + ".tsv");
+				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + ".tsv");
+//				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + ".tsv");
 //				result = sandbox.evaluate();
 //				resultSum += result;
 				handler = new InputStringHandler();
@@ -99,8 +101,8 @@ public class ExperimentNFold {
 				sw.stop();
 				result = round(result, 4);
 				
-				fw.write("Precision: " + (tmp[0]) + " %\n");
-				fw.write("Recall: " + (tmp[1]) + " %\n");
+				fw.write("Precision: " + (tmp[0] * 100) + " %\n");
+				fw.write("Recall: " + (tmp[1] * 100) + " %\n");
 				fw.write("F-Measure: " + (tmp[2]) + "\n");				
 				fw.write(round(sw.doubleTime, 4) + " s\n");
 				fw.flush();
