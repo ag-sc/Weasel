@@ -9,25 +9,25 @@ public class StringEncoder {
 		
 	}
 
-	public static String encodeString(String title){
+	public static String encodeString(String string){
 		try {
 			try{
-				title = URLDecoder.decode(title, "UTF-8");
+				string = URLDecoder.decode(string, "UTF-8");
 			}catch (IllegalArgumentException e){
-				System.err.println("URL decode error for: " + title);
-				e.printStackTrace();
+				//System.err.println("URL decode error for: " + string);
+				//e.printStackTrace();
 				// The title probably contained a '%' sign that didn't specify a URL character code. Oh well, just ignore it then.
 			}
 			
-			title = title.trim().replace(" ", "_").toLowerCase();
-			title = URLEncoder.encode(title, "UTF-8");
+			string = string.trim().replace(" ", "_");
+			string = URLEncoder.encode(string, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			System.exit(-1);
 		} catch (Exception e){
-			System.err.println("Url encoding exception for title: " + title);
+			System.err.println("Url encoding exception for title: " + string);
 			e.printStackTrace();
 		}
-		return title;
+		return string;
 	}
 }

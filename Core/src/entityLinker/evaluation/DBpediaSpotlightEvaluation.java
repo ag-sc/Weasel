@@ -17,7 +17,7 @@ import datatypes.StringEncoder;
 import datatypes.annotatedSentence.AnnotatedSentence;
 import datatypes.annotatedSentence.Fragment;
 import datatypes.configuration.Config;
-
+@Deprecated
 public class DBpediaSpotlightEvaluation extends EvaluationEngine {
 
 //	static String stem = "http://spotlight.dbpedia.org/rest/annotate?text=";

@@ -133,9 +133,9 @@ public class KORE50Parser extends DatasetParser {
 				String[] splitLine = line.split("\\t");
 				// encode to be compatible with database
 				if(useURLEncoding){
-					splitLine[0] = StringEncoder.encodeString(splitLine[0]);
+					splitLine[0] = StringEncoder.encodeString(splitLine[0].toLowerCase());
 					if (splitLine.length >= 4) {
-						splitLine[2] = StringEncoder.encodeString(splitLine[2]);
+						splitLine[2] = StringEncoder.encodeString(splitLine[2].toLowerCase());
 						splitLine[3] = StringEncoder.encodeString(splitLine[3]);
 					}
 				}

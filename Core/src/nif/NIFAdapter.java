@@ -45,7 +45,7 @@ public class NIFAdapter extends ModelAdapter {
 		for(Resource res: tokenList){
 			String token = res.getProperty(NIF_SchemaGen.anchorOf).getLiteral().toString();
 			stringSet.add(token);
-			Fragment fragment = new Fragment(StringEncoder.encodeString(token), res);
+			Fragment fragment = new Fragment(StringEncoder.encodeString(token.toLowerCase()), res);
 //			System.out.println("New fragment: " + fragment.originWord + " - " + fragment.getOriginResource().toString());
 			as.appendFragment(fragment);
 		}

@@ -121,6 +121,8 @@ public class SemSigComputation {
 			String source = tuple[0];
 			String sink   = tuple[1];
 			
+			if(source.isEmpty() || sink.isEmpty()) continue;
+			
 			TreeSet<TinyEdge> tmpSet = graphMap.get(source);
 			if(tmpSet == null){
 				tmpSet = new TreeSet<TinyEdge>();

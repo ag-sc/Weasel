@@ -69,7 +69,7 @@ public class AnchorFileParser extends FileParser{
 			triplet[1] = matcher.group(1);
 
 		if(useURLEncoding){
-			triplet[0] = StringEncoder.encodeString(triplet[0]); // anchor
+			triplet[0] = StringEncoder.encodeString(triplet[0].toLowerCase()); // anchor
 			triplet[1] = StringEncoder.encodeString(triplet[1]); // entity
 		}
 		return triplet;

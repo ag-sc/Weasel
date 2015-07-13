@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import utility.Stopwatch;
+
 public class ConnectorFactory {
 
 	private static final Map<String, DatabaseConnector> dbReferences = new HashMap<String, DatabaseConnector>();
@@ -18,9 +20,10 @@ public class ConnectorFactory {
 			return (InMemoryConnector) dbReferences.get(inMemoryDataContainerFilePath);
 		}else{
 			System.out.println("Connector '" + inMemoryDataContainerFilePath + "' not loaded yet. Loading file...");
+			Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			InMemoryConnector connector = new InMemoryConnector(inMemoryDataContainerFilePath);
 			dbReferences.put(inMemoryDataContainerFilePath, connector);
-			System.out.println("Connector loaded.");
+			System.out.println("Connector loaded. Time taken: " + sw.stop() + " minutes");
 			return connector;
 		}
 	}

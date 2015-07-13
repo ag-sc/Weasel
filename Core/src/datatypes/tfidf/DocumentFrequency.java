@@ -28,7 +28,7 @@ public class DocumentFrequency implements Serializable{
 		
 		TreeSet<String> set = new TreeSet<String>();
 		for(String s: document.toLowerCase().split(" ")){
-			String tmp = StringEncoder.encodeString(s);
+			String tmp = StringEncoder.encodeString(s.toLowerCase());
 			set.add(tmp);
 		}
 		
