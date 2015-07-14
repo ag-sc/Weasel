@@ -8,6 +8,7 @@ if(isset($_POST['inputArea'])){
 ?>
 
 <html>
+	<div align="center"> 
     <head>
         <title>Veasel Webservice</title>
     </head>
@@ -17,7 +18,8 @@ if(isset($_POST['inputArea'])){
 		
 		
         <form action="service.php" method="POST">
-            <textarea rows="10" cols="80" name="inputArea"><?= $message ?></textarea> 
+            <textarea rows="10" cols="80" name="inputArea"><?= $message ?></textarea>
+			<br>
 			<input type="submit">
         </form>
 		
