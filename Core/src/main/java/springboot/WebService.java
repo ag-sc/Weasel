@@ -1,8 +1,6 @@
 package main.java.springboot;
 
 import java.io.InputStream;
-import java.net.URL;
-
 import main.java.iniloader.IniLoader;
 
 import org.springframework.boot.SpringApplication;
@@ -14,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 
 @SpringBootApplication
-@ComponentScan("springboot.backend")
+@ComponentScan("main.java.springboot.backend")
 public class WebService {
 
 	public static void main(String[] args) {

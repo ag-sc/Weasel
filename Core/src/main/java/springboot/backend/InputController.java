@@ -51,7 +51,7 @@ public class InputController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/formatted-output")
-	public String handleInputFormattedOutput(String input){
+	public String handleInputFormattedOutput(@RequestParam(value = "input") String input){
 		// error handling
 		if (input == null) return "Empty input!";
 		Model model = handleSentenceGetModel(input);
