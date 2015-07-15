@@ -1,5 +1,6 @@
 package springboot;
 
+import java.io.InputStream;
 import java.net.URL;
 
 import iniloader.IniLoader;
@@ -18,20 +19,22 @@ public class WebService {
 
 	public static void main(String[] args) {
 		String filepath = "config.ini";
-		if (args.length == 1)
-			filepath = args[0];
-		System.out.println("Using config file: " + filepath);
 		IniLoader iniLoader = new IniLoader();
-		iniLoader.parse(filepath);
+		if (args.length == 1){
+			filepath = args[0];
+			System.out.println("Using config file: " + filepath);
+			iniLoader.parse(filepath);
+		}else{
+			InputStream in = WebService.class.getResourceAsStream("config.ini");
+			iniLoader.parse(in);
+		}
+		
 		
 		SpringApplication.run(WebService.class, args);
 	}
 	
 	@Bean
-	public EmbeddedServletContainerCustomizer containerCustomizer() {
-		URL location = WebService.class.getProtectionDomain().getCodeSource().getLocation();
-        System.out.println(location.getFile());
-		
+	public EmbeddedServletContainerCustomizer containerCustomizer() {	
 	   return (container -> {
 	        ErrorPage error401Page = new ErrorPage(HttpStatus.UNAUTHORIZED, "/401.html");
 	        ErrorPage error404Page = new ErrorPage(HttpStatus.NOT_FOUND, "/404.html");

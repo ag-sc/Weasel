@@ -15,16 +15,24 @@ public class IniLoader {
 		config = Config.getInstance();
 	}
 
+	public void parse(InputStream fileInputStream){
+		Properties p = new Properties();
+		try {
+			p.load(fileInputStream);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		for(Entry<Object, Object> e: p.entrySet()){
+			config.addParameter((String) e.getKey(), (String) e.getValue());
+		}
+	}
 	
 	public void parse(String iniFilePath){
 		InputStream input = null;
 		try {
 			input = new FileInputStream(iniFilePath);
-			Properties p = new Properties();
-			p.load(input);
-			for(Entry<Object, Object> e: p.entrySet()){
-				config.addParameter((String) e.getKey(), (String) e.getValue());
-			}
+			parse(input);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			System.exit(-1);

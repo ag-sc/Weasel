@@ -25,8 +25,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import datasetEvaluator.DatasetEvaluatorSandbox;
-import datatypes.Tuple;
-import datatypes.configuration.Config;
 import entityLinker.InputStringHandler;
 
 @RestController
@@ -43,7 +41,7 @@ public class InputController {
 		adapter = new NIFAdapter(sandbox);
 		handler = new InputStringHandler();
 	}
-
+	
 	@RequestMapping(method = RequestMethod.POST, value = "/veasel-english")
 	public String handleInputEnglish(@RequestParam(value = "input") String input) {
 		// error handling
