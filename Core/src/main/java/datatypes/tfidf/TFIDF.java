@@ -1,10 +1,10 @@
-package datatypes.tfidf;
+package main.java.datatypes.tfidf;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
-import datatypes.TFIDFResult;
+import main.java.datatypes.TFIDFResult;
 
 public final class TFIDF {
 

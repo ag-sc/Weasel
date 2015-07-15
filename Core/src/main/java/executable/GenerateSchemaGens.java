@@ -1,4 +1,4 @@
-package executable;
+package main.java.executable;
 
 import java.util.ArrayList;
 

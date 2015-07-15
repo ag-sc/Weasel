@@ -1,12 +1,12 @@
-package datasetEvaluator.datasetParser;
+package main.java.datasetEvaluator.datasetParser;
 
 import java.io.IOException;
 import java.util.HashSet;
 
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.DatabaseConnector;
-import entityLinker.InputStringHandler;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.entityLinker.InputStringHandler;
 
 public abstract class DatasetParser {
 	

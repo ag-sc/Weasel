@@ -1,10 +1,10 @@
-package datasetEvaluator;
+package main.java.datasetEvaluator;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.TreeSet;
 
-import databaseBuilder.fileparser.WikiParser;
+import main.java.databaseBuilder.fileparser.WikiParser;
 
 public class TestSetBuilder {
 	

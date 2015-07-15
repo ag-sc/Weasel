@@ -1,4 +1,4 @@
-package datatypes.databaseConnectors;
+package main.java.datatypes.databaseConnectors;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

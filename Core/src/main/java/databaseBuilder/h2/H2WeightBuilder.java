@@ -1,4 +1,4 @@
-package databaseBuilder.h2;
+package main.java.databaseBuilder.h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
-import utility.Stopwatch;
-import datatypes.H2List;
+import main.java.utility.Stopwatch;
+import main.java.datatypes.H2List;
 
 public class H2WeightBuilder extends H2Core {
 

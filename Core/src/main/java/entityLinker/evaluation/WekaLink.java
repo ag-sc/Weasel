@@ -1,4 +1,4 @@
-package entityLinker.evaluation;
+package main.java.entityLinker.evaluation;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,7 +18,7 @@ import weka.core.DenseInstance;
 //import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import datatypes.configuration.Config;
+import main.java.datatypes.configuration.Config;
 import weka.core.FastVector;
 
 public class WekaLink {

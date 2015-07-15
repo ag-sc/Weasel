@@ -1,6 +1,6 @@
-package datatypes;
+package main.java.datatypes;
 
-import datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.annotatedSentence.Fragment;
 
 public class FragmentCandidateTuple implements Comparable<FragmentCandidateTuple>{
 	public String candidate;

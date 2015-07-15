@@ -1,4 +1,4 @@
-package executable.testPrograms;
+package main.java.executable.testPrograms;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,6 +1,6 @@
-package executable;
+package main.java.executable;
 
-import iniloader.IniLoader;
+import main.java.iniloader.IniLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,18 +11,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import utility.Stopwatch;
-import databaseBuilder.documentFrequency.DocumentFrequencyObjectBuilder;
-import databaseBuilder.h2.H2AnchorBuilder;
-import databaseBuilder.h2.H2DBCreator;
-import databaseBuilder.h2.H2PageLinksBuilder;
-import databaseBuilder.h2.H2RedirectsBuilder;
-import databaseBuilder.inmemory.MemoryDataContainerBuilderFromH2;
-import databaseBuilder.inmemory.SemSigComputation;
-import databaseBuilder.pageRank.PageRankBuilder;
-import databaseBuilder.vectorMap.VectorMapGenerator;
-import databaseBuilder.wikipediaAbstracts.WikiDumpProcessor;
-import datatypes.configuration.Config;
+import main.java.utility.Stopwatch;
+import main.java.databaseBuilder.documentFrequency.DocumentFrequencyObjectBuilder;
+import main.java.databaseBuilder.h2.H2AnchorBuilder;
+import main.java.databaseBuilder.h2.H2DBCreator;
+import main.java.databaseBuilder.h2.H2PageLinksBuilder;
+import main.java.databaseBuilder.h2.H2RedirectsBuilder;
+import main.java.databaseBuilder.inmemory.MemoryDataContainerBuilderFromH2;
+import main.java.databaseBuilder.inmemory.SemSigComputation;
+import main.java.databaseBuilder.pageRank.PageRankBuilder;
+import main.java.databaseBuilder.vectorMap.VectorMapGenerator;
+import main.java.databaseBuilder.wikipediaAbstracts.WikiDumpProcessor;
+import main.java.datatypes.configuration.Config;
 
 public class FullDataBuilder {
 

@@ -1,4 +1,4 @@
-package datasetEvaluator.datasetParser;
+package main.java.datasetEvaluator.datasetParser;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -10,19 +10,19 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nif.NIF_SchemaGen;
+import main.java.nif.NIF_SchemaGen;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
-import datatypes.StringEncoder;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Fragment;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.DatabaseConnector;
-import entityLinker.InputStringHandler;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.entityLinker.InputStringHandler;
 
 public class KORE50Parser extends DatasetParser {
 

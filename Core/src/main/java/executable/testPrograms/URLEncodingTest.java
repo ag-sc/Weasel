@@ -1,10 +1,10 @@
-package executable.testPrograms;
-import iniloader.IniLoader;
+package main.java.executable.testPrograms;
+import main.java.iniloader.IniLoader;
 
 import java.io.IOException;
 
-import databaseBuilder.fileparser.AnchorFileParser;
-import datatypes.configuration.Config;
+import main.java.databaseBuilder.fileparser.AnchorFileParser;
+import main.java.datatypes.configuration.Config;
 
 
 public class URLEncodingTest {

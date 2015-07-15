@@ -1,4 +1,4 @@
-package datatypes;
+package main.java.datatypes;
 
 public class SortableAssociate<C extends Comparable<C>, O> implements Comparable<SortableAssociate<C, O>>{
 

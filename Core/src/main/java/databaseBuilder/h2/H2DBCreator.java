@@ -1,4 +1,4 @@
-package databaseBuilder.h2;
+package main.java.databaseBuilder.h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

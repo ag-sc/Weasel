@@ -1,4 +1,4 @@
-package entityLinker.evaluation;
+package main.java.entityLinker.evaluation;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import datatypes.StringEncoder;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Fragment;
-import datatypes.configuration.Config;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.configuration.Config;
 @Deprecated
 public class DBpediaSpotlightEvaluation extends EvaluationEngine {
 

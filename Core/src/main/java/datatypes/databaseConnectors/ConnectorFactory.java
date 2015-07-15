@@ -1,11 +1,11 @@
-package datatypes.databaseConnectors;
+package main.java.datatypes.databaseConnectors;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import utility.Stopwatch;
+import main.java.utility.Stopwatch;
 
 public class ConnectorFactory {
 

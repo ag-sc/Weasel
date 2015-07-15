@@ -1,11 +1,11 @@
-package executable.testPrograms;
+package main.java.executable.testPrograms;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import nif.NIF_SchemaGen;
+import main.java.nif.NIF_SchemaGen;
 
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;

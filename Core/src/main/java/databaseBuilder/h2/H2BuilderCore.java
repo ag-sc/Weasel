@@ -1,11 +1,11 @@
-package databaseBuilder.h2;
+package main.java.databaseBuilder.h2;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import databaseBuilder.fileparser.AnchorFileParser;
-import datatypes.H2List;
+import main.java.databaseBuilder.fileparser.AnchorFileParser;
+import main.java.datatypes.H2List;
 
 public class H2BuilderCore extends H2Core{
 	

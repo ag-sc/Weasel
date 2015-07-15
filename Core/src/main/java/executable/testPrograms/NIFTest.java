@@ -1,8 +1,8 @@
-package executable.testPrograms;
+package main.java.executable.testPrograms;
 
-import nif.NIFAdapter;
-import iniloader.IniLoader;
-import datasetEvaluator.DatasetEvaluatorSandbox;
+import main.java.nif.NIFAdapter;
+import main.java.iniloader.IniLoader;
+import main.java.datasetEvaluator.DatasetEvaluatorSandbox;
 
 public class NIFTest {
 

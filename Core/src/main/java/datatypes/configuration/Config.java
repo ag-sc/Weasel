@@ -1,4 +1,4 @@
-package datatypes.configuration;
+package main.java.datatypes.configuration;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

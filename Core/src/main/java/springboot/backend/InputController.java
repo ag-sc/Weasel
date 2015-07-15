@@ -1,4 +1,4 @@
-package springboot.backend;
+package main.java.springboot.backend;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,10 +7,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import nif.ITSRDF_SchemaGen;
-import nif.ModelAdapter;
-import nif.NIFAdapter;
-import nif.NIF_SchemaGen;
+import main.java.nif.ITSRDF_SchemaGen;
+import main.java.nif.ModelAdapter;
+import main.java.nif.NIFAdapter;
+import main.java.nif.NIF_SchemaGen;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,8 +24,8 @@ import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-import datasetEvaluator.DatasetEvaluatorSandbox;
-import entityLinker.InputStringHandler;
+import main.java.datasetEvaluator.DatasetEvaluatorSandbox;
+import main.java.entityLinker.InputStringHandler;
 
 @RestController
 public class InputController {

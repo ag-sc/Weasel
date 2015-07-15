@@ -1,4 +1,4 @@
-package datatypes.databaseConnectors;
+package main.java.datatypes.databaseConnectors;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import datatypes.InMemoryDataContainer;
+import main.java.datatypes.InMemoryDataContainer;
 
 public class InMemoryConnector extends DatabaseConnector {
 

@@ -1,9 +1,9 @@
-package springboot;
+package main.java.springboot;
 
 import java.io.InputStream;
 import java.net.URL;
 
-import iniloader.IniLoader;
+import main.java.iniloader.IniLoader;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

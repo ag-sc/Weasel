@@ -1,4 +1,4 @@
-package datatypes;
+package main.java.datatypes;
 
 public class TFIDFResult implements Comparable<TFIDFResult> {
 

@@ -1,8 +1,8 @@
-package executable;
+package main.java.executable;
 
-import iniloader.IniLoader;
+import main.java.iniloader.IniLoader;
 
-import datasetEvaluator.DatasetEvaluatorSandbox;
+import main.java.datasetEvaluator.DatasetEvaluatorSandbox;
 
 public class EntityLinking {
 

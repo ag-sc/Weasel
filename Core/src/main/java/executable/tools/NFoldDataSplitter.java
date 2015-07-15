@@ -1,4 +1,4 @@
-package executable.tools;
+package main.java.executable.tools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package datatypes.databaseConnectors;
+package main.java.datatypes.databaseConnectors;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
-import datatypes.H2List;
+import main.java.datatypes.H2List;
 
 public class H2Connector extends DatabaseConnector {
 

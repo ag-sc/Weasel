@@ -1,11 +1,11 @@
-package executable.tools;
+package main.java.executable.tools;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Scanner;
 
-import utility.Stopwatch;
-import datatypes.InMemoryDataContainer;
+import main.java.utility.Stopwatch;
+import main.java.datatypes.InMemoryDataContainer;
 
 
 public class InMemoryQuery {

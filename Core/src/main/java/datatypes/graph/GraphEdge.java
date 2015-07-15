@@ -1,4 +1,4 @@
-package datatypes.graph;
+package main.java.datatypes.graph;
 
 public class GraphEdge <T extends Comparable<T>>{
 	public Node<T> source;

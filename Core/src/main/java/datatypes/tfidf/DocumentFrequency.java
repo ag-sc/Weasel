@@ -1,10 +1,10 @@
-package datatypes.tfidf;
+package main.java.datatypes.tfidf;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import datatypes.StringEncoder;
+import main.java.datatypes.StringEncoder;
 
 
 public class DocumentFrequency implements Serializable{

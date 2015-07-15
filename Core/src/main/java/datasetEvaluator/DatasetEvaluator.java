@@ -1,11 +1,11 @@
-package datasetEvaluator;
+package main.java.datasetEvaluator;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
 
-import nif.ITSRDF_SchemaGen;
-import nif.NIF_SchemaGen;
+import main.java.nif.ITSRDF_SchemaGen;
+import main.java.nif.NIF_SchemaGen;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -14,13 +14,13 @@ import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-import datasetEvaluator.datasetParser.DatasetParser;
-import datatypes.StringEncoder;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Fragment;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.DatabaseConnector;
-import entityLinker.EntityLinker;
+import main.java.datasetEvaluator.datasetParser.DatasetParser;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.entityLinker.EntityLinker;
 
 public class DatasetEvaluator {
 

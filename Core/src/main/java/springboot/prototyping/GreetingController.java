@@ -1,4 +1,4 @@
-package springboot.prototyping;
+package main.java.springboot.prototyping;
 
 import java.util.concurrent.atomic.AtomicLong;
 

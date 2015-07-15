@@ -1,4 +1,4 @@
-package entityLinker.evaluation;
+package main.java.entityLinker.evaluation;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -9,17 +9,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import utility.Stopwatch;
-import datatypes.FragmentCandidateTuple;
-import datatypes.SimpleFileWriter;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Candidate;
-import datatypes.annotatedSentence.Fragment;
-import datatypes.databaseConnectors.DatabaseConnector;
-import datatypes.databaseConnectors.H2Connector;
-import datatypes.graph.Graph;
-import datatypes.graph.GraphEdge;
-import datatypes.graph.Node;
+import main.java.utility.Stopwatch;
+import main.java.datatypes.FragmentCandidateTuple;
+import main.java.datatypes.SimpleFileWriter;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Candidate;
+import main.java.datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.datatypes.databaseConnectors.H2Connector;
+import main.java.datatypes.graph.Graph;
+import main.java.datatypes.graph.GraphEdge;
+import main.java.datatypes.graph.Node;
 
 public class BabelfyEvaluation extends EvaluationEngine{
 

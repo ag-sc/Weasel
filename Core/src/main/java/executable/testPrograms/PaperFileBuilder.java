@@ -1,4 +1,4 @@
-package executable.testPrograms;
+package main.java.executable.testPrograms;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,10 +13,10 @@ import java.util.Map.Entry;
 
 import org.nustaq.serialization.FSTObjectInput;
 
-import datatypes.InMemoryDataContainer;
-import datatypes.configuration.Config;
-import datatypes.tfidf.DocumentFrequency;
-import iniloader.IniLoader;
+import main.java.datatypes.InMemoryDataContainer;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.tfidf.DocumentFrequency;
+import main.java.iniloader.IniLoader;
 
 public class PaperFileBuilder {
 

@@ -1,9 +1,9 @@
-package entityLinker.evaluation;
+package main.java.entityLinker.evaluation;
 
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Candidate;
-import datatypes.annotatedSentence.Fragment;
-import datatypes.databaseConnectors.DatabaseConnector;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Candidate;
+import main.java.datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
 
 public class RandomEvaluation extends EvaluationEngine{
 	

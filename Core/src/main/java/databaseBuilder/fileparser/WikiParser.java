@@ -1,4 +1,4 @@
-package databaseBuilder.fileparser;
+package main.java.databaseBuilder.fileparser;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import datatypes.StringEncoder;
-import datatypes.configuration.Config;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.configuration.Config;
 
 public class WikiParser extends FileParser implements Closeable{
 	

@@ -1,6 +1,6 @@
-package executable.experiments;
+package main.java.executable.experiments;
 
-import iniloader.IniLoader;
+import main.java.iniloader.IniLoader;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,17 +10,17 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nif.ModelAdapter;
-import nif.NIFAdapter;
+import main.java.nif.ModelAdapter;
+import main.java.nif.NIFAdapter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
-import utility.Stopwatch;
-import datasetEvaluator.DatasetEvaluator;
-import datasetEvaluator.DatasetEvaluatorSandbox;
-import datasetEvaluator.datasetParser.DatasetParser;
-import datatypes.configuration.Config;
-import entityLinker.InputStringHandler;
+import main.java.utility.Stopwatch;
+import main.java.datasetEvaluator.DatasetEvaluator;
+import main.java.datasetEvaluator.DatasetEvaluatorSandbox;
+import main.java.datasetEvaluator.datasetParser.DatasetParser;
+import main.java.datatypes.configuration.Config;
+import main.java.entityLinker.InputStringHandler;
 
 public class ExperimentNFold {
 

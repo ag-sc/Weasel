@@ -1,4 +1,4 @@
-package databaseBuilder.vectorMap;
+package main.java.databaseBuilder.vectorMap;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -17,15 +17,15 @@ import java.util.Map.Entry;
 
 import org.nustaq.serialization.FSTObjectInput;
 
-import utility.Stopwatch;
-import datatypes.StringEncoder;
-import datatypes.TFIDFResult;
-import datatypes.VectorEntry;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.ConnectorFactory;
-import datatypes.databaseConnectors.DatabaseConnector;
-import datatypes.tfidf.DocumentFrequency;
-import datatypes.tfidf.TFIDF;
+import main.java.utility.Stopwatch;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.TFIDFResult;
+import main.java.datatypes.VectorEntry;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.ConnectorFactory;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.datatypes.tfidf.DocumentFrequency;
+import main.java.datatypes.tfidf.TFIDF;
 
 
 public class VectorMapGenerator {

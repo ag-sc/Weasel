@@ -1,4 +1,4 @@
-package entityLinker.evaluation;
+package main.java.entityLinker.evaluation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,17 +12,17 @@ import java.util.TreeSet;
 
 import org.nustaq.serialization.FSTObjectInput;
 
-import utility.Stopwatch;
-import databaseBuilder.fileparser.StopWordParser;
-import datatypes.TFIDFResult;
-import datatypes.VectorEntry;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Candidate;
-import datatypes.annotatedSentence.Fragment;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.DatabaseConnector;
-import datatypes.tfidf.DocumentFrequency;
-import datatypes.tfidf.TFIDF;
+import main.java.utility.Stopwatch;
+import main.java.databaseBuilder.fileparser.StopWordParser;
+import main.java.datatypes.TFIDFResult;
+import main.java.datatypes.VectorEntry;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Candidate;
+import main.java.datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.datatypes.tfidf.DocumentFrequency;
+import main.java.datatypes.tfidf.TFIDF;
 
 public class VectorEvaluation extends EvaluationEngine {
 

@@ -1,4 +1,4 @@
-package databaseBuilder.documentFrequency;
+package main.java.databaseBuilder.documentFrequency;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 
 import org.nustaq.serialization.FSTObjectOutput;
 
-import datatypes.tfidf.DocumentFrequency;
+import main.java.datatypes.tfidf.DocumentFrequency;
 
 
 public class DocumentFrequencyObjectBuilder {

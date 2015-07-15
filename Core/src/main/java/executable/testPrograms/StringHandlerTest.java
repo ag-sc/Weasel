@@ -1,20 +1,20 @@
-package executable.testPrograms;
+package main.java.executable.testPrograms;
 
 import java.io.IOException;
 
-import utility.Stopwatch;
+import main.java.utility.Stopwatch;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
-import nif.FOXAdapter;
-import nif.ModelAdapter;
-import nif.NIFAdapter;
-import nif.SpotlightAdapter;
-import iniloader.IniLoader;
-import datasetEvaluator.DatasetEvaluator;
-import datasetEvaluator.DatasetEvaluatorSandbox;
-import datasetEvaluator.datasetParser.DatasetParser;
-import entityLinker.InputStringHandler;
+import main.java.nif.FOXAdapter;
+import main.java.nif.ModelAdapter;
+import main.java.nif.NIFAdapter;
+import main.java.nif.SpotlightAdapter;
+import main.java.iniloader.IniLoader;
+import main.java.datasetEvaluator.DatasetEvaluator;
+import main.java.datasetEvaluator.DatasetEvaluatorSandbox;
+import main.java.datasetEvaluator.datasetParser.DatasetParser;
+import main.java.entityLinker.InputStringHandler;
 
 public class StringHandlerTest {
 

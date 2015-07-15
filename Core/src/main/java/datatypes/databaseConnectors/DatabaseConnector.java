@@ -1,4 +1,4 @@
-package datatypes.databaseConnectors;
+package main.java.datatypes.databaseConnectors;
 
 import java.util.LinkedList;
 

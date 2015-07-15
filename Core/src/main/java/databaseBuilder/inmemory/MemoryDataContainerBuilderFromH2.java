@@ -1,4 +1,4 @@
-package databaseBuilder.inmemory;
+package main.java.databaseBuilder.inmemory;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import utility.Stopwatch;
-import datatypes.InMemoryDataContainer;
+import main.java.utility.Stopwatch;
+import main.java.datatypes.InMemoryDataContainer;
 
 public class MemoryDataContainerBuilderFromH2 {
 	

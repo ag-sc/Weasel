@@ -1,4 +1,4 @@
-package nif;
+package main.java.nif;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,8 +22,8 @@ import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-import datatypes.StringEncoder;
-import datatypes.configuration.Config;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.configuration.Config;
 
 public class FOXAdapter extends ModelAdapter{
 	

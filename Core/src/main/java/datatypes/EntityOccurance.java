@@ -1,4 +1,4 @@
-package datatypes;
+package main.java.datatypes;
 
 public class EntityOccurance {
 	private String entityName;

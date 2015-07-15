@@ -1,4 +1,4 @@
-package datatypes;
+package main.java.datatypes;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;

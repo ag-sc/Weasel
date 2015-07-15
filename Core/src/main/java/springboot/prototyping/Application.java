@@ -1,4 +1,4 @@
-package springboot.prototyping;
+package main.java.springboot.prototyping;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

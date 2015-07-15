@@ -1,4 +1,4 @@
-package databaseBuilder.fileparser;
+package main.java.databaseBuilder.fileparser;
 
 import java.io.IOException;
 

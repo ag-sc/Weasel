@@ -1,17 +1,17 @@
-package entityLinker;
+package main.java.entityLinker;
 
 import java.io.IOException;
 import java.util.List;
 
-import nif.ITSRDF_SchemaGen;
-import nif.NIF_SchemaGen;
+import main.java.nif.ITSRDF_SchemaGen;
+import main.java.nif.NIF_SchemaGen;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-import datatypes.configuration.Config;
+import main.java.datatypes.configuration.Config;
 import edu.stanford.nlp.ie.AbstractSequenceClassifier;
 import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -26,7 +26,7 @@ public class InputStringHandler {
 		Config config = Config.getInstance();
 		String serializedClassifier = config.getParameter("stanfordModelPath");
 		classifier = CRFClassifier.getClassifier(serializedClassifier);
-		
+
 		resetModel();
 	}
 

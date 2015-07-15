@@ -1,4 +1,4 @@
-package datatypes.annotatedSentence;
+package main.java.datatypes.annotatedSentence;
 
 public class Candidate implements Comparable<Candidate>{
 

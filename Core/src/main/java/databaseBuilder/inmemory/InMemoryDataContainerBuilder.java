@@ -1,4 +1,4 @@
-package databaseBuilder.inmemory;
+package main.java.databaseBuilder.inmemory;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,9 +9,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import utility.Stopwatch;
-import databaseBuilder.fileparser.AnchorFileParser;
-import datatypes.InMemoryDataContainer;
+import main.java.utility.Stopwatch;
+import main.java.databaseBuilder.fileparser.AnchorFileParser;
+import main.java.datatypes.InMemoryDataContainer;
 
 public class InMemoryDataContainerBuilder {
 

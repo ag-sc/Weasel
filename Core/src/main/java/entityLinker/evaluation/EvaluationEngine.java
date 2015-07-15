@@ -1,8 +1,8 @@
-package entityLinker.evaluation;
+package main.java.entityLinker.evaluation;
 
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.DatabaseConnector;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
 
 public abstract class EvaluationEngine {
 

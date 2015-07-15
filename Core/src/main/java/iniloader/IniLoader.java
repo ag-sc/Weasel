@@ -1,11 +1,11 @@
-package iniloader;
+package main.java.iniloader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import datatypes.configuration.Config;
+import main.java.datatypes.configuration.Config;
 
 public class IniLoader {
 

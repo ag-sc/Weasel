@@ -1,16 +1,16 @@
-package datasetEvaluator;
+package main.java.datasetEvaluator;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
-import utility.Stopwatch;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.ConnectorFactory;
-import datatypes.databaseConnectors.DatabaseConnector;
-import entityLinker.EntityLinker;
-import entityLinker.evaluation.EvaluationEngine;
-import entityLinker.evaluation.WekaLink;
+import main.java.utility.Stopwatch;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.ConnectorFactory;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.entityLinker.EntityLinker;
+import main.java.entityLinker.evaluation.EvaluationEngine;
+import main.java.entityLinker.evaluation.WekaLink;
 
 public class DatasetEvaluatorSandbox {
 

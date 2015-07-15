@@ -1,4 +1,4 @@
-package databaseBuilder.h2;
+package main.java.databaseBuilder.h2;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -6,9 +6,9 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.TreeSet;
 
-import utility.Stopwatch;
-import databaseBuilder.fileparser.AnchorFileParser;
-import databaseBuilder.fileparser.StopWordParser;
+import main.java.utility.Stopwatch;
+import main.java.databaseBuilder.fileparser.AnchorFileParser;
+import main.java.databaseBuilder.fileparser.StopWordParser;
 
 public class H2AnchorBuilder extends H2BuilderCore{
 

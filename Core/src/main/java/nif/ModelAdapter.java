@@ -1,4 +1,4 @@
-package nif;
+package main.java.nif;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -7,7 +7,7 @@ import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-import datatypes.configuration.Config;
+import main.java.datatypes.configuration.Config;
 
 public abstract class ModelAdapter {
 	

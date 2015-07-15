@@ -1,4 +1,4 @@
-package databaseBuilder.pageRank;
+package main.java.databaseBuilder.pageRank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,9 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
-import utility.Stopwatch;
-import datatypes.H2List;
-import datatypes.PageRankNode;
+import main.java.utility.Stopwatch;
+import main.java.datatypes.H2List;
+import main.java.datatypes.PageRankNode;
 import edu.uci.ics.jung.algorithms.scoring.PageRank;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 

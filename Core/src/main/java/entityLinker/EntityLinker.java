@@ -1,4 +1,4 @@
-package entityLinker;
+package main.java.entityLinker;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -7,12 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import databaseBuilder.fileparser.StopWordParser;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Fragment;
-import datatypes.configuration.Config;
-import datatypes.databaseConnectors.DatabaseConnector;
-import entityLinker.evaluation.EvaluationEngine;
+import main.java.databaseBuilder.fileparser.StopWordParser;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Fragment;
+import main.java.datatypes.configuration.Config;
+import main.java.datatypes.databaseConnectors.DatabaseConnector;
+import main.java.entityLinker.evaluation.EvaluationEngine;
 
 public class EntityLinker {
 

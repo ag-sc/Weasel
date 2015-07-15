@@ -1,4 +1,4 @@
-package datatypes.tfidf;
+package main.java.datatypes.tfidf;
 
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package nif;
+package main.java.nif;
 /* CVS $Id: $ */
 
 import com.hp.hpl.jena.rdf.model.*;

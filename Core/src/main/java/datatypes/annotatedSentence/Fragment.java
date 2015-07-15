@@ -1,4 +1,4 @@
-package datatypes.annotatedSentence;
+package main.java.datatypes.annotatedSentence;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -7,7 +7,7 @@ import java.util.TreeSet;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
-import datatypes.configuration.Config;
+import main.java.datatypes.configuration.Config;
 
 public class Fragment implements Comparable<Fragment> {
 

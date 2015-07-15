@@ -1,4 +1,4 @@
-package datatypes.annotatedSentence;
+package main.java.datatypes.annotatedSentence;
 
 import java.util.ArrayList;
 import java.util.Collections;

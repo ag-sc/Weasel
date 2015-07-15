@@ -1,6 +1,6 @@
-package executable.experiments;
+package main.java.executable.experiments;
 
-import iniloader.IniLoader;
+import main.java.iniloader.IniLoader;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,9 +10,9 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import utility.Stopwatch;
-import datasetEvaluator.DatasetEvaluatorSandbox;
-import datatypes.configuration.Config;
+import main.java.utility.Stopwatch;
+import main.java.datasetEvaluator.DatasetEvaluatorSandbox;
+import main.java.datatypes.configuration.Config;
 
 public class Experiment3 {
 

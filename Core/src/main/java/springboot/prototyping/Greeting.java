@@ -1,4 +1,4 @@
-package springboot.prototyping;
+package main.java.springboot.prototyping;
 
 public class Greeting {
 	private final long id;

@@ -1,4 +1,4 @@
-package databaseBuilder.inmemory;
+package main.java.databaseBuilder.inmemory;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import utility.Stopwatch;
-import databaseBuilder.fileparser.WikiParser;
-import datatypes.TinyEdge;
-import datatypes.Tuple;
+import main.java.utility.Stopwatch;
+import main.java.databaseBuilder.fileparser.WikiParser;
+import main.java.datatypes.TinyEdge;
+import main.java.datatypes.Tuple;
 
 public class SemSigComputation {
 

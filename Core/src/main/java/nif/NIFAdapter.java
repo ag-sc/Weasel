@@ -1,4 +1,4 @@
-package nif;
+package main.java.nif;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -11,10 +11,10 @@ import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-import datasetEvaluator.DatasetEvaluatorSandbox;
-import datatypes.StringEncoder;
-import datatypes.annotatedSentence.AnnotatedSentence;
-import datatypes.annotatedSentence.Fragment;
+import main.java.datasetEvaluator.DatasetEvaluatorSandbox;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.annotatedSentence.AnnotatedSentence;
+import main.java.datatypes.annotatedSentence.Fragment;
 
 public class NIFAdapter extends ModelAdapter {
 

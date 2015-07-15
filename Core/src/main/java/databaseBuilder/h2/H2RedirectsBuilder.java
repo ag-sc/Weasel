@@ -1,10 +1,10 @@
-package databaseBuilder.h2;
+package main.java.databaseBuilder.h2;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import datatypes.StringEncoder;
+import main.java.datatypes.StringEncoder;
 import edu.jhu.nlp.wikipedia.PageCallbackHandler;
 import edu.jhu.nlp.wikipedia.WikiPage;
 import edu.jhu.nlp.wikipedia.WikiXMLParser;

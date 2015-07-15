@@ -1,4 +1,4 @@
-package executable.experiments;
+package main.java.executable.experiments;
 
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;

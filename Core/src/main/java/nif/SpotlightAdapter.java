@@ -1,4 +1,4 @@
-package nif;
+package main.java.nif;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,8 +17,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
-import datatypes.StringEncoder;
-import datatypes.configuration.Config;
+import main.java.datatypes.StringEncoder;
+import main.java.datatypes.configuration.Config;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;

@@ -1,11 +1,11 @@
-package databaseBuilder.h2;
+package main.java.databaseBuilder.h2;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import utility.Stopwatch;
-import databaseBuilder.fileparser.WikiParser;
+import main.java.utility.Stopwatch;
+import main.java.databaseBuilder.fileparser.WikiParser;
 
 public class H2PageLinksBuilder extends H2BuilderCore {
 

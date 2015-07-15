@@ -1,4 +1,4 @@
-package datatypes;
+package main.java.datatypes;
 
 import java.util.LinkedList;
 import java.util.TreeSet;
