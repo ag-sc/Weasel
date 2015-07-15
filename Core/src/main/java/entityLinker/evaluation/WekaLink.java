@@ -15,10 +15,11 @@ import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
-import weka.core.FastVector;
+//import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import datatypes.configuration.Config;
+import weka.core.FastVector;
 
 public class WekaLink {
 	BufferedWriter arffWriter;

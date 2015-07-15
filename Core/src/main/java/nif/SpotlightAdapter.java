@@ -8,10 +8,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.fluent.Content;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.utils.URIBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,6 +19,10 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 import datatypes.StringEncoder;
 import datatypes.configuration.Config;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.fluent.Content;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.utils.URIBuilder;
 
 public class SpotlightAdapter extends ModelAdapter{
 	DocumentBuilderFactory dbf;
