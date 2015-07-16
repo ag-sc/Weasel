@@ -35,7 +35,11 @@ public class H2DBCreator {
               " id INTEGER AUTO_INCREMENT, " + 
               " redirectTo INTEGER DEFAULT -1, " + 
               " isDisambiguation BOOLEAN DEFAULT FALSE, " + 
-              " SemanticSignature VARCHAR(MAX), " + 
+              " semSigVector VARCHAR(MAX), " + 
+              " semSigCount VARCHAR(MAX), " + 
+              " tfVector VARCHAR(MAX), " + 
+              " tfCount VARCHAR(MAX), " + 
+              " pageRank DOUBLE DEFAULT 0, " + 
               " PRIMARY KEY ( entity ))"; 
         stmt.executeUpdate(sql);
         

@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -17,6 +18,7 @@ import main.java.databaseBuilder.h2.H2AnchorBuilder;
 import main.java.databaseBuilder.h2.H2DBCreator;
 import main.java.databaseBuilder.h2.H2PageLinksBuilder;
 import main.java.databaseBuilder.h2.H2RedirectsBuilder;
+import main.java.databaseBuilder.h2.H2RemainingDataWriter;
 import main.java.databaseBuilder.inmemory.MemoryDataContainerBuilderFromH2;
 import main.java.databaseBuilder.inmemory.SemSigComputation;
 import main.java.databaseBuilder.pageRank.PageRankBuilder;
@@ -28,6 +30,7 @@ public class FullDataBuilder {
 
 	private static Config config;
 	private static boolean forceOverride = false;
+	private static boolean rebuildH2 = false;
 
 	public static void main(String[] args) {
 		// load ini file
@@ -48,6 +51,7 @@ public class FullDataBuilder {
 		buildSemanticSignature();
 		buildVectorMap();
 		buildPageRankArray();
+		buildRemainingDatabaseData();
 		System.out.println("All done! Total time: " + sw.stop() + " hours");
 	} // main
 
@@ -110,40 +114,20 @@ public class FullDataBuilder {
 		System.out.println("Build H2 Database...");
 		H2DBCreator dbCreator = new H2DBCreator(h2Path);
 		try {
+			rebuildH2 = true;
 			dbCreator.create();
 
 			System.out.println("Build anchor part of DB.");
 			H2AnchorBuilder builder1 = new H2AnchorBuilder(h2Path, anchorFilePath, "sa", "", stopWordsPath);
 			builder1.run();
 
-			// create backup
-			System.out.println("write backup 1");
-			f = new File(path);
-			File backup = new File(path + "_backup");
-			Files.copy(f.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("backup written 1");
-
 			System.out.println("Build pagelinks part of DB.");
 			H2PageLinksBuilder builder2 = new H2PageLinksBuilder(h2Path, pageLinksFilePath, "sa", "");
 			builder2.run();
 
-			// create backup
-			System.out.println("write backup 2");
-			f = new File(path);
-			backup = new File(path + "_backup");
-			Files.copy(f.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("backup written 2");
-
 			System.out.println("Build redirects & disambiguation part of DB.");
 			H2RedirectsBuilder builder3 = new H2RedirectsBuilder(h2Path, wikiDumpPath, "sa", "");
 			builder3.run();
-
-			// create backup
-			System.out.println("write backup 3");
-			f = new File(path);
-			backup = new File(path + "_backup");
-			Files.copy(f.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("backup written 3");
 
 			Class.forName("org.h2.Driver");
 			Connection connection = DriverManager.getConnection("jdbc:h2:" + h2Path, "sa", "");
@@ -246,4 +230,51 @@ public class FullDataBuilder {
 		}
 	} // buildPageRankArray
 
+	private static boolean checkColumn(Connection connection, String column) throws SQLException{
+		return checkColumn(connection, column, forceOverride);
+	}
+	
+	private static boolean checkColumn(Connection connection, String column, boolean localOverride) throws SQLException {
+		String sql = "select count(*) from information_schema.columns where table_name = 'ENTITYID' and column_name = '" + column + "'";
+		Statement stmt = connection.createStatement();
+		ResultSet result = stmt.executeQuery(sql);
+		int value = 0;
+		while (result.next()) {
+			value = result.getInt(1);
+			break;
+		}
+		if (value == 1) {
+			if (localOverride) {
+				System.out.println("Delete column: " + column);
+				sql = "ALTER TABLE EntityId DROP COLUMN " + column + ";";
+				stmt.executeUpdate(sql);
+			} else {
+				System.out.println(column + " column found. No need to build it.");
+				return false;
+			}
+		}
+		if(!localOverride) System.out.println(column + " column not found.");
+		return true;
+	}
+
+	private static void buildRemainingDatabaseData() {
+		String h2Path = config.getParameter("H2Path");
+		String vectorMapOutputPath = config.getParameter("vectorMapPath");
+		String pageRankArrayPath = config.getParameter("pageRankArrayPath");
+
+		if (rebuildH2) {
+			System.out.println("Write VectorMap and PageRankArray to H2 database.");
+			try {
+				H2RemainingDataWriter dataWriter = new H2RemainingDataWriter(h2Path, "sa", "", vectorMapOutputPath, pageRankArrayPath);
+				dataWriter.run();
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				System.exit(-1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
+	}
 }

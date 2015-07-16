@@ -27,7 +27,6 @@ public class WebService {
 			iniLoader.parse(in);
 		}
 		
-		
 		SpringApplication.run(WebService.class, args);
 	}
 	
