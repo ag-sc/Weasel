@@ -29,7 +29,7 @@ if(isset($_POST['inputArea'])){
 <?php
 	// Validate input
 	$result = "";
-	$timeout = 60;
+	$timeout = 6000;
 	if(!isset($_POST['inputArea'])){
 		echo "Timeout is currently set to " . $timeout . " seconds.";
 		exit(-1);

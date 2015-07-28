@@ -12,5 +12,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="E:/Master Project/Git Repo/Core/externalJars/wikixmlj_custom.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/Core/externalJars/bzip2.jar"/>
+	<classpathentry kind="lib" path="E:/Master Project/Git Repo/Core/externalJars/xercesImpl.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

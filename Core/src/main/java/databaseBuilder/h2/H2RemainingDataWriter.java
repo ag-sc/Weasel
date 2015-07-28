@@ -26,7 +26,7 @@ public class H2RemainingDataWriter extends H2Core{
 
 	public void run() throws SQLException, ClassNotFoundException, IOException{
 		Class.forName("org.h2.Driver");
-		Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath, username, password);
+		Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath + ";LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0", username, password);
 		processVectorObject(connection);
 		processPageRankObject(connection);        
         connection.close();
@@ -44,9 +44,7 @@ public class H2RemainingDataWriter extends H2Core{
 //		double[] pageRankArray = new double[10];
 //		for(int id = 0; id < pageRankArray.length; id++) pageRankArray[id] = id;
 		
-		sql = "ALTER TABLE EntityId ADD COLUMN pageRank DOUBLE;";
 		stmt = connection.createStatement();
-        stmt.executeUpdate(sql);
         
         for(int id = 0; id < pageRankArray.length; id++){
         	double pr = pageRankArray[id];
@@ -69,19 +67,8 @@ public class H2RemainingDataWriter extends H2Core{
 		objectReader.close();
 		fileInputStream.close();
 		System.out.println("Done. Took " + sw.stop() + " minutes. Add database tables.");
-		
-//		HashMap<Integer, VectorEntry> vectorMap = new HashMap<Integer, VectorEntry>();
-		
-		// Create new columns
+			
         stmt = connection.createStatement();  
-        sql = "ALTER TABLE EntityId ADD COLUMN semSigVector VARCHAR(MAX);";
-        stmt.executeUpdate(sql);
-        sql = "ALTER TABLE EntityId ADD COLUMN semSigCount VARCHAR(MAX);";
-        stmt.executeUpdate(sql);
-        sql = "ALTER TABLE EntityId ADD COLUMN tfVector VARCHAR(MAX);";
-        stmt.executeUpdate(sql);
-        sql = "ALTER TABLE EntityId ADD COLUMN tfCount VARCHAR(MAX);";
-        stmt.executeUpdate(sql);
         
         String semSigVectorSQL = "UPDATE EntityId SET semSigVector = (?) WHERE id = (?)";
         String semSigCountSQL = "UPDATE EntityId SET semSigCount = (?) WHERE id = (?)";

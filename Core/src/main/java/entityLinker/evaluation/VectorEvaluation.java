@@ -14,8 +14,10 @@ import org.nustaq.serialization.FSTObjectInput;
 
 import main.java.utility.Stopwatch;
 import main.java.databaseBuilder.fileparser.StopWordParser;
+import main.java.datatypes.PageRankContainer;
 import main.java.datatypes.TFIDFResult;
 import main.java.datatypes.VectorEntry;
+import main.java.datatypes.VectorMap;
 import main.java.datatypes.annotatedSentence.AnnotatedSentence;
 import main.java.datatypes.annotatedSentence.Candidate;
 import main.java.datatypes.annotatedSentence.Fragment;
@@ -28,9 +30,9 @@ public class VectorEvaluation extends EvaluationEngine {
 
 	private TreeSet<String> stopWords;
 	private DatabaseConnector dbConnector;
-	static HashMap<Integer, VectorEntry> vectorMap = null;
 	static DocumentFrequency df = null;
-	static double[] pageRankArray = null;
+	PageRankContainer pageRankContainer;
+	VectorMap vectorMap;
 	double lambda;
 	double pageRankWeight;
 	boolean boolScoring = true;
@@ -45,29 +47,10 @@ public class VectorEvaluation extends EvaluationEngine {
 
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 		// read vectorMap object
-		if (vectorMap == null) {
-			sw.start();
-			FileInputStream fileInputStream = new FileInputStream(vectorMapFilePath);
-			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-			System.out.println("Vector map not loaded yet. Loading now...");
-			vectorMap = (HashMap<Integer, VectorEntry>) objectReader.readObject();
-			objectReader.close();
-			fileInputStream.close();
-			System.out.println("Done. Took " + sw.stop() + " minutes.");
-		}
+		vectorMap = new VectorMap();
 
 		// read pageRank object
-		if (pageRankArray == null) {
-			sw.start();
-			System.out.println("PageRank not loaded yet. Loading now...");
-			String pageRankArrayPath = Config.getInstance().getParameter("pageRankArrayPath");
-			FileInputStream fileInputStream = new FileInputStream(pageRankArrayPath);
-			ObjectInputStream objectReader = new ObjectInputStream(fileInputStream);
-			pageRankArray = (double[]) objectReader.readObject();
-			objectReader.close();
-			fileInputStream.close();
-			System.out.println("Done. Took " + sw.stop() + " minutes.");
-		}
+		pageRankContainer = new PageRankContainer();
 
 		sw.start();
 		// read document frequency object
@@ -182,7 +165,7 @@ public class VectorEvaluation extends EvaluationEngine {
 				// System.out.println("working on candidate " + candidateCount);
 				// Find candidate
 				int candidateID = Integer.parseInt(candidate.getEntity());
-				VectorEntry candidateEntry = vectorMap.get(candidateID);
+				VectorEntry candidateEntry = vectorMap.getVectorEntry(candidateID);
 
 				if (candidateEntry == null) {
 					// System.out.println(h2.resolveID(candidate) +
@@ -361,7 +344,7 @@ public class VectorEvaluation extends EvaluationEngine {
 				// Math.sqrt(tfidfScore);
 
 				// 14
-				double pageRank = pageRankArray[Integer.parseInt(candidate.getEntity())];
+				double pageRank = pageRankContainer.getPageRank(Integer.parseInt(candidate.getEntity()));
 
 				double candidateScore = (lambda * Math.sqrt(candidateVectorScore) + (1 - lambda) * Math.sqrt(tfidfScore))
 						* (pageRankWeight * Math.sqrt(pageRank) + Math.sqrt(candidateReferenceFrequency) * (1 - pageRankWeight));
@@ -378,7 +361,7 @@ public class VectorEvaluation extends EvaluationEngine {
 						System.err.println(dbConnector.resolveID(candidate.getEntity()));
 						System.err.println(candidateVectorScore);
 						System.err.println(tfidfScore);
-						System.err.println(pageRankArray[Integer.parseInt(candidate.getEntity())]);
+						System.err.println(pageRankContainer.getPageRank(Integer.parseInt(candidate.getEntity())));
 						System.err.println(candidateReferenceFrequency);
 					}
 				}
