@@ -40,7 +40,7 @@ public class EntityLinker {
 		HashMap<Integer, Integer> foundEntities = new HashMap<Integer, Integer>();
 
 		List<Fragment> fragmentList = as.getFragmentList();
-		boolean disallowRedirects = Boolean.parseBoolean(Config.getInstance().getParameter("disallowRedirectsAndDisambiguationAsCandidates"));
+//		boolean disallowRedirects = Boolean.parseBoolean(Config.getInstance().getParameter("disallowRedirectsAndDisambiguationAsCandidates"));
 
 		for (Fragment f : fragmentList) {
 			if (stopWords != null && stopWords.contains(f.originWord))
