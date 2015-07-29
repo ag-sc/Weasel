@@ -347,7 +347,7 @@ public class NIF_SchemaGen {
     public static final Resource NormalizedContextOccurrence = m_model.createResource( "http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#NormalizedContextOccurrence" );
     
     /** <p>cf. Linked-Data Aware URI Schemes for Referencing Text Fragments by Sebastian 
-     *  Hellmann, Jens Lehmann und Sören Auer in EKAW 2012 http://jens-lehmann.org/files/2012/ekaw_nif.pdf 
+     *  Hellmann, Jens Lehmann und S.A. in EKAW 2012 http://jens-lehmann.org/files/2012/ekaw_nif.pdf 
      *  requires the existence of begin, endIndex and referenceContext Changelog: 
      *  * 1.0.0 originally a plain text string was attached to this uri scheme, but 
      *  this was removed later, because of complaints and complexity. * 1.1.0 subclassing 

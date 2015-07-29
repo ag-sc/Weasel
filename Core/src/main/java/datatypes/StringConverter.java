@@ -24,7 +24,7 @@ public class StringConverter {
 	}
 
 	public static void main(String[] args) throws UnsupportedEncodingException{
-		String tmp = StringConverter.convert("Helló Wòrld", "UTF-8");
+		String tmp = StringConverter.convert("Hello World", "UTF-8");
 		System.out.println(tmp);
 	}
 }
