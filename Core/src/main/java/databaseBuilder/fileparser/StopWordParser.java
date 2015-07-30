@@ -5,6 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.TreeSet;
 
+/**
+ * @author Felix Tristram
+ * Parser for the stopwords file, returns all stopwords in a TreeSet.
+ */
 public class StopWordParser {
 
 	public static TreeSet<String> parseStopwords(String filePath) throws IOException{

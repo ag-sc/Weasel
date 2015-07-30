@@ -4,6 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * @author Felix Tristram
+ * Base class that all other H2 related classes are inheriting from. Essentially just a container for variables.
+ */
 public class H2Core {
 	String dbPath, username, password;
 	PreparedStatement preparedStatement;

@@ -1,7 +1,6 @@
 package main.java.databaseBuilder.fileparser;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,7 +10,11 @@ import java.util.regex.Pattern;
 import main.java.datatypes.StringEncoder;
 import main.java.datatypes.configuration.Config;
 
-public class WikiParser extends FileParser implements Closeable{
+/**
+ * @author Felix Tristram
+ * Parser for the Wikipedia Pagelinks file.
+ */
+public class WikiParser extends FileParser{
 	
 	protected BufferedReader br;
 	protected String stringPattern1 = "<.*?resource/([^>]+)>";
@@ -22,12 +25,21 @@ public class WikiParser extends FileParser implements Closeable{
 	protected Matcher matcher2;
 	private boolean useURLEncoding = false;
 	
+	/**
+	 * @param filePath Path to the Wikipedia Pagelinks file.
+	 * @throws IOException
+	 */
 	public WikiParser(String filePath) throws IOException{
 		br  = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF8"));
 		setPatters(stringPattern1, stringPattern2);
 		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 	}
 	
+	/**
+	 * Set the regex patterns for finding the tuple.
+	 * @param pattern1
+	 * @param pattern2
+	 */
 	public void setPatters(String pattern1, String pattern2){
 		stringPattern1 = new String(pattern1);
 		stringPattern2 = new String(pattern2);

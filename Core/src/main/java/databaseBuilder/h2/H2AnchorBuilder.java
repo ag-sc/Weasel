@@ -3,13 +3,16 @@ package main.java.databaseBuilder.h2;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.TreeSet;
 
 import main.java.utility.Stopwatch;
 import main.java.databaseBuilder.fileparser.AnchorFileParser;
 import main.java.databaseBuilder.fileparser.StopWordParser;
 
+/**
+ * @author Felix Tristram
+ * Build the part of the database related to the wikipedia anchor file.
+ */
 public class H2AnchorBuilder extends H2BuilderCore{
 
 	TreeSet<String> stopWords;
@@ -23,7 +26,6 @@ public class H2AnchorBuilder extends H2BuilderCore{
 	public void run() throws Exception {
 		long timeStart = System.nanoTime();
 		int lineCounter = 0;
-		int totalNumberOfAnchorReferences = 0;
 		String quadruple[];
 		String searchQuery, insertQuery, updateQuery;
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
@@ -32,13 +34,6 @@ public class H2AnchorBuilder extends H2BuilderCore{
 		Connection connection = DriverManager.getConnection("jdbc:h2:" + dbPath + ";LOG=0;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0", username, password);
 		while ((quadruple = anchorParser.parse()) != null) {
 			lineCounter++;
-			try{
-			totalNumberOfAnchorReferences += Integer.parseInt(quadruple[2]);
-			}catch(Exception e){
-				System.err.println("Error parsing number of anchor references for:" + quadruple[0] + " - " + quadruple[1]);
-				e.printStackTrace();
-				continue;
-			}
 			
 			searchQuery = "SELECT ID FROM ANCHORID WHERE ANCHOR IS (?)";
 			insertQuery = "INSERT INTO AnchorId(anchor) VALUES (?)";

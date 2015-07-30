@@ -13,11 +13,21 @@ import main.java.datatypes.StringEncoder;
 import main.java.datatypes.configuration.Config;
 
 
+/**
+ * @author Felix Tristram
+ * AnchorFileParser parses the file containing the wikipedia anchors, which are pairs of a
+ * text token and a Wikipedia URL.
+ */
 public class AnchorFileParser extends FileParser{
 	private BufferedReader br = null;
 	private boolean useURLEncoding = false;
 	private HashMap<String, Integer> totalReferencesPerEntity = new HashMap<String, Integer>();
 	
+	/**
+	 * @param filePath Path to the Wikipedia Anchor file.
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
 	public AnchorFileParser(String filePath) throws FileNotFoundException, UnsupportedEncodingException{
 		useURLEncoding = Boolean.parseBoolean(Config.getInstance().getParameter("useURLEncoding"));
 		// create totalReferencesPerEntity map
@@ -75,6 +85,15 @@ public class AnchorFileParser extends FileParser{
 		return triplet;
 	}
 
+	/**
+	 * Parse the next line of the anchors file.
+	 * @return A String array size 4 with the following content
+	 * Position 0: The anchor token.
+	 * Position 1: The Wikipedia URL.
+	 * Position 2: Number of occurrences of this pair in Wikipedia.
+	 * Position 3: Total nuber of anchor references to the given URL.
+	 * @throws IOException
+	 */
 	public String[] parse() throws IOException {
 		String line;
 		String[] triplet;
@@ -93,27 +112,6 @@ public class AnchorFileParser extends FileParser{
 		
 		return quadruple;
 	}
-	
-//	public String[] getLine() {
-//		try{
-//			String line;
-//			String[] splitLine;
-//			
-//			line = br.readLine();
-//			if(line == null) return null;
-//				
-//			if(lineCounter % 10000 == 0) System.out.println("Processing line: " + lineCounter);
-//			splitLine = line.split("\\t");	
-//			lineCounter++;
-//			return splitLine;
-//			
-//		}catch(IOException e){
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-
-
 
 	@Override
 	public void close() {

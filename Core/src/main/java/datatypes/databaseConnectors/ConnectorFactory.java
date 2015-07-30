@@ -30,6 +30,7 @@ public class ConnectorFactory {
 	
 	public static H2Connector getH2Connector(String h2FilePath, String sql) throws ClassNotFoundException, SQLException{
 		H2Connector connector = new H2Connector(h2FilePath, "sa", "", sql);
+		System.out.println("Opened connection to database: " + h2FilePath);
 		return connector;
 	}
 	

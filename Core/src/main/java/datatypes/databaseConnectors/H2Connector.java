@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -17,16 +16,16 @@ public class H2Connector extends DatabaseConnector {
 	Connection connection;
 	
 	public H2Connector(String dbPath, String username, String password, String sql) throws ClassNotFoundException, SQLException {
-		this(dbPath, username, password, sql, true);
-	}
-	
-	public H2Connector(String dbPath, String username, String password, String sql, boolean connectToLocalServer) throws ClassNotFoundException, SQLException {
 		this.dbPath = dbPath;
 		this.sql = sql;
 		
+		// remove ".mv.db" ending from dbPath as H2 adds it automatically
+		this.dbPath = dbPath.replace(".mv.db", "");
+		
 		Class.forName("org.h2.Driver");
-		if(connectToLocalServer) connection = DriverManager.getConnection("jdbc:h2:" + dbPath, username, password);
-		else connection = DriverManager.getConnection("jdbc:h2:" + dbPath, username, password);
+		DriverManager.getConnection("jdbc:h2:" + this.dbPath, username, password);
+//		if(connectToLocalServer) connection = DriverManager.getConnection("jdbc:h2:" + this.dbPath, username, password);
+//		else connection = DriverManager.getConnection("jdbc:h2:" + this.dbPath, username, password);
 		
 	}
 	
