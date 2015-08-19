@@ -2,7 +2,6 @@ package main.java.entityLinker.evaluation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -38,7 +37,7 @@ public class VectorEvaluation extends EvaluationEngine {
 	boolean boolScoring = true;
 	WekaLink wekaLink;
 
-	public VectorEvaluation(DatabaseConnector semanticSignatureDB, String vectorMapFilePath, String dfFilePath, WekaLink wekaLink) throws IOException,
+	public VectorEvaluation(DatabaseConnector semanticSignatureDB, VectorMap vectorMap, String dfFilePath, WekaLink wekaLink) throws IOException,
 			ClassNotFoundException {
 		this.dbConnector = semanticSignatureDB;
 		String stopwordsPath = Config.getInstance().getParameter("stopwordsPath");
@@ -47,7 +46,7 @@ public class VectorEvaluation extends EvaluationEngine {
 
 		Stopwatch sw = new Stopwatch(Stopwatch.UNIT.MINUTES);
 		// read vectorMap object
-		vectorMap = new VectorMap();
+		this.vectorMap = vectorMap;
 
 		// read pageRank object
 		pageRankContainer = new PageRankContainer();

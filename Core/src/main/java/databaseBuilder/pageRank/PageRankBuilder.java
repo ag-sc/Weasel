@@ -19,6 +19,10 @@ import main.java.datatypes.PageRankNode;
 import edu.uci.ics.jung.algorithms.scoring.PageRank;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
+/**
+ * @author Felix Tristram
+ * Calculate the pageRank for each entry for the graph of interconnected wikipedia pages.
+ */
 public class PageRankBuilder {
 
 	static Connection connection;

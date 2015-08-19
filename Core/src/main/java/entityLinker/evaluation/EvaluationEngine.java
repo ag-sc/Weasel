@@ -1,10 +1,13 @@
 package main.java.entityLinker.evaluation;
 
+import main.java.datatypes.VectorMap;
 import main.java.datatypes.annotatedSentence.AnnotatedSentence;
 import main.java.datatypes.configuration.Config;
 import main.java.datatypes.databaseConnectors.DatabaseConnector;
 
 public abstract class EvaluationEngine {
+	
+	static VectorMap vectorMap = null;
 
 	public abstract void evaluate(AnnotatedSentence annotatedSentence);
 
@@ -20,7 +23,10 @@ public abstract class EvaluationEngine {
 			case "random":
 				return new RandomEvaluation(dbConnector);
 			case "vector":
-				return new VectorEvaluation(dbConnector, config.getParameter("vectorMapPath"), config.getParameter("dfPath"), wekaLink);
+				if(vectorMap == null){
+					vectorMap = new VectorMap();
+				}
+				return new VectorEvaluation(dbConnector, vectorMap, config.getParameter("dfPath"), wekaLink);
 			case "spotlight":
 				return new DBpediaSpotlightEvaluation();
 			default:

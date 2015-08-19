@@ -22,6 +22,10 @@ import edu.jhu.nlp.wikipedia.WikiXMLParser;
 import edu.jhu.nlp.wikipedia.WikiXMLParserFactory;
 
 
+/**
+ * @author Felix Tristram
+ * Parse the wikipedia dump in order to extract tf-idf values from all the abstracts.
+ */
 public class WikiDumpProcessor {
 
 	static BufferedWriter fw;
@@ -29,7 +33,7 @@ public class WikiDumpProcessor {
 	static Stopwatch sw;
 	static boolean useURLEncoding = false;
 	
-	static BufferedWriter debugFW;
+//	static BufferedWriter debugFW;
 	
 	public static void run(String outputFilePath, String inputFilePath) throws IOException {
 //		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("../../data/Wikipedia Abstracts/test-abstracts_cleaned_correct.txt"), "ISO-8859-15"));
@@ -44,7 +48,7 @@ public class WikiDumpProcessor {
 		WikiXMLParser wxsp = WikiXMLParserFactory.getSAXParser(inputFilePath);
 		fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath), "UTF8"));
 		
-		debugFW = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("debugFile.txt"), "UTF8"));
+//		debugFW = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("debugFile.txt"), "UTF8"));
 		
 		sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
 		Stopwatch sw2 = new Stopwatch(Stopwatch.UNIT.MINUTES);
@@ -91,13 +95,13 @@ public class WikiDumpProcessor {
 		            	System.out.println("Potentially dangerous abstract: '" + titleTmp + "'. Skip.");
 		            	return;
 		            }
-		            try {
-						debugFW.write("Current Abstract: " + titleTmp + " (number: " + counter + ")\n");
-						debugFW.flush();
-					} catch (IOException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
+//		            try {
+//						debugFW.write("Current Abstract: " + titleTmp + " (number: " + counter + ")\n");
+//						debugFW.flush();
+//					} catch (IOException e2) {
+//						// TODO Auto-generated catch block
+//						e2.printStackTrace();
+//					}
 		            
 		            try{
 		            	parser.parse(textAbstract);

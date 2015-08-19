@@ -15,6 +15,10 @@ import main.java.databaseBuilder.fileparser.WikiParser;
 import main.java.datatypes.TinyEdge;
 import main.java.datatypes.Tuple;
 
+/**
+ * @author Felix Tristram
+ * Finds the semantic neighborhood signature.
+ */
 public class SemSigComputation {
 
 	static String pageLinksFilePath = "page_links_en.nt";
@@ -46,7 +50,6 @@ public class SemSigComputation {
 	}
 	
 	private static ArrayList<Tuple<String, Integer>> randomWalk(String startNode){
-		
 		String currentNode = startNode;
 		HashMap<String, Integer> tmpSignature = new HashMap<String, Integer>();
 		ArrayList<Tuple<String, Integer>> signature = new ArrayList<Tuple<String, Integer>>();
@@ -89,10 +92,11 @@ public class SemSigComputation {
 				signature.add(new Tuple<String, Integer>(e.getKey(), e.getValue()));
 		}
 
-		Collections.sort(signature, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				Tuple<String, Integer> t1 = (Tuple) o1;
-				Tuple<String, Integer> t2 = (Tuple) o2;
+		Collections.sort(signature, new Comparator<Tuple<String, Integer>>() {
+			@Override
+			public int compare(Tuple<String, Integer> o1, Tuple<String, Integer> o2) {
+				Tuple<String, Integer> t1 = o1;
+				Tuple<String, Integer> t2 = o2;
 				return t1.y.compareTo(t2.y);
 			}
 		});

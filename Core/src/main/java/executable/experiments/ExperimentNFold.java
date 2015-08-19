@@ -24,7 +24,7 @@ import main.java.entityLinker.InputStringHandler;
 
 public class ExperimentNFold {
 
-	static int experimentNumber = 9;
+	static int experimentNumber = 10;
 	static String dataset = "aida";
 	static int numberOfFolds = 10;
 
@@ -37,7 +37,6 @@ public class ExperimentNFold {
 		iniLoader.parse(filepath);
 		double result = 0;
 
-		double resultSum = 0.0;
 		double[] results = new double[3];
 		Config config = Config.getInstance();
 		config.setParameter("wekaModelStatus", "train");
@@ -61,8 +60,8 @@ public class ExperimentNFold {
 				// Train
 				System.out.println("Start training...");
 				config.setParameter("wekaModelStatus", "train");
-				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + "_testset.tsv");
-//				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
+//				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + "_testset.tsv");
+				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
 //				config.setParameter("datasetPath", "/home/felix/data/aidaTestSentence.tsv");
 				//				config.setParameter("datasetPath", "E:/Master Project/data/aida-yago2-dataset/aida_fold_" + trainFold + "_testset.tsv");
 				//				result = sandbox.evaluate();
@@ -80,8 +79,8 @@ public class ExperimentNFold {
 				// Test
 				System.out.println("Start testing...");
 				config.setParameter("wekaModelStatus", "test");
-				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + ".tsv");
-//				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + ".tsv");
+//				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + ".tsv");
+				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + ".tsv");
 //				result = sandbox.evaluate();
 //				resultSum += result;
 				handler = new InputStringHandler();
@@ -91,8 +90,12 @@ public class ExperimentNFold {
 				sandbox = new DatasetEvaluatorSandbox();
 				adapter = new NIFAdapter(sandbox);
 				adapter.linkModel(model);
+				
+				BufferedWriter modelWriter = new BufferedWriter(new FileWriter("result_fold_" + trainFold + ".txt"));
 				System.out.println("Model for fold " + trainFold);
-				model.write(System.out, "Turtle");	
+				model.write(modelWriter, "Turtle");	
+				modelWriter.close();
+				
 				double[] tmp = DatasetEvaluator.evaluateModel(model);
 				results[0] += tmp[0];
 				results[1] += tmp[1];

@@ -28,6 +28,10 @@ import main.java.datatypes.tfidf.DocumentFrequency;
 import main.java.datatypes.tfidf.TFIDF;
 
 
+/**
+ * @author Felix Tristram
+ * Generate the VectorMap.
+ */
 public class VectorMapGenerator {
 	
 	final static int initialMapSize = 15000000;

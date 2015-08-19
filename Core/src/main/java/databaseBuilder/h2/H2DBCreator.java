@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * @author Felix Tristram
+ * Creates the tables for the H2 database.
+ */
 public class H2DBCreator {
 
 	String dbPath;

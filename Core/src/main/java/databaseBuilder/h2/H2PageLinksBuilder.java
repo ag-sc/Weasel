@@ -7,6 +7,10 @@ import java.sql.DriverManager;
 import main.java.utility.Stopwatch;
 import main.java.databaseBuilder.fileparser.WikiParser;
 
+/**
+ * @author Felix Tristram
+ * Parses the Wikipedia pagelinks file and saves the page to page connections in a database.
+ */
 public class H2PageLinksBuilder extends H2BuilderCore {
 
 	WikiParser parser;

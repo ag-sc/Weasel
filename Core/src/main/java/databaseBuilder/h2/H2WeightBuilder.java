@@ -9,6 +9,12 @@ import java.util.TreeSet;
 import main.java.utility.Stopwatch;
 import main.java.datatypes.H2List;
 
+/**
+ * @author Felix Tristram
+ * Calculate connection weights for the PageRank calculation. Deprecated now as
+ * the PageRank is calculated by an external library.
+ */
+@Deprecated
 public class H2WeightBuilder extends H2Core {
 
 	Connection connection;

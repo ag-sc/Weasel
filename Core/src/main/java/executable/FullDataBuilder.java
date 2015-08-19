@@ -4,11 +4,8 @@ import main.java.iniloader.IniLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -230,32 +227,32 @@ public class FullDataBuilder {
 		}
 	} // buildPageRankArray
 
-	private static boolean checkColumn(Connection connection, String column) throws SQLException{
-		return checkColumn(connection, column, forceOverride);
-	}
+//	private static boolean checkColumn(Connection connection, String column) throws SQLException{
+//		return checkColumn(connection, column, forceOverride);
+//	}
 	
-	private static boolean checkColumn(Connection connection, String column, boolean localOverride) throws SQLException {
-		String sql = "select count(*) from information_schema.columns where table_name = 'ENTITYID' and column_name = '" + column + "'";
-		Statement stmt = connection.createStatement();
-		ResultSet result = stmt.executeQuery(sql);
-		int value = 0;
-		while (result.next()) {
-			value = result.getInt(1);
-			break;
-		}
-		if (value == 1) {
-			if (localOverride) {
-				System.out.println("Delete column: " + column);
-				sql = "ALTER TABLE EntityId DROP COLUMN " + column + ";";
-				stmt.executeUpdate(sql);
-			} else {
-				System.out.println(column + " column found. No need to build it.");
-				return false;
-			}
-		}
-		if(!localOverride) System.out.println(column + " column not found.");
-		return true;
-	}
+//	private static boolean checkColumn(Connection connection, String column, boolean localOverride) throws SQLException {
+//		String sql = "select count(*) from information_schema.columns where table_name = 'ENTITYID' and column_name = '" + column + "'";
+//		Statement stmt = connection.createStatement();
+//		ResultSet result = stmt.executeQuery(sql);
+//		int value = 0;
+//		while (result.next()) {
+//			value = result.getInt(1);
+//			break;
+//		}
+//		if (value == 1) {
+//			if (localOverride) {
+//				System.out.println("Delete column: " + column);
+//				sql = "ALTER TABLE EntityId DROP COLUMN " + column + ";";
+//				stmt.executeUpdate(sql);
+//			} else {
+//				System.out.println(column + " column found. No need to build it.");
+//				return false;
+//			}
+//		}
+//		if(!localOverride) System.out.println(column + " column not found.");
+//		return true;
+//	}
 
 	private static void buildRemainingDatabaseData() {
 		String h2Path = config.getParameter("H2Path");

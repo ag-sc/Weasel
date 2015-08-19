@@ -12,6 +12,10 @@ import java.util.Map.Entry;
 import main.java.datatypes.VectorEntry;
 import main.java.utility.Stopwatch;
 
+/**
+ * @author Felix Tristram
+ * Save the data from the Vector Map and the PageRank Array to the database.
+ */
 public class H2RemainingDataWriter extends H2Core{
 
 	String vectorMapFilePath;

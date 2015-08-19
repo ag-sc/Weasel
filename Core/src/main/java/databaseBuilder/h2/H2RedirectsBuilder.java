@@ -10,6 +10,10 @@ import edu.jhu.nlp.wikipedia.WikiPage;
 import edu.jhu.nlp.wikipedia.WikiXMLParser;
 import edu.jhu.nlp.wikipedia.WikiXMLParserFactory;
 
+/**
+ * @author Felix Tristram
+ * Save to the database which entries are redirects and which are disambiguations.
+ */
 public class H2RedirectsBuilder extends H2BuilderCore {
 
 	WikiXMLParser wxsp;

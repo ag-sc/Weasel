@@ -17,6 +17,10 @@ import java.util.Set;
 import main.java.utility.Stopwatch;
 import main.java.datatypes.InMemoryDataContainer;
 
+/**
+ * @author Felix Tristram
+ * Import data from the H2 database in order to generate an in-memory data container.
+ */
 public class MemoryDataContainerBuilderFromH2 {
 	
 	static int abstractCounter = 0;
