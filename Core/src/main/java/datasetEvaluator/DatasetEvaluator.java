@@ -44,13 +44,24 @@ public class DatasetEvaluator {
 		int correctAssignments = 0;
 		int totalAssignments = 0;
 		
+		int inGoldAndFoundByTagger = 0;
+		int foundByTagger = 0;
+		// Max precision & recall
+		StmtIterator foundByTaggerIter = model.listStatements(new SimpleSelector(null, NIF_SchemaGen.anchorOf, (RDFNode) null));
+		while(foundByTaggerIter.hasNext()){
+			Statement stmt = foundByTaggerIter.next();
+			foundByTagger++;
+		}
+		
 		// Count total assignments
 		StmtIterator goldEntitiesIter = model.listStatements(new SimpleSelector(null, Config.datasetEntityProp, (RDFNode) null));
 		while(goldEntitiesIter.hasNext()){
 			Statement stmt = goldEntitiesIter.next();
-			RDFNode subject = stmt.getObject();
-			if(!subject.toString().equalsIgnoreCase("--NME--")){
+			RDFNode object = stmt.getObject();
+			if(!object.toString().equalsIgnoreCase("--NME--")){
 				goldStdEntities++;
+				Statement anchorOf = model.getProperty(stmt.getSubject(), NIF_SchemaGen.anchorOf);
+				if(anchorOf != null) inGoldAndFoundByTagger++;
 			}
 		}
 		
@@ -74,7 +85,7 @@ public class DatasetEvaluator {
 			String correctEntity = correctEntityNode.toString();
 			
 //			if(correctEntity != null && assignedEntity != null) continue;
-			if(correctEntity.equals(assignedEntity)){
+			if(correctEntity.equalsIgnoreCase(assignedEntity)){
 				correctAssignments++;
 				System.out.println("Correctly Assigned: " + assignedEntity);
 			}else{
@@ -94,6 +105,15 @@ public class DatasetEvaluator {
 		System.out.println("Precision:\t" + (precision * 100) + " %\t(" + correctAssignments + "/" + totalAssignments + ")"); 
 		System.out.println("Recall:\t" + (recall * 100) + " %\t(" + correctAssignments + "/" + goldStdEntities + ")");
 		System.out.println("F-Measure:\t" + fMeasure);
+		
+		// Max values
+		double maxPrecision = (double) inGoldAndFoundByTagger / (double) foundByTagger;
+		double maxRecall = (double) inGoldAndFoundByTagger / (double) goldStdEntities;
+		double maxFMeasure = (2 * maxPrecision * maxRecall) / (maxPrecision + maxRecall);
+		System.out.println();
+		System.out.println("Max Precision:\t" + (maxPrecision * 100) + " %\t(" + inGoldAndFoundByTagger + "/" + foundByTagger + ")"); 
+		System.out.println("Max Recall:\t" + (maxRecall * 100) + " %\t(" + inGoldAndFoundByTagger + "/" + goldStdEntities + ")");
+		System.out.println("Max F-Measure:\t" + maxFMeasure);
 		
 		double[] results = new double[3];
 		results[0] = precision;

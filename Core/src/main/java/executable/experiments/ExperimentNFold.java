@@ -50,6 +50,8 @@ public class ExperimentNFold {
 			fw.write("Experiment number " + experimentNumber + "(" + config.getParameter("datasetPath") + ")\n\n");
 			fw.write("id\tcorrect\t\tTime\n");
 			
+			String tmpDataset = config.getParameter("tmpDataset");
+			
 			Stopwatch swTotal = new Stopwatch(Stopwatch.UNIT.MINUTES);
 			for (int trainFold = 0; trainFold < numberOfFolds; trainFold++) {
 				Stopwatch sw = new Stopwatch(Stopwatch.UNIT.SECONDS);
@@ -61,7 +63,7 @@ public class ExperimentNFold {
 				System.out.println("Start training...");
 				config.setParameter("wekaModelStatus", "train");
 //				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + "_testset.tsv");
-				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + "_testset.tsv");
+				config.setParameter("datasetPath", "/home/felix/data/" + tmpDataset + "10fold/" + tmpDataset + "_fold_" + trainFold + "_testset.tsv");
 //				config.setParameter("datasetPath", "/home/felix/data/aidaTestSentence.tsv");
 				//				config.setParameter("datasetPath", "E:/Master Project/data/aida-yago2-dataset/aida_fold_" + trainFold + "_testset.tsv");
 				//				result = sandbox.evaluate();
@@ -80,7 +82,7 @@ public class ExperimentNFold {
 				System.out.println("Start testing...");
 				config.setParameter("wekaModelStatus", "test");
 //				config.setParameter("datasetPath", "/home/felix/data/kore10fold/kore50_fold_" + trainFold + ".tsv");
-				config.setParameter("datasetPath", "/home/felix/data/aida10fold/aida_fold_" + trainFold + ".tsv");
+				config.setParameter("datasetPath", "/home/felix/data/" + tmpDataset + "10fold/" + tmpDataset + "_fold_" + trainFold + ".tsv");
 //				result = sandbox.evaluate();
 //				resultSum += result;
 				handler = new InputStringHandler();
@@ -91,7 +93,7 @@ public class ExperimentNFold {
 				adapter = new NIFAdapter(sandbox);
 				adapter.linkModel(model);
 				
-				BufferedWriter modelWriter = new BufferedWriter(new FileWriter("result_fold_" + trainFold + ".txt"));
+				BufferedWriter modelWriter = new BufferedWriter(new FileWriter(tmpDataset + "_result_fold_" + trainFold + ".txt"));
 				System.out.println("Model for fold " + trainFold);
 				model.write(modelWriter, "Turtle");	
 				modelWriter.close();

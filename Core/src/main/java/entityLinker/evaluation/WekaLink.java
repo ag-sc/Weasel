@@ -57,6 +57,7 @@ public class WekaLink {
 		try {
 			switch (config.getParameter("wekaModelStatus")) {
 			case "train":
+				// edit here
 				arffWriter = new BufferedWriter(new FileWriter(arffFilePath));
 				arffWriter.write("@RELATION entityLinking\n\n");
 				arffWriter.write("@ATTRIBUTE candidateVectorScore\tNUMERIC\n");
@@ -93,6 +94,7 @@ public class WekaLink {
 		fvClassVal.addElement("0");
 		fvClassVal.addElement("1");
 		Attribute ClassAttribute = new Attribute("class", fvClassVal);
+		// edit here
 		fvWekaAttributes = new FastVector<Attribute>(5);
 		fvWekaAttributes.addElement(Attribute1);
 		fvWekaAttributes.addElement(Attribute2);
@@ -119,8 +121,10 @@ public class WekaLink {
 
 	public void writeToARFF(double candidateVectorScore, double tfidfScore, double pageRank, double candidateReferenceFrequency, String clazz) {
 		try {
-			 arffWriter.write(candidateVectorScore + "," + tfidfScore + "," + pageRank + "," + candidateReferenceFrequency + "," + clazz + "\n");
-//			arffWriter.write(candidateVectorScore + ","  + tfidfScore + "," + pageRank + "," + clazz + "\n");
+			// edit here
+			arffWriter.write(candidateVectorScore + "," + tfidfScore + "," + pageRank + "," + candidateReferenceFrequency + "," + clazz + "\n");
+//			arffWriter.write(candidateReferenceFrequency + "," + clazz + "\n");
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,16 +138,15 @@ public class WekaLink {
 			return values;
 		}
 
+		
 		 Instance ins = new DenseInstance(5);
 		 ins.setValue(0, candidateVectorScore);
 		 ins.setValue(1, tfidfScore);
 		 ins.setValue(2, pageRank);
 		 ins.setValue(3, candidateReferenceFrequency);
-
-//		Instance ins = new DenseInstance(4);
-//		ins.setValue(0, candidateVectorScore);
-//		ins.setValue(1, tfidfScore);
-//		ins.setValue(2, pageRank);
+// edit here
+//		Instance ins = new DenseInstance(2);
+//		ins.setValue(0, candidateReferenceFrequency);
 
 		Instances dataUnlabeled = new Instances("TestInstances", fvWekaAttributes, 0);
 		dataUnlabeled.add(ins);

@@ -24,6 +24,7 @@ public class H2Connector extends DatabaseConnector {
 		
 		Class.forName("org.h2.Driver");
 		DriverManager.getConnection("jdbc:h2:" + this.dbPath, username, password);
+		connection = DriverManager.getConnection("jdbc:h2:" + this.dbPath, username, password);
 //		if(connectToLocalServer) connection = DriverManager.getConnection("jdbc:h2:" + this.dbPath, username, password);
 //		else connection = DriverManager.getConnection("jdbc:h2:" + this.dbPath, username, password);
 		
